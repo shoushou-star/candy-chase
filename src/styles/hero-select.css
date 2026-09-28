@@ -1,0 +1,46 @@
+.hero-select-page {
+  position: relative;
+  width: 2048px;
+  height: 1152px;
+  overflow: hidden;
+  background: #20132f;
+  color: var(--foreground);
+}
+
+.hero-select-page__background,
+.hero-select-page__background img,
+.hero-select-page__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-select-page__background img { object-fit: cover; }
+.hero-select-page__background > span { display: grid; height: 100%; place-items: center; font-size: 36px; }
+.hero-select-page__overlay { pointer-events: none; background: linear-gradient(90deg, rgb(16 10 28 / 75%), transparent 65%), linear-gradient(0deg, rgb(16 10 28 / 88%), transparent 48%); }
+.hero-select-page__header { position: absolute; inset: 36px 54px auto; display: flex; align-items: flex-start; justify-content: space-between; }
+.hero-select-page__back { width: 88px; height: 88px; border: 2px solid rgb(255 255 255 / 65%); border-radius: 24px; background: rgb(32 19 55 / 80%); color: white; font-size: 56px; line-height: 1; cursor: pointer; }
+.hero-select-page__currencies { display: flex; gap: 20px; }
+.currency-counter { display: flex; align-items: center; height: 72px; padding: 6px 7px 6px 14px; border: 2px solid rgb(255 255 255 / 35%); border-radius: 36px; background: rgb(24 13 44 / 84%); box-shadow: 0 8px 20px rgb(0 0 0 / 24%); }
+.currency-counter__icon { width: 48px; height: 48px; object-fit: contain; }
+.currency-counter__value { min-width: 96px; padding: 0 14px; text-align: center; font-size: 28px; font-weight: 800; }
+.currency-counter__plus { width: 54px; height: 54px; border: 0; border-radius: 50%; background: #f6cf4a; color: #34254b; font: 800 40px/1 var(--font-family); cursor: pointer; }
+.hero-identity { position: absolute; top: 220px; left: 112px; width: 700px; }
+.hero-identity__eyebrow { margin: 0 0 28px; font-size: 48px; font-weight: 800; letter-spacing: 0.09em; }
+.hero-identity__logo { display: block; max-width: 620px; max-height: 220px; object-fit: contain; object-position: left center; }
+.hero-identity__fallback { display: grid; width: 620px; min-height: 170px; place-items: center; border: 2px dashed rgb(255 255 255 / 55%); border-radius: 24px; font-size: 36px; }
+.hero-identity__caption { margin: 22px 0; font-size: 30px; font-weight: 600; }
+.hero-select-page__selection { position: absolute; inset: 0; pointer-events: none; }
+.hero-select-page__selection > * { pointer-events: auto; }
+.carousel-arrow { position: absolute; top: 510px; width: 90px; height: 100px; border: 3px solid rgb(255 255 255 / 75%); border-radius: 22px; background: rgb(37 21 66 / 82%); color: white; font-size: 90px; line-height: 0.7; cursor: pointer; }
+.carousel-arrow--previous { left: 50px; }
+.carousel-arrow--next { right: 50px; }
+.hero-select-page__confirm { position: absolute; left: 50%; bottom: 360px; width: 330px; height: 100px; border: 4px solid #fff1aa; border-radius: 32px; background: linear-gradient(#ffe073, #eba930); color: #332447; font: italic 800 54px var(--font-family); box-shadow: 0 14px 0 #8c4f2d, 0 25px 30px rgb(0 0 0 / 35%); cursor: pointer; translate: -50% 0; }
+.hero-card-list { position: absolute; right: 190px; bottom: 50px; left: 190px; display: flex; align-items: flex-end; justify-content: center; gap: 22px; }
+.hero-card { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: flex-end; max-width: 245px; height: 260px; padding: 8px; overflow: hidden; border: 4px solid rgb(255 255 255 / 60%); border-radius: 28px; background: linear-gradient(#6745a0, #321d54); color: white; box-shadow: 0 12px 20px rgb(0 0 0 / 34%); cursor: pointer; }
+.hero-card--selected { height: 300px; border-color: #ffe170; box-shadow: 0 0 0 7px rgb(255 211 78 / 35%), 0 18px 25px rgb(0 0 0 / 40%); }
+.hero-card__art { display: grid; flex: 1; width: 100%; min-height: 0; place-items: center; }
+.hero-card__art img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.hero-card__fallback { padding: 12px; text-align: center; font-size: 19px; font-weight: 600; }
+.hero-card__name { flex: none; padding: 6px 0; font-size: 24px; font-weight: 800; }
