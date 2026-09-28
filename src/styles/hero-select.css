@@ -23,6 +23,7 @@
 .hero-select-page__back { width: 88px; height: 88px; border: 2px solid rgb(255 255 255 / 65%); border-radius: 24px; background: rgb(32 19 55 / 80%); color: white; font-size: 56px; line-height: 1; cursor: pointer; }
 .hero-select-page__currencies { display: flex; gap: 20px; }
 .currency-counter { display: flex; align-items: center; height: 72px; padding: 6px 7px 6px 14px; border: 2px solid rgb(255 255 255 / 35%); border-radius: 36px; background: rgb(24 13 44 / 84%); box-shadow: 0 8px 20px rgb(0 0 0 / 24%); }
+.currency-counter__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .currency-counter__icon { width: 48px; height: 48px; object-fit: contain; }
 .currency-counter__value { min-width: 96px; padding: 0 14px; text-align: center; font-size: 28px; font-weight: 800; }
 .currency-counter__plus { width: 54px; height: 54px; border: 0; border-radius: 50%; background: #f6cf4a; color: #34254b; font: 800 40px/1 var(--font-family); cursor: pointer; }

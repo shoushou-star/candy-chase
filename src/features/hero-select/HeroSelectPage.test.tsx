@@ -2,6 +2,7 @@ import { useState } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { CurrencyCounter } from "./CurrencyCounter";
 import { HeroSelectPage } from "./HeroSelectPage";
 import type { HeroAssetState, HeroId } from "./types";
 
@@ -144,5 +145,20 @@ describe("HeroSelectPage", () => {
       expect(pageProps.onOpenStore).toHaveBeenLastCalledWith(button);
     }
     expect(pageProps.onOpenStore).toHaveBeenCalledTimes(3);
+  });
+
+  it("associates each currency name with its displayed value in the accessibility tree", () => {
+    render(
+      <>
+        <CurrencyCounter name="金币" iconSrc="/coins.svg" value={7} onOpenStore={vi.fn()} />
+        <CurrencyCounter name="体力" iconSrc="/energy.svg" value={13} onOpenStore={vi.fn()} />
+        <CurrencyCounter name="宝石" iconSrc="/gems.svg" value={29} onOpenStore={vi.fn()} />
+      </>,
+    );
+    for (const [name, value] of [["金币", "7"], ["体力", "13"], ["宝石", "29"]] as const) {
+      const counter = screen.getByRole("group", { name: `${name}余额` });
+      expect(within(counter).getByText(value)).toBeInTheDocument();
+      expect(within(counter).getByRole("button", { name: `打开${name}商店` })).toBeInTheDocument();
+    }
   });
 });
