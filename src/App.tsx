@@ -1,3 +1,63 @@
+import { useRef, useState } from "react";
+import { StageFrame } from "./components/StageFrame";
+import { StoreUnavailableDialog } from "./components/StoreUnavailableDialog";
+import { HEROES } from "./features/hero-select/heroes";
+import { HeroSelectPage } from "./features/hero-select/HeroSelectPage";
+import { getHeroById } from "./features/hero-select/selection";
+import type { HeroId, Page } from "./features/hero-select/types";
+import { useHeroAssets } from "./features/hero-select/useHeroAssets";
+import { GamePlaceholderPage } from "./pages/GamePlaceholderPage";
+import { TemporaryHomePage } from "./pages/TemporaryHomePage";
+
 export function App() {
-  return <main aria-label="角色选择" />;
+  const [currentPage, setCurrentPage] = useState<Page>("hero-select");
+  const [selectedHeroId, setSelectedHeroId] = useState<HeroId>("piko");
+  const [confirmedHeroId, setConfirmedHeroId] = useState<HeroId>("piko");
+  const [isStoreNoticeOpen, setStoreNoticeOpen] = useState(false);
+  const storeNoticeTrigger = useRef<HTMLButtonElement>(null);
+  const assetLoadState = useHeroAssets(HEROES);
+
+  function confirmHero(heroId: HeroId) {
+    setConfirmedHeroId(heroId);
+    setCurrentPage("game-placeholder");
+  }
+
+  function openStore(trigger: HTMLButtonElement) {
+    storeNoticeTrigger.current = trigger;
+    setStoreNoticeOpen(true);
+  }
+
+  return (
+    <StageFrame>
+      <div inert={isStoreNoticeOpen}>
+        {currentPage === "hero-select" && (
+          <HeroSelectPage
+            selectedHeroId={selectedHeroId}
+            assetLoadState={assetLoadState}
+            onSelectHero={setSelectedHeroId}
+            onConfirm={confirmHero}
+            onBack={() => setCurrentPage("home")}
+            onOpenStore={openStore}
+          />
+        )}
+        {currentPage === "home" && (
+          <TemporaryHomePage
+            selectedHero={getHeroById(selectedHeroId)}
+            onEnterHeroSelect={() => setCurrentPage("hero-select")}
+          />
+        )}
+        {currentPage === "game-placeholder" && (
+          <GamePlaceholderPage
+            confirmedHero={getHeroById(confirmedHeroId)}
+            onReturnToHeroSelect={() => setCurrentPage("hero-select")}
+          />
+        )}
+      </div>
+      <StoreUnavailableDialog
+        open={isStoreNoticeOpen}
+        triggerRef={storeNoticeTrigger}
+        onClose={() => setStoreNoticeOpen(false)}
+      />
+    </StageFrame>
+  );
 }
