@@ -19,3 +19,15 @@ body {
   color: var(--foreground);
   font-family: var(--font-family);
 }
+
+.stage-viewport {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--stage-letterbox);
+}
+
+.stage-frame {
+  transform: scale(var(--stage-scale));
+  transform-origin: center center;
+}
