@@ -8,7 +8,11 @@ interface HeroIdentityProps {
 export function HeroIdentity({ hero, status }: HeroIdentityProps) {
   return (
     <section className="hero-identity" aria-label="当前角色">
-      <p className="hero-identity__eyebrow">CHOOSE YOUR HERO</p>
+      <div className="hero-identity__copy">
+        <h1 className="hero-identity__title">SELECT HERO</h1>
+        <p className="hero-identity__subtitle">Choose your hero</p>
+        <span className="hero-identity__rarity">EPIC</span>
+      </div>
       {status === "ready" ? (
         <img className="hero-identity__logo" src={hero.logoSrc} alt={`${hero.displayName}角色标志`} />
       ) : (
@@ -16,7 +20,6 @@ export function HeroIdentity({ hero, status }: HeroIdentityProps) {
           {status === "error" ? `无法加载 ${hero.displayName}` : `正在加载 ${hero.displayName}`}
         </p>
       )}
-      <p className="hero-identity__caption">选择角色，开启冒险</p>
     </section>
   );
 }

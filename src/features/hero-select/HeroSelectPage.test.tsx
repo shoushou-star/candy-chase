@@ -36,6 +36,26 @@ function ControlledPage({ initialHeroId = "piko" }: { initialHeroId?: HeroId }) 
 }
 
 describe("HeroSelectPage", () => {
+  it("renders the approved target copy, rarity, and currency balances", () => {
+    render(<HeroSelectPage {...props()} />);
+
+    expect(screen.getByRole("heading", { name: "SELECT HERO" })).toBeInTheDocument();
+    expect(screen.getByText("Choose your hero")).toBeInTheDocument();
+    expect(screen.getByText("EPIC")).toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "金币余额" })).getByText("623736")).toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "体力余额" })).getByText("2311")).toBeInTheDocument();
+    expect(within(screen.getByRole("group", { name: "宝石余额" })).getByText("2139")).toBeInTheDocument();
+  });
+
+  it("shows a check badge only on the selected hero card", () => {
+    render(<HeroSelectPage {...props()} />);
+    const cards = within(screen.getByRole("group", { name: "角色卡列表" })).getAllByRole("button");
+
+    expect(cards.filter((card) => card.querySelector(".hero-card__selected-mark"))).toEqual([
+      screen.getByRole("button", { name: "选择 PIKO" }),
+    ]);
+  });
+
   it("renders five cards in carousel order and updates identity after parent selection", async () => {
     const user = userEvent.setup();
     render(<ControlledPage />);

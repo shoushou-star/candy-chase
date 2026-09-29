@@ -4,4 +4,14 @@
   --foreground: #ffffff;
   --focus-ring: #b993ff;
   --font-family: "Montserrat", sans-serif;
+  --hero-purple-950: #18073e;
+  --hero-purple-900: #21094f;
+  --hero-purple-700: #6022d4;
+  --hero-purple-500: #b92cf2;
+  --hero-yellow: #ffc735;
+  --hero-yellow-bright: #ffdf49;
+  --hero-ink: #20133f;
+  --hero-white: #ffffff;
+  --hero-border: rgb(255 255 255 / 92%);
+  --hero-shadow: rgb(25 5 66 / 42%);
 }

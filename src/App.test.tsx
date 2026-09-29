@@ -54,6 +54,63 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
   });
 
+  it("settles rapid next and previous input on the mathematically correct hero", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const next = screen.getByRole("button", { name: "下一位角色" });
+    const previous = screen.getByRole("button", { name: "上一位角色" });
+    await user.click(next);
+    await user.click(next);
+    await user.click(next);
+    await user.click(previous);
+    expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("does not enter the game when the selected hero asset failed", async () => {
+    vi.mocked(useHeroAssets).mockReturnValueOnce({
+      nibby: "ready", piko: "error", mira: "ready", riff: "ready", bongo: "ready",
+    });
+    const user = userEvent.setup();
+    render(<App />);
+    const confirm = screen.getByRole("button", { name: "确认选择 PIKO" });
+    expect(confirm).toBeDisabled();
+    await user.click(confirm);
+    expect(screen.getByRole("main", { name: "角色选择" })).toBeInTheDocument();
+    expect(screen.queryByRole("main", { name: "游戏占位页" })).not.toBeInTheDocument();
+  });
+
+  it("allows a ready hero to be confirmed when another hero failed", async () => {
+    vi.mocked(useHeroAssets).mockReturnValueOnce({
+      nibby: "ready", piko: "error", mira: "ready", riff: "ready", bongo: "ready",
+    });
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
+    expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
+  });
+
+  it("keeps modal background controls from changing state or focus restoration", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const originalTrigger = screen.getByRole("button", { name: "打开金币商店" });
+    await user.click(originalTrigger);
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "打开体力商店" }));
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "选择 PIKO" })).toHaveAttribute("aria-pressed", "true");
+    expect(originalTrigger).toHaveFocus();
+  });
+
+  it("gives every hero-selection button a unique accessible name", () => {
+    render(<App />);
+    const names = screen.getAllByRole("button").map((button) =>
+      button.getAttribute("aria-label") ?? button.textContent?.trim() ?? "",
+    );
+    expect(names).not.toContain("");
+    expect(new Set(names).size).toBe(names.length);
+  });
+
   it.each(["金币", "体力", "宝石"])("returns focus to the %s plus button after Escape", async (name) => {
     const user = userEvent.setup();
     render(<App />);

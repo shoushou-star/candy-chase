@@ -26,7 +26,7 @@ export function HeroCard({ hero, selected, status, onSelect }: HeroCardProps) {
           </span>
         )}
       </span>
-      <span className="hero-card__name" aria-hidden="true">{hero.displayName}</span>
+      {selected && <span className="hero-card__selected-mark" aria-hidden="true">✓</span>}
     </GameButton>
   );
 }

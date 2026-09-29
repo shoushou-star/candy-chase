@@ -51,9 +51,9 @@ export function HeroSelectPage({
           <span aria-hidden="true">←</span>
         </GameButton>
         <div className="hero-select-page__currencies">
-          <CurrencyCounter name="金币" iconSrc={coinsIcon} value={0} onOpenStore={onOpenStore} />
-          <CurrencyCounter name="体力" iconSrc={energyIcon} value={0} onOpenStore={onOpenStore} />
-          <CurrencyCounter name="宝石" iconSrc={gemsIcon} value={0} onOpenStore={onOpenStore} />
+          <CurrencyCounter name="金币" iconSrc={coinsIcon} value={623736} onOpenStore={onOpenStore} />
+          <CurrencyCounter name="体力" iconSrc={energyIcon} value={2311} onOpenStore={onOpenStore} />
+          <CurrencyCounter name="宝石" iconSrc={gemsIcon} value={2139} onOpenStore={onOpenStore} />
         </div>
       </header>
       <HeroIdentity hero={selectedHero} status={currentStatus} />

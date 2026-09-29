@@ -23,8 +23,13 @@ export function App() {
   }
 
   function openStore(trigger: HTMLButtonElement) {
+    if (isStoreNoticeOpen) return;
     storeNoticeTrigger.current = trigger;
     setStoreNoticeOpen(true);
+  }
+
+  function runOutsideModal(action: () => void) {
+    if (!isStoreNoticeOpen) action();
   }
 
   return (
@@ -34,9 +39,9 @@ export function App() {
           <HeroSelectPage
             selectedHeroId={selectedHeroId}
             assetLoadState={assetLoadState}
-            onSelectHero={setSelectedHeroId}
-            onConfirm={confirmHero}
-            onBack={() => setCurrentPage("home")}
+            onSelectHero={(heroId) => runOutsideModal(() => setSelectedHeroId(heroId))}
+            onConfirm={(heroId) => runOutsideModal(() => confirmHero(heroId))}
+            onBack={() => runOutsideModal(() => setCurrentPage("home"))}
             onOpenStore={openStore}
           />
         )}
