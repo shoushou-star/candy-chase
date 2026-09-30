@@ -72,8 +72,13 @@
 .hero-identity__title { margin: 0; color: var(--hero-white); font-size: 56px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; text-shadow: 0 5px 8px rgb(35 10 76 / 36%); }
 .hero-identity__subtitle { margin: 10px 0 0; color: rgb(255 255 255 / 92%); font-size: 31px; font-weight: 500; line-height: 1.15; text-shadow: 0 3px 6px rgb(35 10 76 / 35%); }
 .hero-identity__rarity { display: grid; width: 180px; height: 57px; margin-top: 38px; place-items: center; border-radius: 29px; background: linear-gradient(180deg, #c337f3, #a728e9); box-shadow: 0 7px 14px rgb(56 8 104 / 28%); color: var(--hero-white); font-size: 28px; font-weight: 800; line-height: 1; }
-.hero-identity__logo { position: absolute; top: 316px; left: 125px; display: block; width: 950px; height: 535px; object-fit: contain; object-position: left center; }
+.hero-identity__logo { position: absolute; top: 316px; left: 125px; display: block; width: 950px; height: 535px; opacity: 0; transform: scale(0.92); transform-origin: left center; object-fit: contain; object-position: left center; transition: opacity 350ms ease-out, transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.hero-identity__logo--visible { opacity: 1; transform: scale(1); }
 .hero-identity__fallback { position: absolute; top: 350px; left: 145px; display: grid; width: 850px; min-height: 300px; margin: 0; place-items: center; border: 2px dashed rgb(255 255 255 / 55%); border-radius: 24px; font-size: 36px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-identity__logo { transform: none; transition: opacity 100ms linear; }
+}
 
 .hero-select-page__selection { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .hero-select-page__selection > * { pointer-events: auto; }

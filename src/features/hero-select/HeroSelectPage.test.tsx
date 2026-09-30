@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CurrencyCounter } from "./CurrencyCounter";
@@ -87,6 +87,82 @@ describe("HeroSelectPage", () => {
     expect(riffVideo).toHaveProperty("muted", false);
   });
 
+  it("reveals the hero logo only during the final 0.8 seconds", () => {
+    render(<HeroSelectPage {...props()} playbackRequestId={1} />);
+    const video = screen.getByLabelText("PIKO角色背景视频") as HTMLVideoElement;
+    const logo = screen.getByAltText("PIKO角色标志");
+    Object.defineProperty(video, "duration", { configurable: true, value: 4.064 });
+
+    video.currentTime = 3.2;
+    fireEvent.timeUpdate(video);
+    expect(logo).not.toHaveClass("hero-identity__logo--visible");
+
+    video.currentTime = 3.264;
+    fireEvent.timeUpdate(video);
+    expect(logo).toHaveClass("hero-identity__logo--visible");
+  });
+
+  it("uses rendered video frames to reveal the logo without timeupdate throttling", () => {
+    const callbacks: VideoFrameRequestCallback[] = [];
+    const requestDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLVideoElement.prototype,
+      "requestVideoFrameCallback",
+    );
+    const cancelDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLVideoElement.prototype,
+      "cancelVideoFrameCallback",
+    );
+    Object.defineProperty(HTMLVideoElement.prototype, "requestVideoFrameCallback", {
+      configurable: true,
+      value: (callback: VideoFrameRequestCallback) => {
+        callbacks.push(callback);
+        return callbacks.length;
+      },
+    });
+    Object.defineProperty(HTMLVideoElement.prototype, "cancelVideoFrameCallback", {
+      configurable: true,
+      value: () => undefined,
+    });
+
+    let unmount: () => void = () => undefined;
+    try {
+      ({ unmount } = render(<HeroSelectPage {...props()} playbackRequestId={1} />));
+      const video = screen.getByLabelText("PIKO角色背景视频") as HTMLVideoElement;
+      Object.defineProperty(video, "duration", { configurable: true, value: 4.064 });
+      expect(callbacks).toHaveLength(1);
+
+      act(() => callbacks[0](0, { mediaTime: 3.264 } as VideoFrameCallbackMetadata));
+
+      expect(screen.getByAltText("PIKO角色标志")).toHaveClass("hero-identity__logo--visible");
+    } finally {
+      unmount();
+      if (requestDescriptor) {
+        Object.defineProperty(HTMLVideoElement.prototype, "requestVideoFrameCallback", requestDescriptor);
+      } else {
+        delete (HTMLVideoElement.prototype as Partial<HTMLVideoElement>).requestVideoFrameCallback;
+      }
+      if (cancelDescriptor) {
+        Object.defineProperty(HTMLVideoElement.prototype, "cancelVideoFrameCallback", cancelDescriptor);
+      } else {
+        delete (HTMLVideoElement.prototype as Partial<HTMLVideoElement>).cancelVideoFrameCallback;
+      }
+    }
+  });
+
+  it("hides a revealed logo again when the current hero is replayed", () => {
+    const pageProps = props();
+    const { rerender } = render(<HeroSelectPage {...pageProps} playbackRequestId={1} />);
+    const video = screen.getByLabelText("PIKO角色背景视频") as HTMLVideoElement;
+    Object.defineProperty(video, "duration", { configurable: true, value: 4.064 });
+    video.currentTime = 3.264;
+    fireEvent.timeUpdate(video);
+    expect(screen.getByAltText("PIKO角色标志")).toHaveClass("hero-identity__logo--visible");
+
+    rerender(<HeroSelectPage {...pageProps} playbackRequestId={2} />);
+
+    expect(screen.getByAltText("PIKO角色标志")).not.toHaveClass("hero-identity__logo--visible");
+  });
+
   it("holds the final decoded frame when the active video ends", () => {
     render(<HeroSelectPage {...props()} playbackRequestId={1} />);
     const video = screen.getByLabelText("PIKO角色背景视频") as HTMLVideoElement;
@@ -96,6 +172,7 @@ describe("HeroSelectPage", () => {
     fireEvent.ended(video);
 
     expect(video.currentTime).toBeCloseTo(4 - 1 / 24, 5);
+    expect(screen.getByAltText("PIKO角色标志")).toHaveClass("hero-identity__logo--visible");
   });
 
   it("falls back to the approved static background when video loading fails", () => {
@@ -104,6 +181,7 @@ describe("HeroSelectPage", () => {
     fireEvent.error(screen.getByLabelText("PIKO角色背景视频"));
 
     expect(screen.getByRole("img", { name: "PIKO角色背景" })).toBeInTheDocument();
+    expect(screen.getByAltText("PIKO角色标志")).toHaveClass("hero-identity__logo--visible");
   });
 
   it("renders five cards in carousel order and updates identity after parent selection", async () => {

@@ -3,9 +3,10 @@ import type { Hero, AssetStatus } from "./types";
 interface HeroIdentityProps {
   hero: Hero;
   status: AssetStatus;
+  logoVisible: boolean;
 }
 
-export function HeroIdentity({ hero, status }: HeroIdentityProps) {
+export function HeroIdentity({ hero, status, logoVisible }: HeroIdentityProps) {
   return (
     <section className="hero-identity" aria-label="当前角色">
       <div className="hero-identity__copy">
@@ -14,7 +15,11 @@ export function HeroIdentity({ hero, status }: HeroIdentityProps) {
         <span className="hero-identity__rarity">EPIC</span>
       </div>
       {status === "ready" ? (
-        <img className="hero-identity__logo" src={hero.logoSrc} alt={`${hero.displayName}角色标志`} />
+        <img
+          className={`hero-identity__logo${logoVisible ? " hero-identity__logo--visible" : ""}`}
+          src={hero.logoSrc}
+          alt={`${hero.displayName}角色标志`}
+        />
       ) : (
         <p className="hero-identity__fallback" role="status">
           {status === "error" ? `无法加载 ${hero.displayName}` : `正在加载 ${hero.displayName}`}

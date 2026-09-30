@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import { GameButton } from "../../components/GameButton";
 import coinsIcon from "../../assets/figma/icon-coins.svg";
 import energyIcon from "../../assets/figma/icon-energy.svg";
@@ -32,6 +33,13 @@ export function HeroSelectPage({
 }: HeroSelectPageProps) {
   const selectedHero = getHeroById(selectedHeroId);
   const currentStatus = assetLoadState[selectedHeroId];
+  const playbackKey = `${selectedHeroId}-${playbackRequestId}`;
+  const [revealedPlaybackKey, setRevealedPlaybackKey] = useState<string | null>(null);
+  const logoVisible = revealedPlaybackKey === playbackKey;
+  const revealLogo = useCallback(
+    () => setRevealedPlaybackKey(playbackKey),
+    [playbackKey],
+  );
 
   function selectAdjacent(direction: HeroDirection) {
     onSelectHero(getAdjacentHeroId(selectedHeroId, direction));
@@ -43,6 +51,7 @@ export function HeroSelectPage({
         <HeroVideoBackground
           selectedHeroId={selectedHeroId}
           playbackRequestId={playbackRequestId}
+          onLogoReveal={revealLogo}
         />
       ) : (
         <div className="hero-select-page__background">
@@ -62,7 +71,7 @@ export function HeroSelectPage({
           <CurrencyCounter name="宝石" iconSrc={gemsIcon} value={2139} onOpenStore={onOpenStore} />
         </div>
       </header>
-      <HeroIdentity hero={selectedHero} status={currentStatus} />
+      <HeroIdentity hero={selectedHero} status={currentStatus} logoVisible={logoVisible} />
       <div className="hero-select-page__selection">
         <CarouselArrow direction={-1} onClick={() => selectAdjacent(-1)} />
         <CarouselArrow direction={1} onClick={() => selectAdjacent(1)} />
