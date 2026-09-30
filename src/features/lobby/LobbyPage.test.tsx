@@ -59,6 +59,19 @@ describe("LobbyPage", () => {
     expect(onAction.mock.calls.map(([action]) => action)).toEqual(cases.map(([, action]) => action));
   });
 
+  it("keeps a visible click animation active after a quick pointer click", async () => {
+    const user = userEvent.setup();
+    render(<LobbyPage state={DEFAULT_LOBBY_STATE} assetsReady />);
+    const play = screen.getByRole("button", { name: "开始游戏" });
+    const coins = screen.getByRole("button", { name: "增加金币" });
+
+    await user.click(play);
+    expect(play).toHaveClass("is-click-animating");
+
+    await user.click(coins);
+    expect(coins).toHaveClass("is-click-animating");
+  });
+
   it("uses native Enter and Space activation for keyboard users", async () => {
     const user = userEvent.setup();
     const onAction = vi.fn<(action: LobbyAction) => void>();

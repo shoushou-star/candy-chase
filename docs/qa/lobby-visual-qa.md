@@ -37,7 +37,8 @@ Figma：`UKHmhZoXccKUey5sUweNmQ` / `Lobby / 2048×1152` / 节点 `2:126`
 - 玩家资料栏不是按钮，不进入 Tab 顺序。
 - PLAY Hover 实测缩放：`1.035`。
 - PLAY Pressed 实测缩放：`0.95`。
-- Enter 与 Space 不改变页面、按钮类名或业务状态。
+- 快速点击松开后立即保留固定时长回弹动画；实测 90ms 时 PLAY 缩放为 `0.850`，410ms 后动画状态自动清理。
+- Enter 与 Space 均能启动相同的点击回弹，不改变页面或业务状态。
 - Tab 顺序与上述 12 个按钮顺序一致。
 - 每个焦点环为 `6px solid`，全部位于逻辑舞台边界内。
 - `prefers-reduced-motion: reduce` 时 transition duration 为 `0s`。

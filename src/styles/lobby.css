@@ -19,6 +19,8 @@
 .lobby-button:active { filter: brightness(.96); transform: scale(.96); transition-duration: 70ms; }
 .lobby-button--primary:hover { transform: scale(1.035); filter: brightness(1.1) drop-shadow(0 0 16px rgb(255 222 74 / 38%)); }
 .lobby-button--primary:active { transform: scale(.95); }
+.lobby-button.is-click-animating { animation: lobby-click-bounce 360ms cubic-bezier(.2, .9, .25, 1); }
+.lobby-button--primary.is-click-animating { animation-name: lobby-primary-click-bounce; }
 .lobby-button:focus-visible,
 .lobby-currency__plus:focus-visible { outline: 6px solid var(--lobby-focus-ring); outline-offset: 7px; }
 
@@ -42,6 +44,31 @@
 .lobby-currency__plus { margin-left: auto; width: 44px; height: 44px; border-radius: 14px; background: transparent; color: white; font-size: 30px; font-weight: 800; transition: transform 180ms cubic-bezier(.2, .9, .25, 1.25), filter 180ms ease; }
 .lobby-currency__plus:hover { filter: brightness(1.2) drop-shadow(0 0 7px #b980ff); transform: scale(1.12); }
 .lobby-currency__plus:active { transform: scale(.86); transition-duration: 70ms; }
+.lobby-currency__plus.is-click-animating { animation: lobby-plus-click-bounce 360ms cubic-bezier(.2, .9, .25, 1); }
+
+@keyframes lobby-click-bounce {
+  0% { filter: brightness(1.1); transform: scale(1); }
+  28% { filter: brightness(.92); transform: scale(.88); }
+  62% { filter: brightness(1.18); transform: scale(1.08); }
+  82% { transform: scale(.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lobby-primary-click-bounce {
+  0% { filter: brightness(1.1); transform: scale(1); }
+  28% { filter: brightness(.9); transform: scale(.85); }
+  62% { filter: brightness(1.2); transform: scale(1.1); }
+  82% { transform: scale(.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lobby-plus-click-bounce {
+  0% { transform: scale(1); }
+  28% { transform: scale(.72) rotate(-8deg); }
+  62% { transform: scale(1.22) rotate(5deg); }
+  82% { transform: scale(.94) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
 
 .lobby-settings { position: absolute; left: 1942px; top: 28px; width: 72px; height: 72px; overflow: hidden; border: 1.5px solid rgb(107 51 194 / 34%); border-radius: 20px; background: linear-gradient(92deg, rgb(41 14 99 / 97%), rgb(19 5 61 / 97%)); box-shadow: 0 9px 13px rgb(6 1 28 / 56%), inset 0 2px 3px rgb(255 255 255 / 10%); }
 .lobby-settings::before { position: absolute; top: 2.5px; left: 7.5px; width: 54px; height: 2px; border-radius: 1px; background: rgb(184 128 255 / 48%); content: ""; }
@@ -87,5 +114,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lobby-button,
-  .lobby-currency__plus { transition: none; }
+  .lobby-currency__plus { animation: none; transition: none; }
 }

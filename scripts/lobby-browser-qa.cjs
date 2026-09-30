@@ -63,6 +63,11 @@ const viewports = [
   await page.waitForTimeout(90);
   const pressedTransform = await play.evaluate((element) => getComputedStyle(element).transform);
   await page.mouse.up();
+  const clickAnimationClassImmediately = await play.evaluate((element) => element.classList.contains("is-click-animating"));
+  await page.waitForTimeout(90);
+  const clickAnimationTransformAt90ms = await play.evaluate((element) => getComputedStyle(element).transform);
+  await page.waitForTimeout(320);
+  const clickAnimationClassAfter410ms = await play.evaluate((element) => element.classList.contains("is-click-animating"));
 
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForFunction(() => document.querySelectorAll('button').length === 12);
@@ -72,11 +77,13 @@ const viewports = [
     tabOrder.push(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")));
   }
 
-  const playBefore = await play.getAttribute("class");
   await play.focus();
   await page.keyboard.press("Enter");
+  const enterStartsClickAnimation = await play.evaluate((element) => element.classList.contains("is-click-animating"));
+  await page.waitForTimeout(410);
   await page.keyboard.press("Space");
-  const playAfter = await play.getAttribute("class");
+  const spaceStartsClickAnimation = await play.evaluate((element) => element.classList.contains("is-click-animating"));
+  await page.waitForTimeout(410);
 
   const focusResults = [];
   for (const name of buttonNames) {
@@ -111,8 +118,12 @@ const viewports = [
     viewportResults,
     hoverTransform,
     pressedTransform,
+    clickAnimationClassImmediately,
+    clickAnimationTransformAt90ms,
+    clickAnimationClassAfter410ms,
     tabOrder,
-    playClassStableAfterKeyboardActivation: playBefore === playAfter,
+    enterStartsClickAnimation,
+    spaceStartsClickAnimation,
     focusResults,
     reducedMotionTransition,
     consoleErrors,
