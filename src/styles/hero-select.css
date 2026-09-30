@@ -9,6 +9,7 @@
 
 .hero-select-page__background,
 .hero-select-page__background img,
+.hero-select-page__background video,
 .hero-select-page__overlay {
   position: absolute;
   inset: 0;
@@ -16,7 +17,11 @@
   height: 100%;
 }
 
-.hero-select-page__background img { object-fit: cover; }
+.hero-select-page__background img,
+.hero-select-page__background video { object-fit: cover; }
+.hero-select-page__video { visibility: hidden; opacity: 0; pointer-events: none; }
+.hero-select-page__video--active { visibility: visible; opacity: 1; }
+.hero-select-page__video-fallback { z-index: 2; }
 .hero-select-page__background > span { display: grid; height: 100%; place-items: center; font-size: 36px; }
 .hero-select-page__overlay {
   pointer-events: none;

@@ -12,6 +12,7 @@ import { TemporaryHomePage } from "./pages/TemporaryHomePage";
 export function App() {
   const [currentPage, setCurrentPage] = useState<Page>("hero-select");
   const [selectedHeroId, setSelectedHeroId] = useState<HeroId>("piko");
+  const [playbackRequestId, setPlaybackRequestId] = useState(0);
   const [confirmedHeroId, setConfirmedHeroId] = useState<HeroId>("piko");
   const [isStoreNoticeOpen, setStoreNoticeOpen] = useState(false);
   const storeNoticeTrigger = useRef<HTMLButtonElement>(null);
@@ -32,14 +33,27 @@ export function App() {
     if (!isStoreNoticeOpen) action();
   }
 
+  function selectHero(heroId: HeroId) {
+    runOutsideModal(() => {
+      setSelectedHeroId(heroId);
+      setPlaybackRequestId((previous) => previous + 1);
+    });
+  }
+
+  function showHeroSelect() {
+    setPlaybackRequestId(0);
+    setCurrentPage("hero-select");
+  }
+
   return (
     <StageFrame>
       <div inert={isStoreNoticeOpen}>
         {currentPage === "hero-select" && (
           <HeroSelectPage
             selectedHeroId={selectedHeroId}
+            playbackRequestId={playbackRequestId}
             assetLoadState={assetLoadState}
-            onSelectHero={(heroId) => runOutsideModal(() => setSelectedHeroId(heroId))}
+            onSelectHero={selectHero}
             onConfirm={(heroId) => runOutsideModal(() => confirmHero(heroId))}
             onBack={() => runOutsideModal(() => setCurrentPage("home"))}
             onOpenStore={openStore}
@@ -48,13 +62,13 @@ export function App() {
         {currentPage === "home" && (
           <TemporaryHomePage
             selectedHero={getHeroById(selectedHeroId)}
-            onEnterHeroSelect={() => setCurrentPage("hero-select")}
+            onEnterHeroSelect={showHeroSelect}
           />
         )}
         {currentPage === "game-placeholder" && (
           <GamePlaceholderPage
             confirmedHero={getHeroById(confirmedHeroId)}
-            onReturnToHeroSelect={() => setCurrentPage("hero-select")}
+            onReturnToHeroSelect={showHeroSelect}
           />
         )}
       </div>

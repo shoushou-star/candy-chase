@@ -6,12 +6,14 @@ import { CarouselArrow } from "./CarouselArrow";
 import { CurrencyCounter } from "./CurrencyCounter";
 import { HeroCardList } from "./HeroCardList";
 import { HeroIdentity } from "./HeroIdentity";
+import { HeroVideoBackground } from "./HeroVideoBackground";
 import { getAdjacentHeroId, getHeroById } from "./selection";
 import type { HeroAssetState, HeroDirection, HeroId } from "./types";
 import "../../styles/hero-select.css";
 
 export interface HeroSelectPageProps {
   selectedHeroId: HeroId;
+  playbackRequestId: number;
   assetLoadState: HeroAssetState;
   onSelectHero: (heroId: HeroId) => void;
   onConfirm: (heroId: HeroId) => void;
@@ -21,6 +23,7 @@ export interface HeroSelectPageProps {
 
 export function HeroSelectPage({
   selectedHeroId,
+  playbackRequestId,
   assetLoadState,
   onSelectHero,
   onConfirm,
@@ -36,15 +39,18 @@ export function HeroSelectPage({
 
   return (
     <main className="hero-select-page" aria-label="角色选择">
-      <div className="hero-select-page__background">
-        {currentStatus === "ready" ? (
-          <img src={selectedHero.backgroundSrc} alt={`${selectedHero.displayName}角色背景`} />
-        ) : (
+      {currentStatus === "ready" ? (
+        <HeroVideoBackground
+          selectedHeroId={selectedHeroId}
+          playbackRequestId={playbackRequestId}
+        />
+      ) : (
+        <div className="hero-select-page__background">
           <span role="status">
             {currentStatus === "error" ? `无法加载 ${selectedHero.displayName} 背景` : `正在加载 ${selectedHero.displayName} 背景`}
           </span>
-        )}
-      </div>
+        </div>
+      )}
       <div className="hero-select-page__overlay" aria-hidden="true" />
       <header className="hero-select-page__header">
         <GameButton className="hero-select-page__back" aria-label="返回首页" onClick={onBack}>

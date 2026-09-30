@@ -17,6 +17,7 @@ const ready: HeroAssetState = {
 function props(selectedHeroId: HeroId = "piko", assetLoadState = ready) {
   return {
     selectedHeroId,
+    playbackRequestId: 0,
     assetLoadState,
     onSelectHero: vi.fn(),
     onConfirm: vi.fn(),
@@ -56,6 +57,55 @@ describe("HeroSelectPage", () => {
     ]);
   });
 
+  it("starts the selected PIKO background video muted and preloads every hero video", () => {
+    render(<HeroSelectPage {...props()} />);
+
+    const videos = screen.getAllByLabelText(/角色背景视频$/);
+    expect(videos).toHaveLength(5);
+    const pikoVideo = screen.getByLabelText("PIKO角色背景视频");
+    expect(pikoVideo).toHaveAttribute("data-active", "true");
+    expect(pikoVideo).toHaveProperty("autoplay", true);
+    expect(pikoVideo).toHaveProperty("muted", true);
+    expect(videos.every((video) => video.getAttribute("preload") === "auto")).toBe(true);
+  });
+
+  it("starts a user-selected hero video from zero with sound", () => {
+    const pageProps = props();
+    const { rerender } = render(<HeroSelectPage {...pageProps} />);
+
+    rerender(
+      <HeroSelectPage
+        {...pageProps}
+        selectedHeroId="riff"
+        playbackRequestId={1}
+      />,
+    );
+
+    const riffVideo = screen.getByLabelText("RIFF角色背景视频");
+    expect(riffVideo).toHaveAttribute("data-active", "true");
+    expect(riffVideo).toHaveProperty("autoplay", true);
+    expect(riffVideo).toHaveProperty("muted", false);
+  });
+
+  it("holds the final decoded frame when the active video ends", () => {
+    render(<HeroSelectPage {...props()} playbackRequestId={1} />);
+    const video = screen.getByLabelText("PIKO角色背景视频") as HTMLVideoElement;
+    Object.defineProperty(video, "duration", { configurable: true, value: 4 });
+    video.currentTime = 4;
+
+    fireEvent.ended(video);
+
+    expect(video.currentTime).toBeCloseTo(4 - 1 / 24, 5);
+  });
+
+  it("falls back to the approved static background when video loading fails", () => {
+    render(<HeroSelectPage {...props()} />);
+
+    fireEvent.error(screen.getByLabelText("PIKO角色背景视频"));
+
+    expect(screen.getByRole("img", { name: "PIKO角色背景" })).toBeInTheDocument();
+  });
+
   it("renders five cards in carousel order and updates identity after parent selection", async () => {
     const user = userEvent.setup();
     render(<ControlledPage />);
@@ -68,7 +118,7 @@ describe("HeroSelectPage", () => {
     expect(screen.getByRole("img", { name: "RIFF角色标志" })).toBeInTheDocument();
   });
 
-  it("only requests selection until the parent supplies a new selected ID", async () => {
+  it("requests selection again when the current hero card is clicked", async () => {
     const user = userEvent.setup();
     const pageProps = props();
     const { rerender } = render(<HeroSelectPage {...pageProps} />);
@@ -78,7 +128,8 @@ describe("HeroSelectPage", () => {
     rerender(<HeroSelectPage {...pageProps} selectedHeroId="riff" />);
     expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
-    expect(pageProps.onSelectHero).toHaveBeenCalledTimes(1);
+    expect(pageProps.onSelectHero).toHaveBeenCalledTimes(2);
+    expect(pageProps.onSelectHero).toHaveBeenLastCalledWith("riff");
   });
 
   it("selects BONGO from a NIBBY-selected previous-arrow render", async () => {

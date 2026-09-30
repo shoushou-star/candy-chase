@@ -10,6 +10,7 @@ const requiredFiles = [
   ...backgroundNames.map((name) => `src/assets/figma/hero-${name}-background.png`),
   ...cardNames.map((name) => `src/assets/figma/card-${name}.png`),
   ...backgroundNames.map((name) => `src/assets/hero-logos/${name}-transparent.png`),
+  ...backgroundNames.map((name) => `src/assets/videos/hero-${name}.mp4`),
   'src/assets/figma/icon-coins.svg',
   'src/assets/figma/icon-energy.svg',
   'src/assets/figma/icon-gems.svg',

@@ -26,6 +26,15 @@ describe("App", () => {
     expect(useHeroAssets).toHaveBeenCalledExactlyOnceWith(HEROES);
   });
 
+  it("restarts the current hero video with sound after a user selection", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(screen.getByLabelText("PIKO角色背景视频")).toHaveProperty("muted", true);
+    await user.click(screen.getByRole("button", { name: "选择 PIKO" }));
+    expect(screen.getByLabelText("PIKO角色背景视频")).toHaveProperty("muted", false);
+  });
+
   it("preserves the selected hero through Back, home, and re-entry", async () => {
     const user = userEvent.setup();
     render(<App />);

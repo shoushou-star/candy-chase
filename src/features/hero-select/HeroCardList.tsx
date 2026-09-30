@@ -27,9 +27,7 @@ export function HeroCardList({ selectedHeroId, assetLoadState, onSelectHero }: H
           hero={hero}
           selected={hero.id === selectedHeroId}
           status={assetLoadState[hero.id]}
-          onSelect={() => {
-            if (hero.id !== selectedHeroId) onSelectHero(hero.id);
-          }}
+          onSelect={() => onSelectHero(hero.id)}
         />
       ))}
     </div>

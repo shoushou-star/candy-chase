@@ -8,6 +8,7 @@ export interface Hero {
   id: HeroId;
   displayName: string;
   backgroundSrc: string;
+  videoSrc: string;
   logoSrc: string;
   cardSrc: string;
   disabled?: boolean;
