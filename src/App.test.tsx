@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { HEROES } from "./features/hero-select/heroes";
 import { useHeroAssets } from "./features/hero-select/useHeroAssets";
+import { HeroSelectExperience } from "./features/hero-select/HeroSelectExperience";
 import { App } from "./App";
 
 vi.mock("./features/hero-select/useHeroAssets", () => ({
@@ -18,17 +18,16 @@ vi.mock("./features/hero-select/useHeroAssets", () => ({
 describe("App", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("starts on the hero selection page", () => {
+  it("starts on the game lobby", () => {
     render(<App />);
     const stage = screen.getByRole("region", { name: "游戏画面" });
-    expect(within(stage).getByRole("main", { name: "角色选择" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "选择 PIKO" })).toHaveAttribute("aria-pressed", "true");
-    expect(useHeroAssets).toHaveBeenCalledExactlyOnceWith(HEROES);
+    expect(within(stage).getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
+    expect(within(stage).queryByRole("main", { name: "角色选择" })).not.toBeInTheDocument();
   });
 
   it("restarts the current hero video with sound after a user selection", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
 
     expect(screen.getByLabelText("PIKO角色背景视频")).toHaveProperty("muted", true);
     await user.click(screen.getByRole("button", { name: "选择 PIKO" }));
@@ -37,7 +36,7 @@ describe("App", () => {
 
   it("preserves the selected hero through Back, home, and re-entry", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "返回首页" }));
     const stage = screen.getByRole("region", { name: "游戏画面" });
@@ -50,7 +49,7 @@ describe("App", () => {
 
   it("confirms Riff before showing the game page and retains selection on return", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
     const stage = screen.getByRole("region", { name: "游戏画面" });
@@ -65,7 +64,7 @@ describe("App", () => {
 
   it("settles rapid next and previous input on the mathematically correct hero", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     const next = screen.getByRole("button", { name: "下一位角色" });
     const previous = screen.getByRole("button", { name: "上一位角色" });
     await user.click(next);
@@ -80,7 +79,7 @@ describe("App", () => {
       nibby: "ready", piko: "error", mira: "ready", riff: "ready", bongo: "ready",
     });
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     const confirm = screen.getByRole("button", { name: "确认选择 PIKO" });
     expect(confirm).toBeDisabled();
     await user.click(confirm);
@@ -93,7 +92,7 @@ describe("App", () => {
       nibby: "ready", piko: "error", mira: "ready", riff: "ready", bongo: "ready",
     });
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
     expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
@@ -101,7 +100,7 @@ describe("App", () => {
 
   it("keeps modal background controls from changing state or focus restoration", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     const originalTrigger = screen.getByRole("button", { name: "打开金币商店" });
     await user.click(originalTrigger);
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
@@ -112,7 +111,7 @@ describe("App", () => {
   });
 
   it("gives every hero-selection button a unique accessible name", () => {
-    render(<App />);
+    render(<HeroSelectExperience />);
     const names = screen.getAllByRole("button").map((button) =>
       button.getAttribute("aria-label") ?? button.textContent?.trim() ?? "",
     );
@@ -122,7 +121,7 @@ describe("App", () => {
 
   it.each(["金币", "体力", "宝石"])("returns focus to the %s plus button after Escape", async (name) => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<HeroSelectExperience />);
     const trigger = screen.getByRole("button", { name: `打开${name}商店` });
     await user.click(trigger);
     const dialog = screen.getByRole("dialog", { name: "商店功能暂未开放" });

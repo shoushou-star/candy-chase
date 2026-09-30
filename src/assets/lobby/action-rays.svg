@@ -1,0 +1,32 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="95" height="100.738" viewBox="0 0 95 100.738" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="3D / Action Rays" filter="url(#filter0_d_0_143)">
+<g clip-path="url(#clip0_0_143)">
+<g id="Vector">
+<path d="M25 38.8961L11.6667 6.00132Z" fill="black"/>
+<path d="M25 38.8961L11.6667 6.00132" stroke="#FFE539" stroke-width="10" stroke-linecap="round"/>
+</g>
+<g id="Vector_2">
+<path d="M43.3333 38.8961L56.6667 11.2645Z" fill="black"/>
+<path d="M43.3333 38.8961L56.6667 11.2645" stroke="#FFE539" stroke-width="10" stroke-linecap="round"/>
+</g>
+<g id="Vector_3">
+<path d="M56.6667 52.054L85 41.5276Z" fill="black"/>
+<path d="M56.6667 52.054L85 41.5276" stroke="#FFE539" stroke-width="10" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_0_143" x="-5" y="-0.261835" width="100" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2.5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.32 0 0 0 0 0.08 0 0 0 0 0.52 0 0 0 0.48 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_143"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_143" result="shape"/>
+</filter>
+<clipPath id="clip0_0_143">
+<rect width="90" height="100" fill="white" transform="translate(0 0.738165)"/>
+</clipPath>
+</defs>
+</svg>

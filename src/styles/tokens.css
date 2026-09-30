@@ -14,4 +14,7 @@
   --hero-white: #ffffff;
   --hero-border: rgb(255 255 255 / 92%);
   --hero-shadow: rgb(25 5 66 / 42%);
+  --lobby-loading-background: #0a062e;
+  --lobby-focus-ring: #e5c5ff;
+  --lobby-yellow: #ffd42b;
 }

@@ -1,0 +1,173 @@
+{
+  "buttonNames": [
+    "增加金币",
+    "增加能量",
+    "增加宝石",
+    "打开设置",
+    "开始游戏",
+    "打开歌曲",
+    "打开挑战",
+    "打开角色",
+    "打开每日挑战",
+    "打开邮件",
+    "打开礼物",
+    "打开排行榜"
+  ],
+  "viewportResults": [
+    {
+      "width": 2048,
+      "height": 1152,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "width": 1600,
+      "height": 900,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 900
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "width": 1400,
+      "height": 900,
+      "stage": {
+        "x": 0,
+        "y": 56.25,
+        "width": 1400,
+        "height": 787.5
+      }
+    }
+  ],
+  "hoverTransform": "matrix(1.035, 0, 0, 1.035, 0, 0)",
+  "pressedTransform": "matrix(0.95, 0, 0, 0.95, 0, 0)",
+  "tabOrder": [
+    "增加金币",
+    "增加能量",
+    "增加宝石",
+    "打开设置",
+    "开始游戏",
+    "打开歌曲",
+    "打开挑战",
+    "打开角色",
+    "打开每日挑战",
+    "打开邮件",
+    "打开礼物",
+    "打开排行榜"
+  ],
+  "playClassStableAfterKeyboardActivation": true,
+  "focusResults": [
+    {
+      "name": "增加金币",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "增加能量",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "增加宝石",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开设置",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "开始游戏",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开歌曲",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开挑战",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开角色",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开每日挑战",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开邮件",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开礼物",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    },
+    {
+      "name": "打开排行榜",
+      "outlineStyle": "solid",
+      "outlineWidth": "6px",
+      "withinStage": true
+    }
+  ],
+  "reducedMotionTransition": "0s",
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": []
+}

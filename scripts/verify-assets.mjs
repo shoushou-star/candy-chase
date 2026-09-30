@@ -5,6 +5,27 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const backgroundNames = ['piko', 'riff', 'bongo', 'nibby', 'mira'];
 const cardNames = ['hamster', 'girl', 'piko', 'rabbit', 'bear'];
+const lobbySvgNames = [
+  'icon-coins',
+  'icon-energy',
+  'icon-gems',
+  'icon-mail',
+  'icon-gift',
+  'icon-crown-utility',
+  'chevron-daily',
+  'icon-settings',
+  'icon-halo',
+  'icon-songs',
+  'chevron-menu',
+  'icon-challenges',
+  'icon-hero',
+  'icon-play',
+  'action-rays',
+  'avatar-slot',
+  'icon-level-crown',
+  'profile-avatar-frame',
+  'unread-badge',
+];
 
 const requiredFiles = [
   ...backgroundNames.map((name) => `src/assets/figma/hero-${name}-background.png`),
@@ -14,6 +35,10 @@ const requiredFiles = [
   'src/assets/figma/icon-coins.svg',
   'src/assets/figma/icon-energy.svg',
   'src/assets/figma/icon-gems.svg',
+  'src/assets/lobby/lobby-background.png',
+  'src/assets/lobby/daily-challenge-art.png',
+  'src/assets/lobby/profile-avatar.png',
+  ...lobbySvgNames.map((name) => `src/assets/lobby/${name}.svg`),
 ];
 
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -50,5 +75,12 @@ for (const name of backgroundNames) {
   }
   console.log(`${relativePath}: 2048×1152`);
 }
+
+const lobbyBackground = 'src/assets/lobby/lobby-background.png';
+const lobbyDimensions = pngDimensions(resolve(projectRoot, lobbyBackground));
+if (lobbyDimensions[0] !== 2048 || lobbyDimensions[1] !== 1152) {
+  throw new Error(`Background ${lobbyBackground} is ${lobbyDimensions.join('×')}; expected 2048×1152`);
+}
+console.log(`${lobbyBackground}: 2048×1152`);
 
 console.log(`Verified ${requiredFiles.length} required assets.`);
