@@ -5,6 +5,20 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const backgroundNames = ['piko', 'riff', 'bongo', 'nibby', 'mira'];
 const cardNames = ['hamster', 'girl', 'piko', 'rabbit', 'bear'];
+const loadingAssets = [
+  'src/assets/loading/control-candy-circle.svg',
+  'src/assets/loading/loading-background.png',
+  'src/assets/loading/loading-logo.png',
+  'src/assets/loading/loading-intro.mp4',
+  'src/assets/loading/loading-loop.mp4',
+  'src/assets/loading/ambient-glow.svg',
+  'src/assets/loading/icon-sound.svg',
+  'src/assets/loading/icon-music.svg',
+  'src/assets/loading/icon-settings.svg',
+  'src/assets/loading/icon-account.svg',
+  'src/assets/loading/icon-notice.svg',
+  'src/assets/loading/progress-star.svg',
+];
 const lobbySvgNames = [
   'icon-coins',
   'icon-energy',
@@ -39,6 +53,7 @@ const requiredFiles = [
   'src/assets/lobby/daily-challenge-art.png',
   'src/assets/lobby/profile-avatar.png',
   ...lobbySvgNames.map((name) => `src/assets/lobby/${name}.svg`),
+  ...loadingAssets,
 ];
 
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -82,5 +97,16 @@ if (lobbyDimensions[0] !== 2048 || lobbyDimensions[1] !== 1152) {
   throw new Error(`Background ${lobbyBackground} is ${lobbyDimensions.join('×')}; expected 2048×1152`);
 }
 console.log(`${lobbyBackground}: 2048×1152`);
+
+for (const relativePath of [
+  'src/assets/loading/loading-background.png',
+  'src/assets/loading/loading-logo.png',
+]) {
+  const dimensions = pngDimensions(resolve(projectRoot, relativePath));
+  if (dimensions[0] !== 2048 || dimensions[1] !== 1152) {
+    throw new Error(`Loading asset ${relativePath} is ${dimensions.join('×')}; expected 2048×1152`);
+  }
+  console.log(`${relativePath}: 2048×1152`);
+}
 
 console.log(`Verified ${requiredFiles.length} required assets.`);

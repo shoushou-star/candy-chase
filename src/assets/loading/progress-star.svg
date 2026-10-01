@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="67.0001" height="65" viewBox="0 0 67.0001 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Progress / Star / Animated Position" filter="url(#filter0_d_0_24)">
+<path id="Vector" d="M33.5 5.5L40.5 20.5L57.5 22.5L45.5 34.5L48.5 51.5L33.5 43.5L18.5 51.5L21.5 34.5L9.50004 22.5L26.5 20.5L33.5 5.5Z" fill="#FFD83E" stroke="#FFE88A" stroke-width="3" stroke-linejoin="round"/>
+</g>
+<defs>
+<filter id="filter0_d_0_24" x="-3.49996" y="-1.5" width="74" height="74" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="4"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.427451 0 0 0 0 0.168627 0 0 0 0 0.690196 0 0 0 0.35 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_24"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_24" result="shape"/>
+</filter>
+</defs>
+</svg>
