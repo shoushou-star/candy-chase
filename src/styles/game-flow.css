@@ -1,0 +1,23 @@
+.screen-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  background: #24103f;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--screen-transition-half-duration) ease-in-out;
+}
+
+.screen-transition[data-phase="covering"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.screen-transition[data-phase="revealing"] {
+  opacity: 0;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-transition { transition-timing-function: linear; }
+}

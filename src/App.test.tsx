@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useHeroAssets } from "./features/hero-select/useHeroAssets";
@@ -23,6 +23,12 @@ vi.mock("./features/lobby/useLobbyAssets", () => ({
   useLobbyAssets: vi.fn(() => "ready"),
 }));
 
+async function waitForTransition() {
+  await waitFor(() => {
+    expect(screen.getByTestId("screen-transition")).toHaveAttribute("data-phase", "idle");
+  });
+}
+
 describe("App", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -33,25 +39,59 @@ describe("App", () => {
     expect(within(stage).queryByRole("main", { name: "游戏大厅" })).not.toBeInTheDocument();
   });
 
+  it("covers the loading page before revealing the lobby", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+
+    expect(screen.getByTestId("screen-transition")).toHaveAttribute("data-phase", "covering");
+    expect(screen.getByRole("main", { name: "游戏加载" })).toBeInTheDocument();
+    expect(await screen.findByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
+  });
+
   it("runs loading, lobby, confirmed hero selection, and the game placeholder in order", async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
     expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
     expect(screen.getByRole("button", { name: "已选择 RIFF" })).toHaveTextContent("SELECTED");
 
     await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await waitForTransition();
     expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    await waitForTransition();
 
     expect(screen.getByRole("main", { name: "游戏占位页" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "返回大厅" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "返回大厅" }));
+    await waitForTransition();
+    expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    await waitForTransition();
+    expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
+  });
+
+  it("routes PLAY to hero selection when no hero has been confirmed", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    await waitForTransition();
+
+    expect(screen.getByRole("main", { name: "角色选择" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "选择 PIKO" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("discards a draft hero that was not confirmed", async () => {
@@ -59,15 +99,21 @@ describe("App", () => {
     render(<App />);
 
     await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
     await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
     await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
     await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await waitForTransition();
 
     await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
     await user.click(screen.getByRole("button", { name: "选择 MIRA" }));
     await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await waitForTransition();
     await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
 
     expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
   });

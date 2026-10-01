@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { StageFrame } from "./components/StageFrame";
 import { StoreUnavailableDialog } from "./components/StoreUnavailableDialog";
-import type { AppScreen, StartGameHandler } from "./features/game-flow/types";
+import { ScreenTransition, useScreenTransition } from "./features/game-flow/ScreenTransition";
+import type { StartGameHandler } from "./features/game-flow/types";
 import { HEROES } from "./features/hero-select/heroes";
 import { HeroSelectPage } from "./features/hero-select/HeroSelectPage";
 import { getHeroById } from "./features/hero-select/selection";
@@ -13,19 +14,19 @@ import { LobbyPage } from "./features/lobby/LobbyPage";
 import { GamePlaceholderPage } from "./pages/GamePlaceholderPage";
 
 export function App() {
-  const [screen, setScreen] = useState<AppScreen>("loading");
+  const { durationMs, phase, requestScreen, screen } = useScreenTransition("loading");
   const [draftHeroId, setDraftHeroId] = useState<HeroId>("piko");
   const [confirmedHeroId, setConfirmedHeroId] = useState<HeroId | null>(null);
   const [launchedHeroId, setLaunchedHeroId] = useState<HeroId | null>(null);
 
   function openHeroSelect() {
+    if (!requestScreen("hero-select", 220)) return;
     setDraftHeroId(confirmedHeroId ?? "piko");
-    setScreen("hero-select");
   }
 
   const startGame: StartGameHandler = ({ heroId }) => {
+    if (!requestScreen("game-placeholder", 350)) return;
     setLaunchedHeroId(heroId);
-    setScreen("game-placeholder");
   };
 
   function play() {
@@ -38,7 +39,7 @@ export function App() {
 
   return (
     <StageFrame>
-      {screen === "loading" && <LoadingPage onStartGame={() => setScreen("lobby")} />}
+      {screen === "loading" && <LoadingPage onStartGame={() => requestScreen("lobby", 350)} />}
       {screen === "lobby" && (
         <LobbyPage
           state={DEFAULT_LOBBY_STATE}
@@ -50,7 +51,7 @@ export function App() {
         <IntegratedHeroSelect
           confirmedHeroId={confirmedHeroId}
           selectedHeroId={draftHeroId}
-          onBack={() => setScreen("lobby")}
+          onBack={() => requestScreen("lobby", 220)}
           onConfirm={setConfirmedHeroId}
           onSelectHero={setDraftHeroId}
         />
@@ -58,9 +59,10 @@ export function App() {
       {screen === "game-placeholder" && launchedHeroId !== null && (
         <GamePlaceholderPage
           confirmedHero={getHeroById(launchedHeroId)}
-          onReturnToLobby={() => setScreen("lobby")}
+          onReturnToLobby={() => requestScreen("lobby", 350)}
         />
       )}
+      <ScreenTransition durationMs={durationMs} phase={phase} />
     </StageFrame>
   );
 }
