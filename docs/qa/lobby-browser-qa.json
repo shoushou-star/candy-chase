@@ -75,10 +75,14 @@
       }
     }
   ],
-  "hoverTransform": "matrix(1.035, 0, 0, 1.035, 0, 0)",
+  "hoverTransform": "matrix(1, 0, 0, 1, 0, 0)",
   "pressedTransform": "matrix(0.95, 0, 0, 0.95, 0, 0)",
   "clickAnimationClassImmediately": true,
-  "clickAnimationTransformAt90ms": "matrix(0.850379, 0, 0, 0.850379, 0, 0)",
+  "clickAnimationKeyframes": [
+    "scale(0.95)",
+    "scale(1)"
+  ],
+  "clickAnimationTransformAt90ms": "matrix(0.987083, 0, 0, 0.987083, 0, 0)",
   "clickAnimationClassAfter410ms": false,
   "tabOrder": [
     "增加金币",

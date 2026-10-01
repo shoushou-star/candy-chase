@@ -56,6 +56,9 @@ const viewports = [
   await play.hover();
   await page.waitForTimeout(220);
   const hoverTransform = await play.evaluate((element) => getComputedStyle(element).transform);
+  if (hoverTransform !== "matrix(1, 0, 0, 1, 0, 0)") {
+    throw new Error(`Hover must keep the original button size, received ${hoverTransform}`);
+  }
   const box = await play.boundingBox();
   if (!box) throw new Error("Play button has no bounding box");
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -64,6 +67,18 @@ const viewports = [
   const pressedTransform = await play.evaluate((element) => getComputedStyle(element).transform);
   await page.mouse.up();
   const clickAnimationClassImmediately = await play.evaluate((element) => element.classList.contains("is-click-animating"));
+  const clickAnimationKeyframes = await play.evaluate((element) => {
+    const animation = element.getAnimations().find((item) => item.animationName === "lobby-primary-click-release");
+    return animation?.effect instanceof KeyframeEffect
+      ? animation.effect.getKeyframes().map((frame) => frame.transform)
+      : [];
+  });
+  if (clickAnimationKeyframes.length === 0 || clickAnimationKeyframes.some((transform) => {
+    const match = typeof transform === "string" ? transform.match(/scale\(([^)]+)\)/) : null;
+    return match ? Number(match[1]) > 1 : false;
+  })) {
+    throw new Error(`Click release must return directly to original size without overshoot: ${clickAnimationKeyframes.join(", ")}`);
+  }
   await page.waitForTimeout(90);
   const clickAnimationTransformAt90ms = await play.evaluate((element) => getComputedStyle(element).transform);
   await page.waitForTimeout(320);
@@ -119,6 +134,7 @@ const viewports = [
     hoverTransform,
     pressedTransform,
     clickAnimationClassImmediately,
+    clickAnimationKeyframes,
     clickAnimationTransformAt90ms,
     clickAnimationClassAfter410ms,
     tabOrder,

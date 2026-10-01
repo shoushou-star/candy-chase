@@ -15,12 +15,12 @@
 .lobby-button,
 .lobby-currency__plus { border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .lobby-button { background: transparent; transition: transform 180ms cubic-bezier(.2, .9, .25, 1.25), filter 180ms ease; transform-origin: center; }
-.lobby-button:hover { filter: brightness(1.1) drop-shadow(0 0 12px rgb(186 103 255 / 36%)); transform: scale(1.025); }
+.lobby-button:hover { filter: brightness(1.1) drop-shadow(0 0 12px rgb(186 103 255 / 36%)); transform: scale(1); }
 .lobby-button:active { filter: brightness(.96); transform: scale(.96); transition-duration: 70ms; }
-.lobby-button--primary:hover { transform: scale(1.035); filter: brightness(1.1) drop-shadow(0 0 16px rgb(255 222 74 / 38%)); }
+.lobby-button--primary:hover { transform: scale(1); filter: brightness(1.1) drop-shadow(0 0 16px rgb(255 222 74 / 38%)); }
 .lobby-button--primary:active { transform: scale(.95); }
-.lobby-button.is-click-animating { animation: lobby-click-bounce 360ms cubic-bezier(.2, .9, .25, 1); }
-.lobby-button--primary.is-click-animating { animation-name: lobby-primary-click-bounce; }
+.lobby-button.is-click-animating { animation: lobby-click-release 180ms ease-out; }
+.lobby-button--primary.is-click-animating { animation-name: lobby-primary-click-release; }
 .lobby-button:focus-visible,
 .lobby-currency__plus:focus-visible { outline: 6px solid var(--lobby-focus-ring); outline-offset: 7px; }
 
@@ -42,32 +42,23 @@
 .lobby-currency__icon { width: 36px; height: 36px; flex: none; }
 .lobby-currency__value { margin-left: 12px; font-size: 27px; font-weight: 600; line-height: 34px; }
 .lobby-currency__plus { margin-left: auto; width: 44px; height: 44px; border-radius: 14px; background: transparent; color: white; font-size: 30px; font-weight: 800; transition: transform 180ms cubic-bezier(.2, .9, .25, 1.25), filter 180ms ease; }
-.lobby-currency__plus:hover { filter: brightness(1.2) drop-shadow(0 0 7px #b980ff); transform: scale(1.12); }
+.lobby-currency__plus:hover { filter: brightness(1.2) drop-shadow(0 0 7px #b980ff); transform: scale(1); }
 .lobby-currency__plus:active { transform: scale(.86); transition-duration: 70ms; }
-.lobby-currency__plus.is-click-animating { animation: lobby-plus-click-bounce 360ms cubic-bezier(.2, .9, .25, 1); }
+.lobby-currency__plus.is-click-animating { animation: lobby-plus-click-release 180ms ease-out; }
 
-@keyframes lobby-click-bounce {
-  0% { filter: brightness(1.1); transform: scale(1); }
-  28% { filter: brightness(.92); transform: scale(.88); }
-  62% { filter: brightness(1.18); transform: scale(1.08); }
-  82% { transform: scale(.98); }
+@keyframes lobby-click-release {
+  0% { transform: scale(.96); }
   100% { transform: scale(1); }
 }
 
-@keyframes lobby-primary-click-bounce {
-  0% { filter: brightness(1.1); transform: scale(1); }
-  28% { filter: brightness(.9); transform: scale(.85); }
-  62% { filter: brightness(1.2); transform: scale(1.1); }
-  82% { transform: scale(.97); }
+@keyframes lobby-primary-click-release {
+  0% { transform: scale(.95); }
   100% { transform: scale(1); }
 }
 
-@keyframes lobby-plus-click-bounce {
-  0% { transform: scale(1); }
-  28% { transform: scale(.72) rotate(-8deg); }
-  62% { transform: scale(1.22) rotate(5deg); }
-  82% { transform: scale(.94) rotate(-2deg); }
-  100% { transform: scale(1) rotate(0); }
+@keyframes lobby-plus-click-release {
+  0% { transform: scale(.86); }
+  100% { transform: scale(1); }
 }
 
 .lobby-settings { position: absolute; left: 1942px; top: 28px; width: 72px; height: 72px; overflow: hidden; border: 1.5px solid rgb(107 51 194 / 34%); border-radius: 20px; background: linear-gradient(92deg, rgb(41 14 99 / 97%), rgb(19 5 61 / 97%)); box-shadow: 0 9px 13px rgb(6 1 28 / 56%), inset 0 2px 3px rgb(255 255 255 / 10%); }
