@@ -39,15 +39,33 @@
   height: 82px;
   padding: 0;
   place-items: center;
-  border: 3px solid rgb(112 43 211 / 42%);
-  border-radius: 20px;
-  background: var(--hero-white);
-  color: var(--hero-purple-700);
-  box-shadow: 0 7px 15px var(--hero-shadow);
-  font: 800 42px/1 var(--font-family);
+  border: 3px solid #c6a8ff;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #8f5ee9 0%, #8052df 100%);
+  color: var(--hero-white);
+  box-shadow:
+    0 5px 0 #5e3bb4,
+    0 10px 16px rgb(31 8 82 / 32%);
   cursor: pointer;
+  transition: filter 140ms ease, translate 100ms ease, box-shadow 100ms ease;
 }
-.hero-select-page__back span { scale: 0.82 1; translate: 0 -2px; }
+.hero-select-page__back:hover { filter: brightness(1.06); }
+.hero-select-page__back:active {
+  translate: 0 4px;
+  box-shadow:
+    0 1px 0 #5e3bb4,
+    0 5px 9px rgb(31 8 82 / 28%);
+}
+.hero-select-page__back-icon {
+  width: 42px;
+  height: 42px;
+  overflow: visible;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 10;
+}
 
 .hero-select-page__currencies { position: absolute; top: 28px; right: 30px; display: flex; gap: 28px; }
 .currency-counter {

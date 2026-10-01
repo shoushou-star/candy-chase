@@ -63,7 +63,13 @@ export function HeroSelectPage({
       <div className="hero-select-page__overlay" aria-hidden="true" />
       <header className="hero-select-page__header">
         <GameButton className="hero-select-page__back" aria-label="返回首页" onClick={onBack}>
-          <span aria-hidden="true">←</span>
+          <svg
+            className="hero-select-page__back-icon"
+            aria-hidden="true"
+            viewBox="0 0 64 64"
+          >
+            <path d="M34 14 16 32l18 18M18 32h31" />
+          </svg>
         </GameButton>
         <div className="hero-select-page__currencies">
           <CurrencyCounter name="金币" iconSrc={coinsIcon} value={623736} onOpenStore={onOpenStore} />
