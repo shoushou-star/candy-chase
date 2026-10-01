@@ -37,6 +37,8 @@ const LOBBY_ASSETS = [
 type LobbyPageProps = {
   state: LobbyState;
   onAction?: (action: LobbyAction) => void;
+  onOpenHeroSelect?: () => void;
+  onPlay?: () => void;
   assetsReady?: boolean;
 };
 
@@ -52,9 +54,15 @@ const utilityButtons = [
   { action: "crown", label: "打开排行榜", icon: iconCrown },
 ] as const;
 
-export function LobbyPage({ state, onAction, assetsReady }: LobbyPageProps) {
+export function LobbyPage({ state, onAction, onOpenHeroSelect, onPlay, assetsReady }: LobbyPageProps) {
   const assetStatus = useLobbyAssets(LOBBY_ASSETS);
   const isReady = assetsReady ?? assetStatus === "ready";
+
+  function handleAction(action: LobbyAction) {
+    onAction?.(action);
+    if (action === "hero") onOpenHeroSelect?.();
+    if (action === "play") onPlay?.();
+  }
 
   if (!isReady) {
     return (
@@ -74,16 +82,16 @@ export function LobbyPage({ state, onAction, assetsReady }: LobbyPageProps) {
       <LobbyProfileBar experiencePercent={state.experiencePercent} level={state.level} playerName={state.playerName} />
 
       <div className="lobby-page__currencies">
-        <LobbyCurrencyCounter action="coins" iconSrc={iconCoins} label="金币" onAction={onAction} value={state.currencies.coins} />
-        <LobbyCurrencyCounter action="energy" iconSrc={iconEnergy} label="能量" onAction={onAction} value={state.currencies.energy} />
-        <LobbyCurrencyCounter action="gems" iconSrc={iconGems} label="宝石" onAction={onAction} value={state.currencies.gems} />
+        <LobbyCurrencyCounter action="coins" iconSrc={iconCoins} label="金币" onAction={handleAction} value={state.currencies.coins} />
+        <LobbyCurrencyCounter action="energy" iconSrc={iconEnergy} label="能量" onAction={handleAction} value={state.currencies.energy} />
+        <LobbyCurrencyCounter action="gems" iconSrc={iconGems} label="宝石" onAction={handleAction} value={state.currencies.gems} />
       </div>
 
-      <LobbyButton aria-label="打开设置" className="lobby-settings" onClick={() => onAction?.("settings")}>
+      <LobbyButton aria-label="打开设置" className="lobby-settings" onClick={() => handleAction("settings")}>
         <img alt="" src={iconSettings} />
       </LobbyButton>
 
-      <LobbyButton aria-label="开始游戏" className="lobby-play" onClick={() => onAction?.("play")} primary>
+      <LobbyButton aria-label="开始游戏" className="lobby-play" onClick={() => handleAction("play")} primary>
         <span aria-hidden="true" className="lobby-play__bottom" />
         <span aria-hidden="true" className="lobby-play__face" />
         <span aria-hidden="true" className="lobby-play__shine" />
@@ -95,7 +103,7 @@ export function LobbyPage({ state, onAction, assetsReady }: LobbyPageProps) {
 
       <div className="lobby-menu">
         {menuButtons.map((item) => (
-          <LobbyButton aria-label={item.label} className="lobby-menu-button" key={item.action} onClick={() => onAction?.(item.action)}>
+          <LobbyButton aria-label={item.label} className="lobby-menu-button" key={item.action} onClick={() => handleAction(item.action)}>
             <span aria-hidden="true" className="lobby-menu-button__bottom" />
             <span aria-hidden="true" className="lobby-menu-button__face" />
             <span aria-hidden="true" className="lobby-menu-button__shine" />
@@ -107,7 +115,7 @@ export function LobbyPage({ state, onAction, assetsReady }: LobbyPageProps) {
         ))}
       </div>
 
-      <LobbyButton aria-label="打开每日挑战" className="lobby-daily" onClick={() => onAction?.("daily")}>
+      <LobbyButton aria-label="打开每日挑战" className="lobby-daily" onClick={() => handleAction("daily")}>
         <span aria-hidden="true" className="lobby-daily__bottom" />
         <span aria-hidden="true" className="lobby-daily__face" />
         <span aria-hidden="true" className="lobby-daily__shine" />
@@ -121,7 +129,7 @@ export function LobbyPage({ state, onAction, assetsReady }: LobbyPageProps) {
 
       <div className="lobby-utilities">
         {utilityButtons.map((item) => (
-          <LobbyButton aria-label={item.label} className="lobby-utility" key={item.action} onClick={() => onAction?.(item.action)}>
+          <LobbyButton aria-label={item.label} className="lobby-utility" key={item.action} onClick={() => handleAction(item.action)}>
             <span aria-hidden="true" className="lobby-utility__bottom" />
             <span aria-hidden="true" className="lobby-utility__face" />
             <span aria-hidden="true" className="lobby-utility__shine" />

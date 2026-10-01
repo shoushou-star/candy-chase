@@ -14,6 +14,7 @@ import "../../styles/hero-select.css";
 
 export interface HeroSelectPageProps {
   selectedHeroId: HeroId;
+  confirmedHeroId?: HeroId | null;
   playbackRequestId: number;
   assetLoadState: HeroAssetState;
   onSelectHero: (heroId: HeroId) => void;
@@ -24,6 +25,7 @@ export interface HeroSelectPageProps {
 
 export function HeroSelectPage({
   selectedHeroId,
+  confirmedHeroId = null,
   playbackRequestId,
   assetLoadState,
   onSelectHero,
@@ -32,6 +34,7 @@ export function HeroSelectPage({
   onOpenStore,
 }: HeroSelectPageProps) {
   const selectedHero = getHeroById(selectedHeroId);
+  const isSelectedConfirmed = confirmedHeroId === selectedHeroId;
   const currentStatus = assetLoadState[selectedHeroId];
   const playbackKey = `${selectedHeroId}-${playbackRequestId}`;
   const [revealedPlaybackKey, setRevealedPlaybackKey] = useState<string | null>(null);
@@ -83,11 +86,11 @@ export function HeroSelectPage({
         <CarouselArrow direction={1} onClick={() => selectAdjacent(1)} />
         <GameButton
           className="hero-select-page__confirm"
-          aria-label={`确认选择 ${selectedHero.displayName}`}
-          disabled={currentStatus !== "ready" || selectedHero.disabled}
+          aria-label={isSelectedConfirmed ? `已选择 ${selectedHero.displayName}` : `确认选择 ${selectedHero.displayName}`}
+          disabled={currentStatus !== "ready" || selectedHero.disabled || isSelectedConfirmed}
           onClick={() => onConfirm(selectedHeroId)}
         >
-          SELECT
+          {isSelectedConfirmed ? "SELECTED" : "SELECT"}
         </GameButton>
         <HeroCardList
           selectedHeroId={selectedHeroId}

@@ -15,14 +15,61 @@ vi.mock("./features/hero-select/useHeroAssets", () => ({
   })),
 }));
 
+vi.mock("./features/loading/useLoadingProgress", () => ({
+  useLoadingProgress: vi.fn(() => 100),
+}));
+
+vi.mock("./features/lobby/useLobbyAssets", () => ({
+  useLobbyAssets: vi.fn(() => "ready"),
+}));
+
 describe("App", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("starts on the game lobby", () => {
+  it("starts on the loading page", () => {
     render(<App />);
     const stage = screen.getByRole("region", { name: "游戏画面" });
-    expect(within(stage).getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
-    expect(within(stage).queryByRole("main", { name: "角色选择" })).not.toBeInTheDocument();
+    expect(within(stage).getByRole("main", { name: "游戏加载" })).toBeInTheDocument();
+    expect(within(stage).queryByRole("main", { name: "游戏大厅" })).not.toBeInTheDocument();
+  });
+
+  it("runs loading, lobby, confirmed hero selection, and the game placeholder in order", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
+    expect(screen.getByRole("button", { name: "已选择 RIFF" })).toHaveTextContent("SELECTED");
+
+    await user.click(screen.getByRole("button", { name: "返回首页" }));
+    expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+
+    expect(screen.getByRole("main", { name: "游戏占位页" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "返回大厅" })).toBeInTheDocument();
+  });
+
+  it("discards a draft hero that was not confirmed", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "返回首页" }));
+
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await user.click(screen.getByRole("button", { name: "选择 MIRA" }));
+    await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+
+    expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("restarts the current hero video with sound after a user selection", async () => {

@@ -59,6 +59,26 @@ describe("LobbyPage", () => {
     expect(onAction.mock.calls.map(([action]) => action)).toEqual(cases.map(([, action]) => action));
   });
 
+  it("exposes dedicated HERO and PLAY navigation callbacks", async () => {
+    const user = userEvent.setup();
+    const onOpenHeroSelect = vi.fn();
+    const onPlay = vi.fn();
+    render(
+      <LobbyPage
+        state={DEFAULT_LOBBY_STATE}
+        assetsReady
+        onOpenHeroSelect={onOpenHeroSelect}
+        onPlay={onPlay}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+
+    expect(onOpenHeroSelect).toHaveBeenCalledOnce();
+    expect(onPlay).toHaveBeenCalledOnce();
+  });
+
   it("keeps a visible click animation active after a quick pointer click", async () => {
     const user = userEvent.setup();
     render(<LobbyPage state={DEFAULT_LOBBY_STATE} assetsReady />);
