@@ -437,7 +437,89 @@ async function realDelayedAudioRecovery(browserInstance) {
     hudHidden: document.querySelector('#rhythmProgressHud').hidden,
     progress: document.querySelector('#musicProgress').getAttribute('aria-valuenow'),
     earnedStars: document.querySelectorAll('[data-rating-star].is-earned').length,
+    mediaTime: document.querySelector('#gameBgm').currentTime,
+    mediaPaused: document.querySelector('#gameBgm').paused,
+    score: document.querySelector('#scoreValue').textContent,
+    combo: document.querySelector('#comboValue').textContent,
+    heads: document.querySelectorAll('.note').length,
+    tails: document.querySelectorAll('.hold-note-tail-layer').length,
+    judgedVisible: document.querySelector('#judgementText').classList.contains('is-visible'),
   }));
+  assert.deepEqual(restart, {
+    hudHidden: false, progress: '0', earnedStars: 0, mediaTime: 0, mediaPaused: true,
+    score: '0', combo: '0', heads: 0, tails: 0, judgedVisible: false,
+  }, 'restart must reset media, score, combo, progress and all transient notes');
+
+  // Breaks caught: countdown catch-up, media motion during pause, focus loss,
+  // repeated pause events, and an incomplete chart rebuilt on restart.
+  await page.locator('#pauseButton').click();
+  const pausedCountdown = await page.locator('#countdown').textContent();
+  await page.evaluate(() => window.__setFakeAudioTime(100));
+  await nextRenderFrame(page);
+  assert.equal(await page.locator('#countdown').textContent(), pausedCountdown);
+  await page.locator('#resumeButton').click();
+  await nextRenderFrame(page);
+  assert.equal(await page.locator('#countdown').isVisible(), true,
+    'resuming countdown must retain its remaining interval');
+  await page.evaluate(() => window.__setFakeAudioTime(103.05));
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  await page.evaluate(() => window.__setMediaTime(20));
+  await nextRenderFrame(page);
+  await page.locator('#pauseButton').click();
+  const frozenAt20 = await page.evaluate(() => ({
+    progress: document.querySelector('#musicProgress').getAttribute('aria-valuenow'),
+    notes: Array.from(document.querySelectorAll('.note, .hold-note-tail')).map((note) => ({
+      id: note.dataset.noteId, style: note.getAttribute('style'), dash: note.getAttribute('stroke-dasharray'),
+    })),
+  }));
+  await page.evaluate(() => { window.__setMediaTime(25); window.__setFakeAudioTime(200); });
+  await nextRenderFrame(page);
+  const frozenAfterSeek = await page.evaluate(() => ({
+    progress: document.querySelector('#musicProgress').getAttribute('aria-valuenow'),
+    notes: Array.from(document.querySelectorAll('.note, .hold-note-tail')).map((note) => ({
+      id: note.dataset.noteId, style: note.getAttribute('style'), dash: note.getAttribute('stroke-dasharray'),
+    })),
+  }));
+  assert.deepEqual(frozenAfterSeek, frozenAt20, 'pause at 20s must freeze all note geometry and progress');
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.currentTime), 20,
+    'resume must restore the frozen media time without catching up');
+  await page.evaluate(() => {
+    window.__focusPauseCount = 0;
+    window.addEventListener('rhythmgame:pause', () => { window.__focusPauseCount += 1; });
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('blur'));
+  });
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true,
+    'hidden visibility must pause active gameplay');
+  assert.equal(await page.evaluate(() => window.__focusPauseCount), 1);
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('ended')));
+  await page.locator('#restartButton').click();
+  await page.locator('#countdown').waitFor({ state: 'visible' });
+  await page.evaluate(() => window.__setFakeAudioTime(203.05));
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  let rebuiltScore = 0;
+  for (const note of chartNotes) {
+    rebuiltScore += note.type === 'hold' ? 200 : 100;
+    await hitChartNote(page, note, rebuiltScore);
+  }
+  await page.evaluate(() => {
+    document.querySelector('#gameBgm').dispatchEvent(new Event('ended'));
+    document.querySelector('#gameBgm').dispatchEvent(new Event('ended'));
+  });
+  const rebuiltRound = await page.evaluate(() => window.__completionDetails.at(-1));
+  assert.deepEqual(rebuiltRound, {
+    finalScore: 9200, maxCombo: 80, perfect: 80, good: 0, miss: 0,
+    accuracy: 100, repairPercent: 100, starRating: 5, totalNotes: 80, judgedNotes: 80,
+  }, 'restart must rebuild exactly 80 playable queued chart events');
 
   collectingAudioFailures = true;
   await page.goto(`${targetUrl}&audioScenario=delayed`, { waitUntil: 'load' });
@@ -460,9 +542,15 @@ async function realDelayedAudioRecovery(browserInstance) {
     'first retry must remain arming while its unlock awaits delayed metadata');
   assert.equal(await page.locator('#countdown').isHidden(), true,
     'retry must await metadata rather than begin countdown early');
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await page.evaluate(() => window.__setMediaReady());
   await page.locator('#countdown').waitFor({ state: 'visible' });
   assert.equal(await page.locator('#audioLoadError').isHidden(), true);
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true,
+    'focus loss while arming must pause the countdown when metadata becomes ready');
+  assert.equal(await page.evaluate(() => window.__getFakeAudioState()), 'suspended');
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => document.querySelector('#pauseOverlay').hidden);
 
   await page.evaluate(() => {
     window.__rejectNextPlay = true;
@@ -498,10 +586,34 @@ async function realDelayedAudioRecovery(browserInstance) {
   assert.equal(await page.locator('#musicProgress').getAttribute('aria-valuenow'), '0');
   assert.equal(await page.evaluate(() => window.__mediaPlayCalls.length), callsBeforePlaying,
     'pending BGM play must not be reissued by subsequent animation frames');
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   await page.evaluate(() => window.__resolveMediaPlay());
+  await nextRenderFrame(page);
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true,
+    'a play promise resolving after focus loss must not restart BGM');
+  assert.equal(await page.evaluate(() => window.__getFakeAudioState()), 'suspended');
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true);
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
   await nextRenderFrame(page);
   await page.keyboard.press('Space');
   assert.equal(await page.locator('#scoreValue').textContent(), '100');
+  await page.locator('#pauseButton').click();
+  await page.evaluate(() => { window.__deferNextPlay = true; window.__resolveMediaPlay = null; });
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => Boolean(window.__resolveMediaPlay));
+  const pendingResumeCalls = await page.evaluate(() => window.__mediaPlayCalls.length);
+  await page.locator('#resumeButton').dispatchEvent('click');
+  assert.equal(await page.evaluate(() => window.__mediaPlayCalls.length), pendingResumeCalls,
+    'duplicate resume while play is pending must not issue another playback call');
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await page.evaluate(() => window.__resolveMediaPlay());
+  await nextRenderFrame(page);
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true,
+    'a deferred resume resolving after blur must remain paused');
+  assert.equal(await page.evaluate(() => window.__getFakeAudioState()), 'suspended');
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
   const audioRecovery = {
     initialReadiness, loadFailure, playFailure, callsBeforePlaying, expectedAudioErrors,
   };
@@ -523,6 +635,9 @@ async function realDelayedAudioRecovery(browserInstance) {
     finalStarCount,
     result,
     restart,
+    frozenAt20,
+    frozenAfterSeek,
+    rebuiltRound,
     audioRecovery,
     realRecovery,
     consoleErrors,

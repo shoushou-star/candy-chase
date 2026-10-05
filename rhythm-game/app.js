@@ -27,6 +27,7 @@
   const SPAWN_GROW_SECONDS = 0.2;
   const SUCCESS_POSE_MS = 250;
   const MISS_POSE_MS = 450;
+  const HOLD_REENTRY_MS = 1500;
 
   const elements = {
     stage: document.querySelector('#gameStage'),
@@ -79,6 +80,14 @@
   let isInputHeld = false;
   let heldSource = null;
   let activeHold = null;
+  let pausedMediaTime = 0;
+  let pausedCountdownRemaining = 0;
+  let reentryTimeout = 0;
+  let reentryDeadline = 0;
+  let lifecycleVersion = 0;
+  let completionDispatched = false;
+  let pauseAfterArming = false;
+  const activeSfx = new Set();
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -139,33 +148,102 @@
   }
 
   async function pauseGame() {
-    if (status !== 'countdown' && status !== 'playing') return;
-    pausedFromStatus = status;
+    if (status === 'arming') {
+      pauseAfterArming = true;
+      return;
+    }
+    if (!['countdown', 'starting-audio', 'playing', 'reengaging', 'resuming-audio'].includes(status)) return;
+    if (status === 'countdown') {
+      pausedCountdownRemaining = Math.max(0, countdownEndTime - sfxContext.currentTime);
+    }
+    pausedFromStatus = status === 'resuming-audio' ? pausedFromStatus
+      : status === 'countdown' ? 'countdown' : 'playing';
+    lifecycleVersion += 1;
+    clearReentry();
+    pausedMediaTime = bgmClock.currentTime;
     status = 'paused';
+    clearInputLatch();
     bgmClock.pause();
+    setCharacter('idle');
     setPauseUi(true);
     window.dispatchEvent(new CustomEvent('rhythmgame:pause'));
-    if (sfxContext?.state === 'running') {
-      await sfxContext.suspend();
+    try {
+      await suspendSfx();
+    } catch (error) {
+      if (status === 'paused') showAudioLoadError(error);
     }
   }
 
-  async function resumeGame() {
-    if (status !== 'paused' || !pausedFromStatus) return;
+  function clearReentry() {
+    window.clearTimeout(reentryTimeout);
+    reentryTimeout = 0;
+    reentryDeadline = 0;
+    if (elements.countdown.textContent === 'HOLD') elements.countdown.hidden = true;
+  }
+
+  function settleCancelledPlayback() {
+    if (status !== 'playing') bgmClock.pause();
+    if (['paused', 'idle', 'result'].includes(status)) void suspendSfx();
+  }
+
+  async function resumePlayback(reenteredHold = false) {
+    const nextStatus = pausedFromStatus;
+    const version = ++lifecycleVersion;
+    status = 'resuming-audio';
+    clearReentry();
+    setPauseUi(false);
     try {
-      if (sfxContext?.state !== 'running') {
-        await sfxContext.resume();
-      }
-      if (pausedFromStatus === 'playing') {
-        await bgmClock.resume();
-      }
+      await Promise.all([
+        sfxContext?.resume(),
+        nextStatus === 'playing' ? bgmClock.resume() : Promise.resolve(),
+      ]);
     } catch (error) {
-      showAudioLoadError(error);
+      if (version === lifecycleVersion) showAudioLoadError(error);
+      else settleCancelledPlayback();
       return;
     }
-    status = pausedFromStatus;
+    if (version !== lifecycleVersion || status !== 'resuming-audio') {
+      settleCancelledPlayback();
+      return;
+    }
+    if (nextStatus === 'countdown') {
+      countdownEndTime = sfxContext.currentTime + pausedCountdownRemaining;
+    }
+    status = nextStatus;
     pausedFromStatus = null;
-    setPauseUi(false);
+    if (reenteredHold && activeHold) {
+      if (!isInputHeld) finishHold('miss');
+      else {
+        setCharacter('hit');
+        fireAttack(activeHold.startJudgement, 'hold-start');
+      }
+    }
+  }
+
+  function resumeGame() {
+    if (status !== 'paused' || !pausedFromStatus) return;
+    bgmClock.media.currentTime = pausedMediaTime;
+    if (pausedFromStatus === 'playing' && activeHold) {
+      status = 'reengaging';
+      setPauseUi(false);
+      elements.countdown.classList.remove('asset-countdown-number', 'asset-countdown-pop');
+      elements.countdown.removeAttribute('data-countdown-asset');
+      elements.countdown.setAttribute('aria-label', 'HOLD');
+      elements.countdown.textContent = 'HOLD';
+      elements.countdown.hidden = false;
+      reentryDeadline = performance.now() + HOLD_REENTRY_MS;
+      reentryTimeout = window.setTimeout(expireReentry, HOLD_REENTRY_MS);
+      return;
+    }
+    void resumePlayback();
+  }
+
+  function expireReentry() {
+    if (status !== 'reengaging') return;
+    clearReentry();
+    clearInputLatch();
+    finishHold('miss');
+    void resumePlayback();
   }
 
   function setCharacter(kind, durationMs = 0) {
@@ -228,8 +306,20 @@
     gain.gain.exponentialRampToValueAtTime(volume, when + 0.008);
     gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
     oscillator.connect(gain).connect(sfxContext.destination);
+    activeSfx.add(oscillator);
+    oscillator.onended = () => activeSfx.delete(oscillator);
     oscillator.start(when);
     oscillator.stop(when + duration + 0.02);
+  }
+
+  function stopSfx() {
+    for (const oscillator of activeSfx) oscillator.stop();
+    activeSfx.clear();
+  }
+
+  function suspendSfx() {
+    stopSfx();
+    return sfxContext?.state === 'running' ? sfxContext.suspend() : Promise.resolve();
   }
 
   function fireAttack(strength, phase = 'burst') {
@@ -239,9 +329,13 @@
     }));
   }
 
-  function resetInput() {
+  function clearInputLatch() {
     isInputHeld = false;
     heldSource = null;
+  }
+
+  function resetInput() {
+    clearInputLatch();
     activeHold = null;
     window.dispatchEvent(new CustomEvent('rhythmgame:reset'));
   }
@@ -383,6 +477,16 @@
   }
 
   function handlePressInput(source) {
+    if (status === 'reengaging' && activeHold && !isInputHeld) {
+      if (performance.now() >= reentryDeadline) {
+        expireReentry();
+        return;
+      }
+      isInputHeld = true;
+      heldSource = source;
+      void resumePlayback(true);
+      return;
+    }
     if (status !== 'playing' || isInputHeld || activeHold) return;
     isInputHeld = true;
     heldSource = source;
@@ -452,15 +556,28 @@
   }
 
   function endGame() {
-    if (status !== 'playing' && status !== 'paused') return;
+    if (completionDispatched
+      || !['playing', 'paused', 'reengaging', 'resuming-audio', 'starting-audio'].includes(status)) return;
+    completionDispatched = true;
+    lifecycleVersion += 1;
+    clearReentry();
     status = 'result';
     pausedFromStatus = null;
+    for (const note of notes) {
+      if (note.state === 'hit' || note.state === 'missed') continue;
+      finishNote(note, note.type === 'hold'
+        ? Core.combineHoldJudgements(note.startJudgement || 'miss', 'miss')
+        : singleNoteResult('miss'));
+    }
     resetInput();
     const completionDetail = Core.buildCompletionDetail(scoreState, notes.length, chartMaxScore);
     bgmClock.pause();
+    void suspendSfx();
     clearNotes();
     setCharacter('idle');
+    judgementVersion += 1;
     elements.judgement.classList.remove('is-visible');
+    elements.countdown.hidden = true;
     elements.resultScore.textContent = String(scoreState.score);
     elements.resultCombo.textContent = String(scoreState.maxCombo);
     renderMusicProgress(1);
@@ -508,11 +625,17 @@
   }
 
   function showAudioLoadError(error) {
+    lifecycleVersion += 1;
+    clearReentry();
     status = 'idle';
     pausedFromStatus = null;
     resetInput();
     bgmClock.reset();
+    void suspendSfx();
     clearNotes();
+    setCharacter('idle');
+    judgementVersion += 1;
+    elements.judgement.classList.remove('is-visible');
     elements.countdown.hidden = true;
     elements.progressHud.hidden = true;
     elements.pauseButton.disabled = true;
@@ -527,16 +650,36 @@
 
   async function beginBgmPlayback() {
     if (status !== 'starting-audio') return;
+    const version = lifecycleVersion;
     try {
       await bgmClock.playFromStart();
-      if (status === 'starting-audio') status = 'playing';
+      if (version === lifecycleVersion && status === 'starting-audio') status = 'playing';
+      else settleCancelledPlayback();
     } catch (error) {
-      showAudioLoadError(error);
+      if (version === lifecycleVersion) showAudioLoadError(error);
+      else settleCancelledPlayback();
     }
   }
 
   async function startGame() {
     if (status !== 'idle' && status !== 'result') return;
+    const version = ++lifecycleVersion;
+    completionDispatched = false;
+    clearReentry();
+    pausedFromStatus = null;
+    pausedMediaTime = 0;
+    pausedCountdownRemaining = 0;
+    pauseAfterArming = false;
+    bgmClock.reset();
+    resetInput();
+    stopSfx();
+    clearNotes();
+    resetScore();
+    prepareNotes();
+    resetProgressHud();
+    judgementVersion += 1;
+    elements.judgement.classList.remove('is-visible');
+    setCharacter('idle');
     try {
       // A failed load needs a fresh media load before readiness can be retried.
       if (bgmClock.media.error) bgmClock.media.load();
@@ -547,16 +690,14 @@
       elements.startButton.disabled = true;
       await Promise.all([readyPromise, unlockPromise, createSfxContext()]);
     } catch (error) {
-      showAudioLoadError(error);
+      if (version === lifecycleVersion) showAudioLoadError(error);
+      return;
+    }
+    if (version !== lifecycleVersion || status !== 'arming') {
+      settleCancelledPlayback();
       return;
     }
     elements.audioLoadError.hidden = true;
-    resetInput();
-    clearNotes();
-    resetScore();
-    prepareNotes();
-    resetProgressHud();
-    setCharacter('idle');
     elements.resultOverlay.hidden = true;
     elements.startOverlay.hidden = true;
     elements.progressHud.hidden = false;
@@ -566,6 +707,7 @@
     elements.countdown.textContent = '3';
     countdownEndTime = sfxContext.currentTime + COUNTDOWN_SECONDS;
     status = 'countdown';
+    if (pauseAfterArming || document.hidden) void pauseGame();
   }
 
   elements.startButton.addEventListener('click', (event) => {
@@ -618,15 +760,26 @@
     handleReleaseInput(`pointer:${event.pointerId}`, true);
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) void pauseGame();
+  });
+
+  window.addEventListener('blur', () => { void pauseGame(); });
+
   window.addEventListener('pagehide', () => {
+    lifecycleVersion += 1;
+    clearReentry();
+    status = 'idle';
+    pausedFromStatus = null;
     resetInput();
     bgmClock.pause();
+    void suspendSfx();
     window.cancelAnimationFrame(animationFrame);
   });
 
   bgmClock.media.addEventListener('ended', endGame);
   bgmClock.media.addEventListener('error', () => {
-    if (['countdown', 'starting-audio', 'playing', 'paused'].includes(status)) {
+    if (['countdown', 'starting-audio', 'playing', 'paused', 'reengaging', 'resuming-audio'].includes(status)) {
       showAudioLoadError(new Error('BGM playback failed'));
     }
   });

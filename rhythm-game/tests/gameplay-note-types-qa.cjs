@@ -103,6 +103,7 @@ async function sampleLateOvershoot(page, note) {
 }
 
 (async () => {
+  mkdirSync(outputDir, { recursive: true });
   browser = await chromium.launch({
     executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
     headless: true,
@@ -125,15 +126,25 @@ async function sampleLateOvershoot(page, note) {
       readyState: { configurable: true, get: () => 4 },
       paused: { configurable: true, get() { return this.__paused !== false; } },
     });
-    HTMLMediaElement.prototype.play = async function play() { this.__paused = false; };
+    HTMLMediaElement.prototype.play = async function play() {
+      window.__mediaPlayCount += 1;
+      this.__paused = false;
+    };
     HTMLMediaElement.prototype.pause = function pause() { this.__paused = true; };
     window.__setMediaTime = (value) => { mediaTime = value; };
     window.__setSfxTime = (value) => { sfxTime = value; };
     window.__advanceSfxTime = (value) => { sfxTime += value; };
     window.__attacks = [];
     window.__completions = [];
+    window.__pauseCount = 0;
+    window.__mediaPlayCount = 0;
+    window.__setHidden = (hidden) => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: hidden });
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
     window.addEventListener('rhythmgame:attack', (event) => window.__attacks.push(event.detail));
     window.addEventListener('rhythmgame:complete', (event) => window.__completions.push(event.detail));
+    window.addEventListener('rhythmgame:pause', () => { window.__pauseCount += 1; });
     class AudioNode {
       constructor() { this.frequency = this.gain = { setValueAtTime() {}, exponentialRampToValueAtTime() {} }; }
       connect(target) { return target; }
@@ -151,6 +162,16 @@ async function sampleLateOvershoot(page, note) {
     window.AudioContext = window.webkitAudioContext = AudioContext;
   });
   await page.goto(targetUrl, { waitUntil: 'load' });
+  await page.evaluate(() => {
+    window.__setHidden(true);
+    window.dispatchEvent(new Event('blur'));
+    window.__setHidden(false);
+  });
+  await page.keyboard.press('Space');
+  await page.mouse.click(1500, 850);
+  assert.equal(await page.locator('#startOverlay').isVisible(), true);
+  assert.equal(await page.evaluate(() => window.__pauseCount), 0, 'idle focus events must not pause');
+  assert.deepEqual(await page.evaluate(() => window.__attacks), [], 'idle input must not attack');
   await page.locator('#startButton').click();
   await page.locator('#countdown').waitFor({ state: 'visible' });
   await page.evaluate(() => window.__setSfxTime(3.05));
@@ -162,6 +183,140 @@ async function sampleLateOvershoot(page, note) {
     hold: window.RhythmGameChart.NOTES.find((note) => note.type === 'hold'),
     beforeHold: window.RhythmGameChart.NOTES[54],
   }));
+  // Breaks caught: lost focus leaving input latched, dropped hold starts,
+  // judging a paused release, unbounded re-entry, and partial/duplicate completion.
+  const lifecycleHold = definitions.hold;
+  await page.evaluate((id) => { window.__holdId = id; }, lifecycleHold.id);
+  await setTime(page, lifecycleHold.hitTime + 0.15);
+  await page.keyboard.down('Space');
+  await setTime(page, lifecycleHold.hitTime + 0.35);
+  const beforeHoldPause = await holdState(page);
+  await page.locator('#pauseButton').click();
+  await page.keyboard.up('Space');
+  const duringHoldPause = await holdState(page);
+  assert.equal(duringHoldPause.score, 0, 'release during pause must preserve the unresolved start');
+  assert.equal(duringHoldPause.tailLength, beforeHoldPause.tailLength);
+  await setTime(page, lifecycleHold.hitTime + 5);
+  assert.equal((await holdState(page)).tailLength, beforeHoldPause.tailLength,
+    'paused fake media seeks must not move the hold tail');
+  await page.locator('#resumeButton').click();
+  await nextFrame(page);
+  const holdReentry = await page.locator('#countdown').evaluate((cue) => ({
+    visible: !cue.hidden, text: cue.textContent, fontSize: parseFloat(getComputedStyle(cue).fontSize),
+    mediaPaused: document.querySelector('#gameBgm').paused,
+    mediaTime: document.querySelector('#gameBgm').currentTime,
+  }));
+  assert.equal(holdReentry.mediaPaused, true, 'resume of an interrupted hold must await a fresh press');
+  assert.equal(holdReentry.visible, true);
+  assert.equal(holdReentry.text, 'HOLD');
+  assert.ok(holdReentry.fontSize > 0, 'HOLD cue must render text rather than a countdown image');
+  assert.equal(holdReentry.mediaTime, lifecycleHold.hitTime + 0.35,
+    're-entry must restore the original frozen media position');
+  await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hold-reentry.png') });
+  await page.setViewportSize({ width: 658, height: 383 });
+  await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hold-reentry-small.png') });
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.keyboard.down('Space');
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  assert.equal(await page.locator('#countdown').isHidden(), true);
+  assert.equal((await holdState(page)).score, 0, 're-entry must not score or rejudge the start');
+  assert.equal((await holdState(page)).tailLength, beforeHoldPause.tailLength);
+  assert.equal((await holdState(page)).sustained, true, 're-entry must restore sustained feedback');
+  await setTime(page, lifecycleHold.holdEndTime);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 150, 'original Good start plus Perfect release must remain 150');
+
+  await restartRound(page);
+  await setTime(page, lifecycleHold.hitTime);
+  await page.mouse.move(1500, 850);
+  await page.mouse.down();
+  await nextFrame(page);
+  const pauseCountBeforeFocusLoss = await page.evaluate(() => window.__pauseCount);
+  await page.evaluate(() => {
+    window.__setHidden(true);
+    window.dispatchEvent(new Event('blur'));
+    window.__setHidden(true);
+  });
+  await nextFrame(page);
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true,
+    'visibility loss must pause the game');
+  assert.equal(await page.evaluate(() => window.__pauseCount), pauseCountBeforeFocusLoss + 1,
+    'visibility and blur for one pause must emit one transition event');
+  assert.equal((await holdState(page)).litPixels, 0, 'focus loss must clear active attack particles');
+  await page.mouse.up();
+  await page.evaluate(() => window.__setHidden(false));
+  await page.locator('#resumeButton').click();
+  await page.waitForTimeout(650);
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await page.waitForTimeout(1000);
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true,
+    'another focus loss must cancel the earlier re-entry deadline');
+  assert.equal((await holdState(page)).score, 0);
+  await page.locator('#resumeButton').click();
+  await page.keyboard.down('Space');
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  await setTime(page, lifecycleHold.holdEndTime);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 200,
+    'fresh keyboard re-entry must replace a lost pointer latch');
+
+  await restartRound(page);
+  await setTime(page, lifecycleHold.hitTime);
+  await page.keyboard.down('Space');
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true, 'blur alone must pause');
+  await page.locator('#resumeButton').click();
+  // A repeat from a key still physically down cannot satisfy fresh re-entry.
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', repeat: true })));
+  await page.waitForTimeout(650);
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true,
+    're-entry must allow the full 1500ms wall-clock interval');
+  assert.equal((await holdState(page)).score, 0);
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused, null, { timeout: 2000 });
+  const reentryTimeout = await holdState(page);
+  assert.equal(reentryTimeout.score, 100, 'timeout retains Perfect start points and misses the release');
+  assert.equal(reentryTimeout.combo, 0);
+  assert.equal(reentryTimeout.holding, false);
+  assert.equal(reentryTimeout.tailLength, null);
+  assert.equal(reentryTimeout.litPixels, 0);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 100, 'later release cannot repeat timeout resolution');
+
+  await restartRound(page);
+  await setTime(page, lifecycleHold.hitTime);
+  await page.keyboard.down('Space');
+  await page.locator('#pauseButton').click();
+  await page.keyboard.up('Space');
+  await page.locator('#resumeButton').click();
+  const completionsBeforeEarlyEnd = await page.evaluate(() => window.__completions.length);
+  const playsBeforeEarlyEnd = await page.evaluate(() => window.__mediaPlayCount);
+  await finishRound(page);
+  await finishRound(page);
+  const earlyEnd = await page.evaluate(() => window.__completions.at(-1));
+  assert.equal(await page.evaluate(() => window.__completions.length), completionsBeforeEarlyEnd + 1,
+    'ended twice must dispatch exactly one completion');
+  assert.deepEqual(earlyEnd, {
+    finalScore: 100, maxCombo: 0, perfect: 0, good: 0, miss: 80,
+    accuracy: 1.09, repairPercent: 1.09, starRating: 0, totalNotes: 80, judgedNotes: 80,
+  }, 'completion must resolve the interrupted hold and all remaining chart events once');
+  await page.waitForTimeout(1600);
+  assert.equal(await page.evaluate(() => window.__mediaPlayCount), playsBeforeEarlyEnd,
+    'completion must cancel the pending re-entry timeout');
+  assert.equal((await holdState(page)).litPixels, 0);
+  const resultPauseCount = await page.evaluate(() => window.__pauseCount);
+  await page.evaluate(() => {
+    window.__setHidden(true);
+    window.dispatchEvent(new Event('blur'));
+    window.__setHidden(false);
+  });
+  assert.equal(await page.evaluate(() => window.__pauseCount), resultPauseCount,
+    'result focus events must not create pause transitions');
+  assert.equal(await page.locator('#resultOverlay').isVisible(), true);
+  await page.keyboard.press('Space');
+  await page.mouse.click(1500, 850);
+  assert.equal((await holdState(page)).attacks.length, 1, 'result input cannot dispatch attacks');
+  const lifecycle = { beforeHoldPause, duringHoldPause, holdReentry, reentryTimeout, earlyEnd };
+  await restartRound(page);
   // Breaks caught: ID-based colors, linear speed motion, drifting centers, and repeated flashes.
   await page.evaluate((time) => window.__setMediaTime(time), definitions.normal.spawnTime + 0.5);
   await page.waitForFunction(() => document.querySelectorAll('.note').length > 0);
@@ -324,8 +479,8 @@ async function sampleLateOvershoot(page, note) {
     assert.equal(result.finalScore, scenario.points);
     assert.equal(result.perfect, scenario.judgement === 'perfect' ? 1 : 0);
     assert.equal(result.good, scenario.judgement === 'good' ? 1 : 0);
-    assert.equal(result.miss, firstHold.id + (scenario.judgement === 'miss' ? 1 : 0));
-    assert.equal(result.judgedNotes, firstHold.id + 1, 'one completed hold is one judged note');
+    assert.equal(result.miss, scenario.judgement === 'miss' ? 80 : 79);
+    assert.equal(result.judgedNotes, 80, 'completion must resolve all queued events, including each hold once');
     holdScenarios.push({ ...scenario, pressed, released, result });
   }
 
@@ -361,8 +516,8 @@ async function sampleLateOvershoot(page, note) {
   const comboReset = await finishRound(page);
   assert.equal(comboReset.maxCombo, 1);
   assert.equal(comboReset.perfect, 1);
-  assert.equal(comboReset.miss, 55);
-  assert.equal(comboReset.judgedNotes, 56);
+  assert.equal(comboReset.miss, 79);
+  assert.equal(comboReset.judgedNotes, 80);
 
   await restartRound(page);
   await setTime(page, firstHold.hitTime);
@@ -395,7 +550,7 @@ async function sampleLateOvershoot(page, note) {
     'missed start must remove the tail');
   const missedStart = await finishRound(page);
   assert.equal(missedStart.finalScore, 0);
-  assert.equal(missedStart.miss, firstHold.id + 1);
+  assert.equal(missedStart.miss, 80);
   assert.equal(missedStart.accuracy, 0);
 
   // Lifecycle cleanup must not create another attack after the game has stopped.
@@ -422,6 +577,10 @@ async function sampleLateOvershoot(page, note) {
 
   await setTime(page, firstHold.hitTime);
   await page.keyboard.down('Space');
+  await page.locator('#pauseButton').click();
+  await page.keyboard.up('Space');
+  await page.locator('#resumeButton').click();
+  const playsBeforeAudioError = await page.evaluate(() => window.__mediaPlayCount);
   injectingAudioError = true;
   await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('error')));
   await page.locator('#audioLoadError').waitFor({ state: 'visible' });
@@ -435,6 +594,10 @@ async function sampleLateOvershoot(page, note) {
   await page.keyboard.press('Space');
   assert.equal((await holdState(page)).attacks.length, failedAudio.attacks.length,
     'audio failure must clear input and suppress later attacks');
+  await page.waitForTimeout(1600);
+  assert.equal(await page.evaluate(() => window.__mediaPlayCount), playsBeforeAudioError,
+    'audio failure must cancel re-entry before it can restart BGM');
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true);
   injectingAudioError = false;
   assert.equal(expectedAudioErrors.length, 1);
   assert.match(expectedAudioErrors[0], /BGM playback failed/);
@@ -449,10 +612,31 @@ async function sampleLateOvershoot(page, note) {
   await page.keyboard.press('Space');
   assert.equal((await holdState(page)).score, 100, 'retry must reset a previously held input latch');
 
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  await page.locator('#pauseButton').click();
+  await page.keyboard.up('Space');
+  await page.locator('#resumeButton').click();
+  const playsBeforePagehide = await page.evaluate(() => window.__mediaPlayCount);
+  await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+  await page.waitForTimeout(1600);
+  assert.equal(await page.evaluate(() => window.__mediaPlayCount), playsBeforePagehide,
+    'pagehide must cancel the re-entry timeout');
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true);
+  assert.equal(await page.locator('#countdown').isHidden(), true);
+  const attacksBeforePagehideInput = (await holdState(page)).attacks.length;
+  await page.keyboard.press('Space');
+  await page.mouse.click(1500, 850);
+  assert.equal((await holdState(page)).attacks.length, attacksBeforePagehideInput,
+    'pagehide must block later input');
+  assert.equal((await holdState(page)).sustained, false);
+  assert.equal((await holdState(page)).litPixels, 0);
+
   assert.deepEqual(errors, [], 'browser must remain free of console and page errors');
   process.stdout.write(`${JSON.stringify({ normalSamples, before, transition, after, arrived, hold,
     lateHoldUnpressed, headBeforePress, headAfterPress, normalLateOvershoot, speedLateOvershoot,
-    holdScenarios, comboReset, expiredHold, missedStart, paused, restarted, failedAudio,
+    lifecycle, holdScenarios, comboReset, expiredHold, missedStart, paused, restarted, failedAudio,
     expectedAudioErrors: expectedAudioErrors.map((message) => message.split('\n')[0]),
     accelerationTransitions: 1, errors }, null, 2)}\n`);
 })().catch((error) => {
