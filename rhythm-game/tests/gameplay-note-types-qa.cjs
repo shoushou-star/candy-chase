@@ -152,14 +152,33 @@ async function sampleLateOvershoot(page, note) {
       stop() {}
     }
     class AudioContext {
-      constructor() { this.destination = new AudioNode(); this.state = 'suspended'; }
+      constructor() {
+        this.destination = new AudioNode();
+        this.state = 'suspended';
+        window.__fakeSfxContext = this;
+      }
       get currentTime() { return sfxTime; }
-      async resume() { this.state = 'running'; }
+      async resume() {
+        if (window.__deferNextSfxResume) {
+          window.__deferNextSfxResume = false;
+          await new Promise((resolveResume) => {
+            window.__resolveDeferredSfxResume = () => {
+              this.state = 'running';
+              window.__resolveDeferredSfxResume = null;
+              resolveResume();
+              queueMicrotask(() => { window.__deferredSfxResumeSettled = true; });
+            };
+          });
+          return;
+        }
+        this.state = 'running';
+      }
       async suspend() { this.state = 'suspended'; }
       createOscillator() { return new AudioNode(); }
       createGain() { return new AudioNode(); }
     }
     window.AudioContext = window.webkitAudioContext = AudioContext;
+    window.__getFakeSfxState = () => window.__fakeSfxContext?.state || 'missing';
   });
   await page.goto(targetUrl, { waitUntil: 'load' });
   await page.evaluate(() => {
@@ -611,6 +630,33 @@ async function sampleLateOvershoot(page, note) {
   await setTime(page, definitions.normal.hitTime);
   await page.keyboard.press('Space');
   assert.equal((await holdState(page)).score, 100, 'retry must reset a previously held input latch');
+
+  // A native AudioContext can remain `suspended` while resume() is pending.
+  // Its older resume must not escape a newer HOLD re-entry after blur.
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  await page.locator('#pauseButton').click();
+  await page.keyboard.up('Space');
+  await page.waitForFunction(() => window.__getFakeSfxState() === 'suspended');
+  await page.locator('#resumeButton').click();
+  await page.locator('#countdown').waitFor({ state: 'visible' });
+  await page.evaluate(() => { window.__deferNextSfxResume = true; });
+  await page.keyboard.down('Space');
+  await page.waitForFunction(() => typeof window.__resolveDeferredSfxResume === 'function');
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await page.waitForFunction(() => !document.querySelector('#pauseOverlay').hidden
+    && window.__getFakeSfxState() === 'suspended');
+  await page.keyboard.up('Space');
+  await page.locator('#resumeButton').click();
+  assert.equal(await page.locator('#countdown').textContent(), 'HOLD');
+  assert.equal(await page.evaluate(() => window.__getFakeSfxState()), 'suspended');
+  await page.evaluate(() => { window.__deferredSfxResumeSettled = false; });
+  await page.evaluate(() => window.__resolveDeferredSfxResume());
+  await page.waitForFunction(() => window.__deferredSfxResumeSettled === true);
+  assert.equal(await page.locator('#countdown').textContent(), 'HOLD');
+  assert.equal(await page.evaluate(() => window.__getFakeSfxState()), 'suspended',
+    'stale SFX resume settling during a newer HOLD deadline must re-suspend the context');
 
   await restartRound(page);
   await setTime(page, firstHold.hitTime);

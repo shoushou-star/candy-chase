@@ -183,7 +183,7 @@
 
   function settleCancelledPlayback() {
     if (status !== 'playing') bgmClock.pause();
-    if (['paused', 'idle', 'result'].includes(status)) void suspendSfx();
+    if (['paused', 'reengaging', 'idle', 'result'].includes(status)) void suspendSfx();
   }
 
   async function resumePlayback(reenteredHold = false) {
