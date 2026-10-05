@@ -8,6 +8,9 @@
     throw new Error('RhythmGameCore, RhythmGameChart, and RhythmAudioClock must be loaded before app.js');
   }
   const { AudioClock } = Audio;
+  const embedParams = new URLSearchParams(location.search);
+  const embedded = embedParams.get('embed') === '1';
+  const runId = Number(embedParams.get('runId'));
   const bgmClock = new AudioClock(document.querySelector('#gameBgm'));
   Core.validateChart(Chart.NOTES, Chart.META);
   const chartMaxScore = Core.calculateChartMaxScore(Chart.NOTES);
@@ -53,6 +56,9 @@
     resultScore: document.querySelector('#resultScore'),
     resultCombo: document.querySelector('#resultCombo'),
     restartButton: document.querySelector('#restartButton'),
+    audioRecoveryOverlay: document.querySelector('#audioRecoveryOverlay'),
+    audioRecoveryMessage: document.querySelector('#audioRecoveryMessage'),
+    audioRecoveryButton: document.querySelector('#audioRecoveryButton'),
     characterIdle: document.querySelector('#characterIdle'),
     characterHit: document.querySelector('#characterHit'),
     characterMiss: document.querySelector('#characterMiss'),
@@ -87,6 +93,8 @@
   let lifecycleVersion = 0;
   let completionDispatched = false;
   let pauseAfterArming = false;
+  let disposed = false;
+  let embedStartAccepted = false;
   const activeSfx = new Set();
 
   function clamp(value, min, max) {
@@ -185,9 +193,9 @@
     // A newer playback lifecycle owns both media and SFX while it is starting.
     // Stale continuations may only restore a lifecycle that still wants silence.
     if (version !== lifecycleVersion
-      && !['paused', 'reengaging', 'idle', 'result'].includes(status)) return;
+      && !['paused', 'reengaging', 'idle', 'result', 'disposed'].includes(status)) return;
     if (status !== 'playing') bgmClock.pause();
-    if (['paused', 'reengaging', 'idle', 'result'].includes(status)) void suspendSfx();
+    if (['paused', 'reengaging', 'idle', 'result', 'disposed'].includes(status)) void suspendSfx();
   }
 
   async function resumePlayback(reenteredHold = false) {
@@ -588,13 +596,14 @@
     elements.progressHud.hidden = true;
     elements.pauseButton.disabled = true;
     setPauseUi(false);
-    elements.resultOverlay.hidden = false;
+    elements.resultOverlay.hidden = embedded;
     window.dispatchEvent(new CustomEvent('rhythmgame:complete', {
       detail: completionDetail,
     }));
   }
 
   function frame() {
+    if (disposed) return;
     if (status === 'countdown') {
       const remaining = countdownEndTime - sfxContext.currentTime;
       if (remaining > 0) {
@@ -628,6 +637,7 @@
   }
 
   function showAudioLoadError(error) {
+    if (disposed) return;
     lifecycleVersion += 1;
     clearReentry();
     status = 'idle';
@@ -644,10 +654,15 @@
     elements.pauseButton.disabled = true;
     setPauseUi(false);
     elements.resultOverlay.hidden = true;
-    elements.startOverlay.hidden = false;
+    elements.startOverlay.hidden = embedded;
     elements.audioLoadError.hidden = false;
     elements.startButton.textContent = 'RETRY';
     elements.startButton.disabled = false;
+    if (embedded) {
+      elements.audioRecoveryOverlay.hidden = false;
+      elements.audioRecoveryMessage.textContent = '点击恢复音频';
+      elements.audioRecoveryButton.hidden = !embedStartAccepted;
+    }
     console.error(error);
   }
 
@@ -665,6 +680,7 @@
   }
 
   async function startGame() {
+    if (disposed || (embedded && !embedStartAccepted)) return;
     if (status !== 'idle' && status !== 'result') return;
     const version = ++lifecycleVersion;
     completionDispatched = false;
@@ -691,7 +707,13 @@
       const unlockPromise = bgmClock.unlock();
       status = 'arming';
       elements.startButton.disabled = true;
-      await Promise.all([readyPromise, unlockPromise, createSfxContext()]);
+      const sfxPromise = createSfxContext();
+      if (embedded && sfxContext.state !== 'running') {
+        elements.audioRecoveryOverlay.hidden = false;
+        elements.audioRecoveryButton.hidden = false;
+        elements.audioRecoveryMessage.textContent = '点击继续播放';
+      }
+      await Promise.all([readyPromise, unlockPromise, sfxPromise]);
     } catch (error) {
       if (version === lifecycleVersion) showAudioLoadError(error);
       return;
@@ -703,6 +725,7 @@
     elements.audioLoadError.hidden = true;
     elements.resultOverlay.hidden = true;
     elements.startOverlay.hidden = true;
+    elements.audioRecoveryOverlay.hidden = true;
     elements.progressHud.hidden = false;
     elements.pauseButton.disabled = false;
     setPauseUi(false);
@@ -721,6 +744,18 @@
   elements.restartButton.addEventListener('click', (event) => {
     event.stopPropagation();
     startGame();
+  });
+
+  elements.audioRecoveryButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (disposed || !embedStartAccepted) return;
+    window.focus();
+    if (status === 'arming') {
+      // Resume the pending unlock in the actual click gesture.
+      void Promise.all([bgmClock.unlock(), createSfxContext()]).catch(showAudioLoadError);
+    } else {
+      void startGame();
+    }
   });
 
   elements.pauseButton.addEventListener('click', (event) => {
@@ -770,16 +805,24 @@
 
   window.addEventListener('blur', () => { void pauseGame(); });
 
-  window.addEventListener('pagehide', () => {
+  function disposeGame() {
+    if (disposed) return;
+    disposed = true;
     lifecycleVersion += 1;
     clearReentry();
-    status = 'idle';
+    status = 'disposed';
     pausedFromStatus = null;
     resetInput();
     bgmClock.pause();
     void suspendSfx();
+    if (sfxContext && sfxContext.state !== 'closed') void sfxContext.close();
+    clearNotes();
+    characterVersion += 1;
+    judgementVersion += 1;
     window.cancelAnimationFrame(animationFrame);
-  });
+  }
+
+  if (!embedded) window.addEventListener('pagehide', disposeGame);
 
   bgmClock.media.addEventListener('ended', endGame);
   bgmClock.media.addEventListener('error', () => {
@@ -796,8 +839,37 @@
   setPauseUi(false);
   setCharacter('idle');
   elements.startButton.disabled = true;
-  bgmClock.whenReady().then(() => {
-    elements.startButton.disabled = false;
-  }).catch(showAudioLoadError);
+  if (embedded) {
+    elements.startOverlay.hidden = true;
+    elements.resultOverlay.hidden = true;
+    const bridge = globalThis.RhythmEmbedBridge.createEmbedBridge({
+      window, runId,
+      prepare: async () => {
+        const pageLoaded = document.readyState === 'complete' ? Promise.resolve()
+          : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
+        const extraSources = [...Object.values(CANDY_SOURCES), ...Object.values(JUDGEMENT_SOURCES),
+          ...[1, 2, 3].map((number) => `assets/ui/countdown/${number}.png`)];
+        const images = [...document.images].filter((image) => image.getAttribute('src'));
+        for (const source of extraSources) {
+          const image = new Image();
+          image.src = source;
+          images.push(image);
+        }
+        await Promise.all([pageLoaded, bgmClock.whenReady(), ...images.map((image) => image.decode())]);
+      },
+      start: () => {
+        embedStartAccepted = true;
+        resetInput();
+        window.focus();
+        void startGame();
+      },
+      dispose: disposeGame,
+    });
+    bridge.ready.catch(showAudioLoadError);
+  } else {
+    bgmClock.whenReady().then(() => {
+      if (!disposed) elements.startButton.disabled = false;
+    }).catch(showAudioLoadError);
+  }
   animationFrame = window.requestAnimationFrame(frame);
 })();

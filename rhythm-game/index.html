@@ -193,6 +193,13 @@
         </div>
       </section>
 
+      <section id="audioRecoveryOverlay" class="screen-overlay" hidden aria-label="Audio recovery">
+        <div class="pause-card">
+          <p id="audioRecoveryMessage" class="result-kicker" role="alert">点击继续播放</p>
+          <button id="audioRecoveryButton" class="primary-button" type="button">点击继续播放</button>
+        </div>
+      </section>
+
       <section id="pauseOverlay" class="screen-overlay pause-overlay" hidden aria-label="Game paused">
         <div class="pause-card">
           <p class="result-kicker">PAUSED</p>
@@ -205,6 +212,7 @@
   <script src="game-core.js"></script>
   <script src="game-chart.js"></script>
   <script src="audio-clock.js"></script>
+  <script src="embed-bridge.js"></script>
   <script src="app.js?v=5"></script>
   <script src="magic-attack-d.js?v=9"></script>
   <script src="countdown-assets.js?v=1"></script>

@@ -10,7 +10,7 @@ const scriptPath = resolve(dirname(fileURLToPath(import.meta.url)), 'copy-game-r
 
 test('publishes the standalone runtime and nested assets without publishing tests or clearing existing output', () => {
   const root = mkdtempSync(resolve(tmpdir(), 'game-runtime-publication-'));
-  const files = ['index.html', 'app.js', 'game-core.js', 'game-chart.js', 'audio-clock.js',
+  const files = ['index.html', 'app.js', 'embed-bridge.js', 'game-core.js', 'game-chart.js', 'audio-clock.js',
     'styles.css', 'countdown-assets.js', 'countdown-assets.css', 'magic-attack-d.js', 'magic-attack-d.css'];
   mkdirSync(resolve(root, 'rhythm-game/assets/ui/countdown'), { recursive: true });
   mkdirSync(resolve(root, 'rhythm-game/tests'), { recursive: true });
