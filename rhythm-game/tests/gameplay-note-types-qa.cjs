@@ -78,6 +78,30 @@ async function sampleAt(page, time, selector, expectedProgress) {
   return sample;
 }
 
+async function sampleLateOvershoot(page, note) {
+  await setTime(page, note.hitTime + 0.15);
+  const sample = await page.locator(`.note[data-note-id="${note.id}"]`).evaluate((element) => {
+    const path = document.querySelector('#travelPath');
+    const length = path.getTotalLength();
+    const end = path.getPointAtLength(length);
+    const beforeEnd = path.getPointAtLength(length - 8);
+    const stage = document.querySelector('#gameStage').getBoundingClientRect();
+    const bounds = element.getBoundingClientRect();
+    const dx = (bounds.x + bounds.width / 2 - stage.x) / stage.width * 2048 - end.x;
+    const dy = (bounds.y + bounds.height / 2 - stage.y) / stage.height * 1152 - end.y;
+    const tangentLength = Math.hypot(end.x - beforeEnd.x, end.y - beforeEnd.y);
+    return {
+      expectedDistance: length * 0.075,
+      tangentDistance: (dx * (end.x - beforeEnd.x) + dy * (end.y - beforeEnd.y)) / tangentLength,
+      perpendicularDistance: Math.abs(dx * (end.y - beforeEnd.y) - dy * (end.x - beforeEnd.x)) / tangentLength,
+    };
+  });
+  assert.ok(Math.abs(sample.tangentDistance - sample.expectedDistance) < 0.08,
+    `${note.type} must retain its +150ms tangent overshoot`);
+  assert.ok(sample.perpendicularDistance < 0.08);
+  return sample;
+}
+
 (async () => {
   browser = await chromium.launch({
     executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
@@ -190,6 +214,37 @@ async function sampleAt(page, time, selector, expectedProgress) {
   // detached tails, expiring held heads at the start, and raw-input effect ownership.
   const firstHold = definitions.hold;
   await page.evaluate((id) => { window.__holdId = id; }, firstHold.id);
+  await restartRound(page);
+  const lateHoldSelector = `.note-hold[data-note-id="${firstHold.id}"]`;
+  const lateHoldUnpressed = await sampleAt(page, firstHold.hitTime + 0.15, lateHoldSelector, 1);
+  assert.equal((await holdState(page)).holding, false);
+  const lateTailEnd = await page.locator(`.hold-note-tail-layer[data-note-id="${firstHold.id}"] .hold-note-tail`)
+    .evaluate((tail) => Number(tail.getAttribute('stroke-dasharray').split(' ')[0])
+      - Number(tail.getAttribute('stroke-dashoffset')));
+  const trackLength = await page.locator('#travelPath').evaluate((path) => path.getTotalLength());
+  assert.ok(Math.abs(lateTailEnd - trackLength) < 0.001, 'unpressed late hold tail must end at the clamped head');
+  const headBeforePress = await page.locator(lateHoldSelector).evaluate((head) => ({
+    left: head.style.left, top: head.style.top,
+  }));
+  await page.keyboard.down('Space');
+  await nextFrame(page);
+  const headAfterPress = await page.locator(lateHoldSelector).evaluate((head) => ({
+    left: head.style.left, top: head.style.top,
+  }));
+  assert.deepEqual(headAfterPress, headBeforePress, 'valid late press must not jump the hold head');
+  assert.deepEqual((await holdState(page)).attacks, [{ strength: 'good', phase: 'hold-start' }]);
+  await setTime(page, firstHold.holdEndTime);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 150, 'clamped late hold must retain its Good start judgement');
+
+  await restartRound(page);
+  const normalLateOvershoot = await sampleLateOvershoot(page, definitions.normal);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).score, 50);
+  const speedLateOvershoot = await sampleLateOvershoot(page, definitions.speed);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).score, 100);
+
   const holdScenarios = [];
   for (const scenario of [
     { name: 'PP', press: 0, release: 0, points: 200, judgement: 'perfect' },
@@ -396,6 +451,7 @@ async function sampleAt(page, time, selector, expectedProgress) {
 
   assert.deepEqual(errors, [], 'browser must remain free of console and page errors');
   process.stdout.write(`${JSON.stringify({ normalSamples, before, transition, after, arrived, hold,
+    lateHoldUnpressed, headBeforePress, headAfterPress, normalLateOvershoot, speedLateOvershoot,
     holdScenarios, comboReset, expiredHold, missedStart, paused, restarted, failedAudio,
     expectedAudioErrors: expectedAudioErrors.map((message) => message.split('\n')[0]),
     accelerationTransitions: 1, errors }, null, 2)}\n`);

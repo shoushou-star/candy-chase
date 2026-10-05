@@ -295,7 +295,7 @@
 
   function pointForNote(note, gameTime, progress) {
     const elapsed = gameTime - note.spawnTime;
-    if (elapsed <= Chart.META.travelTimeSeconds) {
+    if (note.type === 'hold' || elapsed <= Chart.META.travelTimeSeconds) {
       return elements.path.getPointAtLength(pathLength * progress);
     }
 
