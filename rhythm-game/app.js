@@ -96,6 +96,13 @@
   let disposed = false;
   let embedStartAccepted = false;
   const activeSfx = new Set();
+  const listenerCleanups = [];
+
+  function listen(target, type, callback, options) {
+    if (disposed) return;
+    target.addEventListener(type, callback, options);
+    listenerCleanups.push(() => target.removeEventListener(type, callback, options));
+  }
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -372,7 +379,7 @@
     image.alt = '';
     image.draggable = false;
     image.src = CANDY_SOURCES[note.type];
-    image.addEventListener('error', () => {
+    listen(image, 'error', () => {
       image.removeAttribute('src');
       image.classList.add('note-fallback', `note-fallback-${note.type}`);
     }, { once: true });
@@ -736,17 +743,17 @@
     if (pauseAfterArming || document.hidden) void pauseGame();
   }
 
-  elements.startButton.addEventListener('click', (event) => {
+  listen(elements.startButton, 'click', (event) => {
     event.stopPropagation();
     startGame();
   });
 
-  elements.restartButton.addEventListener('click', (event) => {
+  listen(elements.restartButton, 'click', (event) => {
     event.stopPropagation();
     startGame();
   });
 
-  elements.audioRecoveryButton.addEventListener('click', (event) => {
+  listen(elements.audioRecoveryButton, 'click', (event) => {
     event.stopPropagation();
     if (disposed || !embedStartAccepted) return;
     window.focus();
@@ -758,7 +765,7 @@
     }
   });
 
-  elements.pauseButton.addEventListener('click', (event) => {
+  listen(elements.pauseButton, 'click', (event) => {
     event.stopPropagation();
     if (status === 'paused') {
       resumeGame();
@@ -767,47 +774,48 @@
     }
   });
 
-  elements.resumeButton.addEventListener('click', (event) => {
+  listen(elements.resumeButton, 'click', (event) => {
     event.stopPropagation();
     resumeGame();
   });
 
-  window.addEventListener('keydown', (event) => {
+  listen(window, 'keydown', (event) => {
     if (event.code !== 'Space') return;
     event.preventDefault();
     if (event.repeat) return;
     handlePressInput('keyboard');
   });
 
-  window.addEventListener('keyup', (event) => {
+  listen(window, 'keyup', (event) => {
     if (event.code !== 'Space') return;
     event.preventDefault();
     handleReleaseInput('keyboard');
   });
 
-  elements.stage.addEventListener('pointerdown', (event) => {
+  listen(elements.stage, 'pointerdown', (event) => {
     if (event.button !== 0 || event.target.closest('button')) return;
     handlePressInput(`pointer:${event.pointerId}`);
   });
 
-  window.addEventListener('pointerup', (event) => {
+  listen(window, 'pointerup', (event) => {
     handleReleaseInput(`pointer:${event.pointerId}`);
   });
 
-  window.addEventListener('pointercancel', () => {
+  listen(window, 'pointercancel', () => {
     clearInputLatch();
     void pauseGame();
   });
 
-  document.addEventListener('visibilitychange', () => {
+  listen(document, 'visibilitychange', () => {
     if (document.hidden) void pauseGame();
   });
 
-  window.addEventListener('blur', () => { void pauseGame(); });
+  listen(window, 'blur', () => { void pauseGame(); });
 
   function disposeGame() {
     if (disposed) return;
     disposed = true;
+    for (const cleanup of listenerCleanups.splice(0)) cleanup();
     lifecycleVersion += 1;
     clearReentry();
     status = 'disposed';
@@ -822,10 +830,10 @@
     window.cancelAnimationFrame(animationFrame);
   }
 
-  if (!embedded) window.addEventListener('pagehide', disposeGame);
+  if (!embedded) listen(window, 'pagehide', disposeGame);
 
-  bgmClock.media.addEventListener('ended', endGame);
-  bgmClock.media.addEventListener('error', () => {
+  listen(bgmClock.media, 'ended', endGame);
+  listen(bgmClock.media, 'error', () => {
     if (['countdown', 'starting-audio', 'playing', 'paused', 'reengaging', 'resuming-audio'].includes(status)) {
       showAudioLoadError(new Error('BGM playback failed'));
     }
@@ -846,7 +854,7 @@
       window, runId,
       prepare: async () => {
         const pageLoaded = document.readyState === 'complete' ? Promise.resolve()
-          : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
+          : new Promise((resolve) => listen(window, 'load', resolve, { once: true }));
         const extraSources = [...Object.values(CANDY_SOURCES), ...Object.values(JUDGEMENT_SOURCES),
           ...[1, 2, 3].map((number) => `assets/ui/countdown/${number}.png`)];
         const images = [...document.images].filter((image) => image.getAttribute('src'));

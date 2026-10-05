@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import '../embed-bridge.js';
+import '../game-core.js';
+import '../game-chart.js';
+import '../audio-clock.js';
 
 function harness() {
   const window = new EventTarget();
@@ -94,4 +99,66 @@ test('pagehide disposes an active bridge and stops future messages', async () =>
   game.message({ type: 'rhythmgame:start', runId: 7 });
   assert.equal(game.starts, 0);
   assert.equal(game.cleanups, 1);
+});
+
+test('actual app releases Space consumption and its registered listeners on dispose', async () => {
+  // Removing input state alone must not leave the actual app's preventDefault listener alive.
+  class Target extends EventTarget {
+    listeners = new Map();
+    addEventListener(type, callback, options) {
+      super.addEventListener(type, callback, options);
+      if (!this.listeners.has(type)) this.listeners.set(type, new Set());
+      this.listeners.get(type).add(callback);
+    }
+    removeEventListener(type, callback, options) {
+      super.removeEventListener(type, callback, options);
+      this.listeners.get(type)?.delete(callback);
+    }
+    get listenerCount() { return [...this.listeners.values()].reduce((count, set) => count + set.size, 0); }
+  }
+  class Element extends Target {
+    classList = { toggle() {}, remove() {} };
+    style = { setProperty() {} };
+    readyState = 1;
+    duration = 69.218005;
+    currentTime = 0;
+    setAttribute() {}
+    replaceChildren() {}
+    getTotalLength() { return 800; }
+    getPointAtLength(length) { return { x: length, y: 500 }; }
+    pause() { this.paused = true; }
+  }
+  const elements = new Map();
+  const document = new Target();
+  document.querySelector = (selector) => {
+    if (!elements.has(selector)) elements.set(selector, new Element());
+    return elements.get(selector);
+  };
+  document.querySelectorAll = () => Array.from({ length: 5 }, () => new Element());
+  const window = new Target();
+  window.clearTimeout = () => {};
+  window.requestAnimationFrame = () => 1;
+  window.cancelAnimationFrame = () => {};
+  vm.runInNewContext(readFileSync(new URL('../app.js', import.meta.url), 'utf8'), {
+    window, document, location: { search: '' }, URLSearchParams, CustomEvent, console,
+    RhythmGameCore: globalThis.RhythmGameCore, RhythmGameChart: globalThis.RhythmGameChart,
+    RhythmAudioClock: globalThis.RhythmAudioClock,
+  });
+  await Promise.resolve();
+  function space(type) {
+    const event = new Event(type, { cancelable: true });
+    event.code = 'Space';
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  }
+  assert.equal(space('keydown'), true, 'active app consumes its game key');
+  assert.equal(space('keyup'), true, 'active app owns key release');
+  window.dispatchEvent(new Event('pagehide'));
+  assert.equal(space('keydown'), false, 'disposed app must release the Space default action');
+  assert.equal(space('keyup'), false, 'disposed app must release keyup too');
+  assert.equal(window.listenerCount, 0, 'window input and lifecycle listeners are removed');
+  assert.equal(document.listenerCount, 0, 'visibility listener is removed');
+  for (const [selector, element] of elements) {
+    assert.equal(element.listenerCount, 0, `${selector} button, stage or media listeners are removed`);
+  }
 });

@@ -106,8 +106,8 @@ for (const type of ['rhythmgame:pause', 'rhythmgame:reset', 'rhythmgame:complete
 }
 
 test('app.js remains the only keyboard and pointer input owner', () => {
-  assert.match(appSource, /addEventListener\(['"]keydown['"]/);
-  assert.match(appSource, /addEventListener\(['"]pointerdown['"]/);
+  assert.match(appSource, /listen\(window,\s*['"]keydown['"]/);
+  assert.match(appSource, /listen\(elements\.stage,\s*['"]pointerdown['"]/);
   assert.doesNotMatch(effectSource, /addEventListener\(['"]keydown['"]/);
   assert.doesNotMatch(effectSource, /addEventListener\(['"]pointerdown['"]/);
 });
@@ -119,9 +119,9 @@ test('valid gameplay input dispatches one semantic attack event with strength', 
 });
 
 test('app owns release input and exposes semantic hold phases', () => {
-  assert.match(appSource, /addEventListener\(['"]keyup['"]/);
-  assert.match(appSource, /addEventListener\(['"]pointerup['"]/);
-  assert.match(appSource, /addEventListener\(['"]pointercancel['"]/);
+  assert.match(appSource, /listen\(window,\s*['"]keyup['"]/);
+  assert.match(appSource, /listen\(window,\s*['"]pointerup['"]/);
+  assert.match(appSource, /listen\(window,\s*['"]pointercancel['"]/);
   assert.match(appSource, /fireAttack\([^;]+['"]hold-start['"]\)/);
   assert.match(appSource, /fireAttack\([^;]+['"]hold-end['"]\)/);
   assert.doesNotMatch(effectSource, /addEventListener\(['"]keyup['"]/);
