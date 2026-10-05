@@ -1,5 +1,6 @@
-import { useEffect, useRef, type RefObject } from "react";
+import type { RefObject } from "react";
 import { GameButton } from "./GameButton";
+import { useDialogFocus } from "./useDialogFocus";
 
 export interface StoreUnavailableDialogProps {
   open: boolean;
@@ -8,29 +9,7 @@ export interface StoreUnavailableDialogProps {
 }
 
 export function StoreUnavailableDialog({ open, triggerRef, onClose }: StoreUnavailableDialogProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
-
-  useEffect(() => {
-    if (!open) return;
-
-    closeButtonRef.current?.focus();
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onCloseRef.current();
-      } else if (event.key === "Tab") {
-        event.preventDefault();
-        closeButtonRef.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      triggerRef.current?.focus();
-    };
-  }, [open, triggerRef]);
+  const closeButtonRef = useDialogFocus({ open, triggerRef, onClose });
 
   if (!open) return null;
 
