@@ -1,4 +1,4 @@
-const { mkdirSync, writeFileSync } = require('node:fs');
+const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require('playwright-core');
@@ -12,12 +12,130 @@ const targetUrl = `${pathToFileURL(resolve(projectDir, 'index.html')).href}?qa=h
 mkdirSync(outputDir, { recursive: true });
 let browser;
 
+async function nextRenderFrame(page) {
+  await page.evaluate(() => new Promise((resolveFrame) => {
+    requestAnimationFrame(() => requestAnimationFrame(resolveFrame));
+  }));
+}
+
+async function hitChartNote(page, hitTime, hitIndex) {
+  await page.evaluate((time) => window.__setMediaTime(time), hitTime);
+  await nextRenderFrame(page);
+  await page.keyboard.press('Space');
+  await page.waitForFunction((expectedScore) => (
+    Number(document.querySelector('#scoreValue').textContent.replaceAll(',', '')) === expectedScore
+  ), (hitIndex + 1) * 100, { polling: 'raf', timeout: 1500 });
+}
+
+async function realDelayedAudioRecovery(browserInstance) {
+  const context = await browserInstance.newContext();
+  const nativePage = await context.newPage();
+  const initialErrors = [];
+  const recoveryErrors = [];
+  const pageErrors = [];
+  let allowAudio = false;
+  let delayedAudioRequests = 0;
+  nativePage.on('console', (message) => {
+    if (message.type() === 'error') {
+      (allowAudio ? recoveryErrors : initialErrors).push(message.text());
+    }
+  });
+  nativePage.on('pageerror', (error) => pageErrors.push(error.message));
+  try {
+    await nativePage.addInitScript(() => {
+      const nativePlay = HTMLMediaElement.prototype.play;
+      window.__nativePlayAttempts = [];
+      HTMLMediaElement.prototype.play = function play(...args) {
+        const attempt = {
+          muted: this.muted,
+          inClick: Boolean(window.event?.type === 'click' && window.event.isTrusted),
+          state: 'pending',
+        };
+        window.__nativePlayAttempts.push(attempt);
+        return nativePlay.apply(this, args).then(() => {
+          attempt.state = 'fulfilled';
+        }, (error) => {
+          attempt.state = error.name;
+          throw error;
+        });
+      };
+    });
+    // Serve local packaged files through a synthetic origin; playback behavior stays native.
+    await nativePage.route('http://rhythm-game-qa.test/**', async (route) => {
+      const asset = decodeURIComponent(new URL(route.request().url()).pathname).slice(1) || 'index.html';
+      if (asset === 'favicon.ico') {
+        await route.fulfill({ status: 204 });
+        return;
+      }
+      if (asset === 'assets/audio/game-bgm.m4a') {
+        if (!allowAudio) {
+          await route.fulfill({ status: 404, body: 'Initial audio failure' });
+          return;
+        }
+        delayedAudioRequests += 1;
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 200));
+      }
+      const contentTypes = {
+        html: 'text/html', js: 'application/javascript', css: 'text/css',
+        png: 'image/png', m4a: 'audio/mp4',
+      };
+      await route.fulfill({
+        status: 200,
+        contentType: contentTypes[asset.split('.').at(-1)] || 'application/octet-stream',
+        body: readFileSync(resolve(projectDir, asset)),
+      });
+    });
+    await nativePage.goto('http://rhythm-game-qa.test/index.html', { waitUntil: 'load' });
+    await nativePage.locator('#audioLoadError').waitFor({ state: 'visible' });
+    assert.equal(await nativePage.locator('#startButton').isEnabled(), true);
+    allowAudio = true;
+    await nativePage.locator('#startButton').click();
+    await nativePage.waitForFunction(() => document.querySelector('#gameBgm').readyState >= 1);
+    await nativePage.waitForFunction(() => (
+      window.__nativePlayAttempts[0] && window.__nativePlayAttempts[0].state !== 'pending'
+    ));
+    await nextRenderFrame(nativePage);
+    const retry = await nativePage.evaluate(() => ({
+      countdownVisible: !document.querySelector('#countdown').hidden,
+      errorHidden: document.querySelector('#audioLoadError').hidden,
+      duration: document.querySelector('#gameBgm').duration,
+      playAttempts: window.__nativePlayAttempts,
+    }));
+    assert.equal(retry.countdownVisible, true,
+      `first RETRY must reach countdown after delayed metadata: ${JSON.stringify(retry.playAttempts)}`);
+    assert.equal(retry.errorHidden, true);
+    assert.equal(retry.playAttempts[0].inClick, true,
+      'unlock must invoke native play on the direct click stack');
+    assert.equal(retry.playAttempts[0].muted, true);
+    assert.equal(retry.playAttempts[0].state, 'fulfilled');
+    await nativePage.waitForFunction(() => (
+      document.querySelector('#countdown').hidden
+      && !document.querySelector('#gameBgm').paused
+      && document.querySelector('#gameBgm').currentTime > 0.1
+    ), null, { timeout: 6000 });
+    const playback = await nativePage.locator('#gameBgm').evaluate((media) => ({
+      currentTime: media.currentTime, duration: media.duration, paused: media.paused,
+    }));
+    assert.equal(playback.duration, 69.218005);
+    assert.ok(delayedAudioRequests > 0);
+    assert.deepEqual(recoveryErrors, []);
+    assert.deepEqual(pageErrors, []);
+    return { retry, playback, delayedAudioRequests, initialErrors, recoveryErrors, pageErrors };
+  } finally {
+    await context.close();
+  }
+}
+
 (async () => {
   browser = await chromium.launch({
     executablePath: edgePath,
     headless: true,
-    args: ['--autoplay-policy=no-user-gesture-required'],
   });
+  if (process.argv.includes('--real-recovery-only')) {
+    process.stdout.write(`${JSON.stringify(await realDelayedAudioRecovery(browser), null, 2)}\n`);
+    await browser.close();
+    return;
+  }
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   const consoleErrors = [];
   const pageErrors = [];
@@ -36,6 +154,7 @@ let browser;
     let mediaTime = 0;
     let mediaReady = !location.search.includes('audioScenario=delayed');
     let mediaError = null;
+    let pendingMetadataPlay = null;
     window.__mediaPlayCalls = [];
     Object.defineProperties(HTMLMediaElement.prototype, {
       duration: { configurable: true, get: () => mediaReady ? 69.218005 : NaN },
@@ -54,6 +173,11 @@ let browser;
         window.__rejectNextPlay = false;
         throw new Error('Controlled BGM playback failure');
       }
+      if (!mediaReady) {
+        await new Promise((resolvePlay, rejectPlay) => {
+          pendingMetadataPlay = { resolvePlay, rejectPlay };
+        });
+      }
       if (window.__deferNextPlay) {
         window.__deferNextPlay = false;
         await new Promise((resolve) => { window.__resolveMediaPlay = resolve; });
@@ -61,11 +185,21 @@ let browser;
       this.__paused = false;
     };
     HTMLMediaElement.prototype.pause = function pause() { this.__paused = true; };
-    HTMLMediaElement.prototype.load = function load() { mediaError = null; };
+    HTMLMediaElement.prototype.load = function load() {
+      if (pendingMetadataPlay) {
+        pendingMetadataPlay.rejectPlay(new DOMException('Playback interrupted by load()', 'AbortError'));
+        pendingMetadataPlay = null;
+      }
+      mediaError = null;
+    };
     window.__setMediaTime = (value) => { mediaTime = value; };
     window.__setMediaReady = () => {
       mediaReady = true;
       mediaError = null;
+      if (pendingMetadataPlay) {
+        pendingMetadataPlay.resolvePlay();
+        pendingMetadataPlay = null;
+      }
       document.querySelector('#gameBgm').dispatchEvent(new Event('loadedmetadata'));
     };
     window.__failMediaLoad = () => {
@@ -135,7 +269,7 @@ let browser;
   const hud = page.locator('#rhythmProgressHud');
   const startHidden = await hud.isHidden();
   await page.locator('#startButton').click();
-  await page.waitForTimeout(40);
+  await page.locator('#countdown').waitFor({ state: 'visible' });
   const countdown = await page.evaluate(() => ({
     hudHidden: document.querySelector('#rhythmProgressHud').hidden,
     progress: document.querySelector('#musicProgress').getAttribute('aria-valuenow'),
@@ -144,14 +278,14 @@ let browser;
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hud-countdown.png') });
 
   await page.evaluate(() => window.__setFakeAudioTime(3.05));
-  await page.waitForTimeout(40);
+  await nextRenderFrame(page);
 
   await page.evaluate(() => window.__setMediaTime(1.3843601));
-  await page.waitForTimeout(40);
+  await nextRenderFrame(page);
   assert.equal(await page.locator('#musicProgress').getAttribute('aria-valuenow'), '2',
     'music progress must come from BGM currentTime / 69.218005');
   await page.evaluate(() => window.__setFakeAudioTime(13.05));
-  await page.waitForTimeout(40);
+  await nextRenderFrame(page);
   assert.equal(await page.locator('#musicProgress').getAttribute('aria-valuenow'), '2',
     'advancing SFX time must not advance the song');
   const playbackStart = await page.evaluate(() => ({
@@ -166,9 +300,7 @@ let browser;
   const hitTimes = await page.evaluate(() => window.RhythmGameChart.NOTES.map((note) => note.hitTime));
   assert.equal(hitTimes.length, 80);
   for (let index = 0; index < 56; index += 1) {
-    await page.evaluate((time) => window.__setMediaTime(time), hitTimes[index]);
-    await page.waitForTimeout(50);
-    await page.keyboard.press('Space');
+    await hitChartNote(page, hitTimes[index], index);
   }
   await page.waitForFunction(() => document.querySelector('#musicProgress').getAttribute('aria-valuenow') === '62');
 
@@ -195,7 +327,11 @@ let browser;
     return window.__attackCount;
   });
   await page.locator('#pauseButton').click();
-  await page.waitForTimeout(30);
+  await page.waitForFunction(() => (
+    document.querySelector('#gameBgm').paused
+    && window.__getFakeAudioState() === 'suspended'
+    && !document.querySelector('#pauseOverlay').hidden
+  ));
   const pausedBeforeInput = await page.evaluate(() => ({
     pressed: document.querySelector('#pauseButton').getAttribute('aria-pressed'),
     overlayVisible: !document.querySelector('#pauseOverlay').hidden,
@@ -205,13 +341,17 @@ let browser;
   }));
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hud-paused.png') });
   await page.keyboard.press('Space');
-  await page.waitForTimeout(20);
+  await nextRenderFrame(page);
   const pausedAfterInput = await page.evaluate(() => ({
     attackCount: window.__attackCount,
     scoreText: document.querySelector('#scoreValue').textContent,
   }));
   await page.locator('#resumeButton').click();
-  await page.waitForTimeout(30);
+  await page.waitForFunction(() => (
+    !document.querySelector('#gameBgm').paused
+    && window.__getFakeAudioState() === 'running'
+    && document.querySelector('#pauseOverlay').hidden
+  ));
   const resumed = await page.evaluate(() => ({
     pressed: document.querySelector('#pauseButton').getAttribute('aria-pressed'),
     overlayHidden: document.querySelector('#pauseOverlay').hidden,
@@ -261,14 +401,12 @@ let browser;
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hud-658x383.png') });
 
   for (let index = 56; index < 80; index += 1) {
-    await page.evaluate((time) => window.__setMediaTime(time), hitTimes[index]);
-    await page.waitForTimeout(50);
-    await page.keyboard.press('Space');
+    await hitChartNote(page, hitTimes[index], index);
   }
   const finalStarCount = await page.locator('[data-rating-star].is-earned').count();
 
   await page.evaluate(() => window.__setMediaTime(69.218005));
-  await page.waitForTimeout(40);
+  await nextRenderFrame(page);
   assert.equal(await page.locator('#resultOverlay').isHidden(), true,
     'completion must wait for the media ended event');
   await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('ended')));
@@ -286,7 +424,7 @@ let browser;
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hud-result.png') });
 
   await page.locator('#restartButton').click();
-  await page.waitForTimeout(40);
+  await page.locator('#countdown').waitFor({ state: 'visible' });
   const restart = await page.evaluate(() => ({
     hudHidden: document.querySelector('#rhythmProgressHud').hidden,
     progress: document.querySelector('#musicProgress').getAttribute('aria-valuenow'),
@@ -309,7 +447,9 @@ let browser;
     retryEnabled: true, buttonText: 'RETRY', mediaPaused: true, mediaTime: 0,
   });
   await page.locator('#startButton').click();
-  await page.waitForTimeout(30);
+  await nextRenderFrame(page);
+  assert.equal(await page.locator('#startButton').isDisabled(), true,
+    'first retry must remain arming while its unlock awaits delayed metadata');
   assert.equal(await page.locator('#countdown').isHidden(), true,
     'retry must await metadata rather than begin countdown early');
   await page.evaluate(() => window.__setMediaReady());
@@ -343,7 +483,7 @@ let browser;
     window.__setFakeAudioTime(12);
     window.__setMediaTime(4.981);
   });
-  await page.waitForTimeout(80);
+  await nextRenderFrame(page);
   await page.keyboard.press('Space');
   assert.equal(await page.locator('#scoreValue').textContent(), '0',
     'input must remain blocked until BGM play resolves');
@@ -351,12 +491,13 @@ let browser;
   assert.equal(await page.evaluate(() => window.__mediaPlayCalls.length), callsBeforePlaying,
     'pending BGM play must not be reissued by subsequent animation frames');
   await page.evaluate(() => window.__resolveMediaPlay());
-  await page.waitForTimeout(40);
+  await nextRenderFrame(page);
   await page.keyboard.press('Space');
   assert.equal(await page.locator('#scoreValue').textContent(), '100');
   const audioRecovery = {
     initialReadiness, loadFailure, playFailure, callsBeforePlaying, expectedAudioErrors,
   };
+  const realRecovery = await realDelayedAudioRecovery(browser);
 
   const report = {
     targetUrl,
@@ -375,6 +516,7 @@ let browser;
     result,
     restart,
     audioRecovery,
+    realRecovery,
     consoleErrors,
     pageErrors,
   };

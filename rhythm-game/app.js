@@ -434,10 +434,12 @@
     try {
       // A failed load needs a fresh media load before readiness can be retried.
       if (bgmClock.media.error) bgmClock.media.load();
+      // Start metadata loading before unlock: a later load() cancels pending play.
+      const readyPromise = bgmClock.whenReady();
       const unlockPromise = bgmClock.unlock();
       status = 'arming';
       elements.startButton.disabled = true;
-      await Promise.all([unlockPromise, bgmClock.whenReady(), createSfxContext()]);
+      await Promise.all([readyPromise, unlockPromise, createSfxContext()]);
     } catch (error) {
       showAudioLoadError(error);
       return;
