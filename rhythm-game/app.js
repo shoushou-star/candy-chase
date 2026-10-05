@@ -76,6 +76,9 @@
   let characterVersion = 0;
   let judgementVersion = 0;
   let pausedFromStatus = null;
+  let isInputHeld = false;
+  let heldSource = null;
+  let activeHold = null;
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -229,15 +232,37 @@
     oscillator.stop(when + duration + 0.02);
   }
 
-  function fireAttack(strength) {
+  function fireAttack(strength, phase = 'burst') {
+    if (status !== 'playing') return;
     window.dispatchEvent(new CustomEvent('rhythmgame:attack', {
-      detail: { strength },
+      detail: { strength, phase },
     }));
   }
 
+  function resetInput() {
+    isInputHeld = false;
+    heldSource = null;
+    activeHold = null;
+    window.dispatchEvent(new CustomEvent('rhythmgame:reset'));
+  }
+
   function createNoteElement(note) {
+    if (note.type === 'hold') {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 2048 1152');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.classList.add('hold-note-tail-layer');
+      svg.dataset.noteId = String(note.id);
+      const tail = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      tail.setAttribute('d', elements.path.getAttribute('d'));
+      tail.classList.add('hold-note-tail');
+      svg.appendChild(tail);
+      elements.notes.appendChild(svg);
+      note.tailElement = svg;
+    }
     const image = document.createElement('img');
     image.className = `note note-${note.type}`;
+    image.dataset.noteId = String(note.id);
     image.alt = '';
     image.draggable = false;
     image.src = CANDY_SOURCES[note.type];
@@ -253,6 +278,10 @@
   }
 
   function removeNote(note) {
+    if (note.tailElement) {
+      note.tailElement.remove();
+      note.tailElement = null;
+    }
     if (note.element) {
       note.element.remove();
       note.element = null;
@@ -284,10 +313,12 @@
       if (note.state === 'queued' && gameTime >= note.spawnTime) {
         createNoteElement(note);
       }
-      if (note.state !== 'active' || !note.element) continue;
+      if (!['active', 'holding'].includes(note.state) || !note.element) continue;
 
-      const progress = Core.travelProgress(note, gameTime, Chart.META.travelTimeSeconds);
-      const point = pointForNote(note, gameTime, progress);
+      const progress = note.state === 'holding' ? 1
+        : Core.travelProgress(note, gameTime, Chart.META.travelTimeSeconds);
+      const point = note.state === 'holding' ? elements.path.getPointAtLength(pathLength)
+        : pointForNote(note, gameTime, progress);
       note.element.dataset.progress = progress.toFixed(4);
       if (note.type === 'speed' && gameTime >= note.accelerationAt && !note.didAccelerate) {
         note.didAccelerate = true;
@@ -299,13 +330,27 @@
       note.element.style.left = `${(point.x / DESIGN.width) * 100}%`;
       note.element.style.top = `${(point.y / DESIGN.height) * 100}%`;
       note.element.style.transform = `scale(${grow})`;
+      if (note.tailElement) {
+        const remaining = note.state === 'holding'
+          ? clamp((note.holdEndTime - gameTime) / (note.holdEndTime - note.hitTime), 0, 1)
+          : 1;
+        const headLength = pathLength * progress;
+        const tailLength = Math.min(headLength,
+          pathLength * (note.holdEndTime - note.hitTime) / Chart.META.travelTimeSeconds * remaining);
+        const tail = note.tailElement.firstElementChild;
+        tail.setAttribute('stroke-dasharray', `${tailLength} ${pathLength}`);
+        tail.setAttribute('stroke-dashoffset', String(-(headLength - tailLength)));
+      }
     }
   }
 
-  function resolveNote(note, judgement) {
+  function finishNote(note, result) {
+    if (note.state === 'hit' || note.state === 'missed') return;
+    const { judgement } = result;
     note.state = judgement === 'miss' ? 'missed' : 'hit';
     removeNote(note);
-    scoreState = Core.applyJudgement(scoreState, judgement);
+    scoreState = Core.applyNoteResult(scoreState, result);
+    if (activeHold === note) activeHold = null;
     renderHud();
     showJudgement(judgement);
 
@@ -317,8 +362,30 @@
     }
   }
 
-  function handleHitInput() {
-    if (status !== 'playing') return;
+  function inputJudgement(gameTime, targetTime) {
+    // Keep inclusive millisecond boundaries stable after subtracting media timestamps.
+    const offsetMs = Math.round((gameTime - targetTime) * 1e9) / 1e6;
+    return Core.judgeOffsetMs(offsetMs);
+  }
+
+  function judgementOrMiss(gameTime, targetTime) {
+    const judgement = inputJudgement(gameTime, targetTime);
+    return judgement === 'none' ? 'miss' : judgement;
+  }
+
+  function singleNoteResult(judgement) {
+    return {
+      judgement,
+      points: judgement === 'perfect' ? Core.CONFIG.perfectScore
+        : judgement === 'good' ? Core.CONFIG.goodScore : 0,
+      maxPoints: 100,
+    };
+  }
+
+  function handlePressInput(source) {
+    if (status !== 'playing' || isInputHeld || activeHold) return;
+    isInputHeld = true;
+    heldSource = source;
     const gameTime = bgmClock.currentTime;
     let candidate = null;
     let smallestDifference = Infinity;
@@ -336,20 +403,50 @@
       fireAttack('weak');
       return;
     }
-    const judgement = Core.judgeOffsetMs((gameTime - candidate.hitTime) * 1000);
+    const judgement = inputJudgement(gameTime, candidate.hitTime);
     if (judgement === 'none') {
       fireAttack('weak');
       return;
     }
-    fireAttack(judgement);
-    resolveNote(candidate, judgement);
+    if (candidate.type === 'hold') {
+      candidate.startJudgement = judgement;
+      candidate.state = 'holding';
+      candidate.element.classList.add('is-holding');
+      activeHold = candidate;
+      setCharacter('hit');
+      fireAttack(judgement, 'hold-start');
+      renderNotes(gameTime);
+    } else {
+      fireAttack(judgement);
+      finishNote(candidate, singleNoteResult(judgement));
+    }
+  }
+
+  function finishHold(endJudgement) {
+    const note = activeHold;
+    if (!note) return;
+    fireAttack(endJudgement, 'hold-end');
+    finishNote(note, Core.combineHoldJudgements(note.startJudgement, endJudgement));
+  }
+
+  function handleReleaseInput(source, cancelled = false) {
+    if (!isInputHeld || heldSource !== source) return;
+    isInputHeld = false;
+    heldSource = null;
+    if (status !== 'playing' || !activeHold) return;
+    const endJudgement = cancelled ? 'miss'
+      : judgementOrMiss(bgmClock.currentTime, activeHold.holdEndTime);
+    finishHold(endJudgement);
   }
 
   function expireMissedNotes(gameTime) {
     const lateWindow = Core.CONFIG.goodWindowMs / 1000;
     for (const note of notes) {
       if (note.state === 'active' && gameTime > note.hitTime + lateWindow) {
-        resolveNote(note, 'miss');
+        finishNote(note, note.type === 'hold'
+          ? Core.combineHoldJudgements('miss', 'miss') : singleNoteResult('miss'));
+      } else if (note.state === 'holding' && gameTime > note.holdEndTime + lateWindow) {
+        finishHold('miss');
       }
     }
   }
@@ -358,6 +455,7 @@
     if (status !== 'playing' && status !== 'paused') return;
     status = 'result';
     pausedFromStatus = null;
+    resetInput();
     const completionDetail = Core.buildCompletionDetail(scoreState, notes.length, chartMaxScore);
     bgmClock.pause();
     clearNotes();
@@ -412,6 +510,7 @@
   function showAudioLoadError(error) {
     status = 'idle';
     pausedFromStatus = null;
+    resetInput();
     bgmClock.reset();
     clearNotes();
     elements.countdown.hidden = true;
@@ -452,6 +551,7 @@
       return;
     }
     elements.audioLoadError.hidden = true;
+    resetInput();
     clearNotes();
     resetScore();
     prepareNotes();
@@ -496,15 +596,30 @@
     if (event.code !== 'Space') return;
     event.preventDefault();
     if (event.repeat) return;
-    handleHitInput();
+    handlePressInput('keyboard');
+  });
+
+  window.addEventListener('keyup', (event) => {
+    if (event.code !== 'Space') return;
+    event.preventDefault();
+    handleReleaseInput('keyboard');
   });
 
   elements.stage.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || event.target.closest('button')) return;
-    handleHitInput();
+    handlePressInput(`pointer:${event.pointerId}`);
+  });
+
+  window.addEventListener('pointerup', (event) => {
+    handleReleaseInput(`pointer:${event.pointerId}`);
+  });
+
+  window.addEventListener('pointercancel', (event) => {
+    handleReleaseInput(`pointer:${event.pointerId}`, true);
   });
 
   window.addEventListener('pagehide', () => {
+    resetInput();
     bgmClock.pause();
     window.cancelAnimationFrame(animationFrame);
   });

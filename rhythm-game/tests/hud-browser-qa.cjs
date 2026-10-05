@@ -18,13 +18,18 @@ async function nextRenderFrame(page) {
   }));
 }
 
-async function hitChartNote(page, hitTime, hitIndex) {
-  await page.evaluate((time) => window.__setMediaTime(time), hitTime);
+async function hitChartNote(page, note, expectedScore) {
+  await page.evaluate((time) => window.__setMediaTime(time), note.hitTime);
   await nextRenderFrame(page);
-  await page.keyboard.press('Space');
+  await page.keyboard.down('Space');
+  if (note.type === 'hold') {
+    await page.evaluate((time) => window.__setMediaTime(time), note.holdEndTime);
+    await nextRenderFrame(page);
+  }
+  await page.keyboard.up('Space');
   await page.waitForFunction((expectedScore) => (
     Number(document.querySelector('#scoreValue').textContent.replaceAll(',', '')) === expectedScore
-  ), (hitIndex + 1) * 100, { polling: 'raf', timeout: 1500 });
+  ), expectedScore, { polling: 'raf', timeout: 1500 });
 }
 
 async function realDelayedAudioRecovery(browserInstance) {
@@ -297,12 +302,14 @@ async function realDelayedAudioRecovery(browserInstance) {
     { muted: true, time: 0, sfxTime: 0 },
     { muted: false, time: 0, sfxTime: 3.05 },
   ], 'unlock must precede countdown and audible playback must start once afterward');
-  const hitTimes = await page.evaluate(() => window.RhythmGameChart.NOTES.map((note) => note.hitTime));
-  assert.equal(hitTimes.length, 80);
+  const chartNotes = await page.evaluate(() => window.RhythmGameChart.NOTES);
+  assert.equal(chartNotes.length, 80);
+  let expectedScore = 0;
   for (let index = 0; index < 56; index += 1) {
-    await hitChartNote(page, hitTimes[index], index);
+    expectedScore += chartNotes[index].type === 'hold' ? 200 : 100;
+    await hitChartNote(page, chartNotes[index], expectedScore);
   }
-  await page.waitForFunction(() => document.querySelector('#musicProgress').getAttribute('aria-valuenow') === '62');
+  await page.waitForFunction(() => document.querySelector('#musicProgress').getAttribute('aria-valuenow') === '63');
 
   const active = await page.evaluate(() => {
     const stage = document.querySelector('#gameStage').getBoundingClientRect();
@@ -401,7 +408,8 @@ async function realDelayedAudioRecovery(browserInstance) {
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hud-658x383.png') });
 
   for (let index = 56; index < 80; index += 1) {
-    await hitChartNote(page, hitTimes[index], index);
+    expectedScore += chartNotes[index].type === 'hold' ? 200 : 100;
+    await hitChartNote(page, chartNotes[index], expectedScore);
   }
   const finalStarCount = await page.locator('[data-rating-star].is-earned').count();
 
@@ -531,7 +539,7 @@ async function realDelayedAudioRecovery(browserInstance) {
   if (!startHidden) process.exitCode = 1;
   if (!Object.values(topHud).every(Boolean)) process.exitCode = 1;
   if (countdown.hudHidden || countdown.progress !== '0' || countdown.earnedStars !== 0) process.exitCode = 1;
-  if (active.progress !== 62 || active.earnedStars !== 3 || active.scoreText !== '5,600') process.exitCode = 1;
+  if (active.progress !== 63 || active.earnedStars !== 3 || active.scoreText !== '5,700') process.exitCode = 1;
   if (active.pointerEvents !== 'none') process.exitCode = 1;
   if (!/^\d{1,3}(,\d{3})+$/.test(active.scoreText)) process.exitCode = 1;
   if (pausedBeforeInput.pressed !== 'true' || !pausedBeforeInput.overlayVisible || pausedBeforeInput.audioState !== 'suspended' || !pausedBeforeInput.mediaPaused) process.exitCode = 1;
@@ -561,8 +569,7 @@ async function realDelayedAudioRecovery(browserInstance) {
   if (comboVerticalCenterDelta > 1) process.exitCode = 1;
   if (small.comboLabelRightRadius <= 0) process.exitCode = 1;
   if (small.comboValueZ <= small.comboLabelZ) process.exitCode = 1;
-  // Holds retain their future 200-point denominator; Task 7 adds endpoint scoring.
-  if (finalStarCount !== 4) process.exitCode = 1;
+  if (finalStarCount !== 5) process.exitCode = 1;
   if (!result.resultVisible || !result.hudHidden || result.completionDetails.length !== 1) process.exitCode = 1;
   if (!detail || ![
     'finalScore',
@@ -577,8 +584,8 @@ async function realDelayedAudioRecovery(browserInstance) {
     'judgedNotes',
   ].every((key) => key in detail)) process.exitCode = 1;
   assert.deepEqual(detail, {
-    finalScore: 8000, maxCombo: 80, perfect: 80, good: 0, miss: 0,
-    accuracy: 100, repairPercent: 86.96, starRating: 4, totalNotes: 80, judgedNotes: 80,
+    finalScore: 9200, maxCombo: 80, perfect: 80, good: 0, miss: 0,
+    accuracy: 100, repairPercent: 100, starRating: 5, totalNotes: 80, judgedNotes: 80,
   });
   if (restart.hudHidden || restart.progress !== '0' || restart.earnedStars !== 0) process.exitCode = 1;
   assert.deepEqual(expectedAudioErrors.map((message) => message.split('\n')[0]), [

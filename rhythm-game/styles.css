@@ -221,6 +221,7 @@ img {
 
 .note {
   position: absolute;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 8.2%;
@@ -231,6 +232,25 @@ img {
     drop-shadow(0 0 10px rgba(255, 255, 255, 0.86))
     drop-shadow(0 0 22px rgba(110, 210, 255, 0.62));
   will-change: transform, left, top, opacity;
+}
+
+.hold-note-tail-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hold-note-tail {
+  fill: none;
+  stroke: rgba(116, 226, 255, 0.86);
+  stroke-width: 22;
+  stroke-linecap: round;
+  filter: blur(2px) drop-shadow(0 0 12px #7c8dff) drop-shadow(0 0 22px #52e7ff);
+  pointer-events: none;
 }
 
 .note-fallback {

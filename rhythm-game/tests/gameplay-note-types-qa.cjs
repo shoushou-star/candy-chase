@@ -9,6 +9,51 @@ const outputDir = resolve(projectDir, '..', 'docs', 'qa');
 const targetUrl = `${pathToFileURL(resolve(projectDir, 'index.html')).href}?qa=note-types`;
 let browser;
 
+async function nextFrame(page) {
+  await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+}
+
+async function setTime(page, time) {
+  await page.evaluate((value) => window.__setMediaTime(value), time);
+  await nextFrame(page);
+}
+
+async function restartRound(page) {
+  await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('ended')));
+  await page.locator('#restartButton').click();
+  await page.locator('#countdown').waitFor({ state: 'visible' });
+  await page.evaluate(() => window.__advanceSfxTime(3.05));
+  await page.waitForFunction(() => document.querySelector('#countdown').hidden
+    && !document.querySelector('#gameBgm').paused);
+  await page.evaluate(() => { window.__attacks.length = 0; });
+}
+
+async function holdState(page) {
+  return page.evaluate(() => {
+    const head = document.querySelector(`.note-hold[data-note-id="${window.__holdId}"]`);
+    const tail = document.querySelector(`.hold-note-tail-layer[data-note-id="${window.__holdId}"] .hold-note-tail`);
+    const canvas = document.querySelector('.magic-attack-stage');
+    const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    let litPixels = 0;
+    for (let index = 3; index < pixels.length; index += 4) if (pixels[index] > 0) litPixels += 1;
+    return {
+      score: Number(document.querySelector('#scoreValue').textContent.replaceAll(',', '')),
+      combo: Number(document.querySelector('#comboValue').textContent),
+      holding: Boolean(head?.classList.contains('is-holding')),
+      sustained: canvas.classList.contains('is-holding'),
+      tailLength: tail ? Number(tail.getAttribute('stroke-dasharray').split(' ')[0]) : null,
+      tailOffset: tail ? Number(tail.getAttribute('stroke-dashoffset')) : null,
+      litPixels,
+      attacks: window.__attacks.map((detail) => ({ ...detail })),
+    };
+  });
+}
+
+async function finishRound(page) {
+  await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('ended')));
+  return page.evaluate(() => window.__completions.at(-1));
+}
+
 async function sampleAt(page, time, selector, expectedProgress) {
   await page.evaluate((value) => window.__setMediaTime(value), time);
   await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
@@ -40,8 +85,12 @@ async function sampleAt(page, time, selector, expectedProgress) {
   });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   const errors = [];
+  const expectedAudioErrors = [];
+  let injectingAudioError = false;
   page.on('pageerror', (error) => errors.push(error.message));
-  page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('console', (message) => {
+    if (message.type() === 'error') (injectingAudioError ? expectedAudioErrors : errors).push(message.text());
+  });
   // Only audio clocks are controlled; the chart, renderer, assets and SVG geometry are real.
   await page.addInitScript(() => {
     let mediaTime = 0;
@@ -56,6 +105,11 @@ async function sampleAt(page, time, selector, expectedProgress) {
     HTMLMediaElement.prototype.pause = function pause() { this.__paused = true; };
     window.__setMediaTime = (value) => { mediaTime = value; };
     window.__setSfxTime = (value) => { sfxTime = value; };
+    window.__advanceSfxTime = (value) => { sfxTime += value; };
+    window.__attacks = [];
+    window.__completions = [];
+    window.addEventListener('rhythmgame:attack', (event) => window.__attacks.push(event.detail));
+    window.addEventListener('rhythmgame:complete', (event) => window.__completions.push(event.detail));
     class AudioNode {
       constructor() { this.frequency = this.gain = { setValueAtTime() {}, exponentialRampToValueAtTime() {} }; }
       connect(target) { return target; }
@@ -82,6 +136,7 @@ async function sampleAt(page, time, selector, expectedProgress) {
     normal: window.RhythmGameChart.NOTES.find((note) => note.type === 'normal'),
     speed: window.RhythmGameChart.NOTES.find((note) => note.type === 'speed'),
     hold: window.RhythmGameChart.NOTES.find((note) => note.type === 'hold'),
+    beforeHold: window.RhythmGameChart.NOTES[54],
   }));
   // Breaks caught: ID-based colors, linear speed motion, drifting centers, and repeated flashes.
   await page.evaluate((time) => window.__setMediaTime(time), definitions.normal.spawnTime + 0.5);
@@ -129,8 +184,221 @@ async function sampleAt(page, time, selector, expectedProgress) {
   const hold = await sampleAt(page, definitions.hold.spawnTime + 0.5, '.note-hold', 0.25);
   assert.match(hold.src, /candy-blue\.png$/);
   await page.screenshot({ path: resolve(outputDir, 'rhythm-game-note-types-small.png') });
+  await page.setViewportSize({ width: 1920, height: 1080 });
+
+  // Breaks caught: scoring the press, duplicate results, ignoring release offsets,
+  // detached tails, expiring held heads at the start, and raw-input effect ownership.
+  const firstHold = definitions.hold;
+  await page.evaluate((id) => { window.__holdId = id; }, firstHold.id);
+  const holdScenarios = [];
+  for (const scenario of [
+    { name: 'PP', press: 0, release: 0, points: 200, judgement: 'perfect' },
+    { name: 'PG', press: 0, release: 0.15, points: 150, judgement: 'good' },
+    { name: 'GG', press: -0.15, release: 0.15, points: 100, judgement: 'good' },
+    { name: 'early-Perfect-boundary', press: -0.1, release: -0.1, points: 200, judgement: 'perfect', strength: 'perfect' },
+    { name: 'late-Perfect-boundary', press: 0.1, release: 0.1, points: 200, judgement: 'perfect', strength: 'perfect' },
+    { name: 'early-Good-boundary', press: -0.2, release: -0.2, points: 100, judgement: 'good', strength: 'good' },
+    { name: 'late-Good-boundary', press: 0.2, release: 0.2, points: 100, judgement: 'good', strength: 'good' },
+    { name: 'late-release-Miss', press: 0, release: 0.25, points: 100, judgement: 'miss' },
+    { name: 'early-release-Miss', press: 0, release: -0.25, points: 100, judgement: 'miss' },
+    { name: 'Good-start-Miss-end', press: 0.15, release: -0.25, points: 50, judgement: 'miss' },
+  ]) {
+    await restartRound(page);
+    await setTime(page, firstHold.hitTime + scenario.press);
+    const beforePress = await holdState(page);
+    assert.equal(beforePress.score, 0);
+    await page.keyboard.down('Space');
+    await nextFrame(page);
+    const pressed = await holdState(page);
+    assert.equal(pressed.score, 0, `${scenario.name}: press must not score a completed note`);
+    assert.equal(pressed.combo, 0, `${scenario.name}: press must not increment combo`);
+    assert.equal(pressed.holding, true);
+    assert.equal(pressed.sustained, true);
+    assert.deepEqual(pressed.attacks, [{ strength: scenario.strength || (scenario.press ? 'good' : 'perfect'), phase: 'hold-start' }]);
+    const geometry = await page.locator('.hold-note-tail').first().evaluate((tail) => ({
+      d: tail.getAttribute('d'), viewBox: tail.parentElement.getAttribute('viewBox'),
+      reference: document.querySelector('#travelPath').getAttribute('d'),
+      pointerEvents: getComputedStyle(tail).pointerEvents,
+    }));
+    assert.equal(geometry.d, geometry.reference, 'tail must clone the exact approved track');
+    assert.equal(geometry.viewBox, '0 0 2048 1152');
+    assert.equal(geometry.pointerEvents, 'none');
+    await page.keyboard.down('Space');
+    await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 99 })));
+    assert.deepEqual((await holdState(page)).attacks, pressed.attacks,
+      'repeat press and another source release must not complete the hold');
+
+    if (scenario.name === 'PP') {
+      await sampleAt(page, firstHold.hitTime + 0.4992, '.note-hold', 1);
+      const midpoint = await holdState(page);
+      assert.equal(midpoint.score, 0);
+      assert.equal(midpoint.holding, true);
+      assert.ok(midpoint.tailLength > 0 && midpoint.tailLength < pressed.tailLength);
+      const length = await page.locator('#travelPath').evaluate((path) => path.getTotalLength());
+      assert.ok(Math.abs(midpoint.tailLength - length * 0.2496) < 0.001,
+        'half-duration tail is half the hold duration projected onto the exact path');
+      assert.ok(Math.abs(-midpoint.tailOffset + midpoint.tailLength - length) < 0.001,
+        'remaining tail must end exactly at the pinned head');
+      await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hold-sustained.png') });
+      await page.setViewportSize({ width: 658, height: 383 });
+      await sampleAt(page, firstHold.hitTime + 0.4992, '.note-hold', 1);
+      await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hold-sustained-small.png') });
+      await page.setViewportSize({ width: 1920, height: 1080 });
+      // A sustained connection must survive the original 920ms burst lifetime.
+      await page.waitForTimeout(1050);
+      assert.ok((await holdState(page)).litPixels > 0, 'held magic connection must stay visible');
+    }
+    await setTime(page, firstHold.holdEndTime + scenario.release);
+    await page.keyboard.up('Space');
+    await nextFrame(page);
+    const released = await holdState(page);
+    assert.equal(released.score, scenario.points);
+    assert.equal(released.combo, scenario.judgement === 'miss' ? 0 : 1);
+    assert.equal(released.holding, false);
+    assert.equal(released.sustained, false);
+    assert.equal(released.tailLength, null);
+    assert.equal(released.litPixels, 0, 'release must clear the sustained connection');
+    assert.equal(released.attacks.length, 2);
+    assert.equal(released.attacks[1].phase, 'hold-end');
+    assert.equal(released.attacks[1].strength, scenario.judgement === 'miss' ? 'miss'
+      : scenario.strength || (scenario.release ? 'good' : 'perfect'));
+    await page.keyboard.up('Space');
+    await nextFrame(page);
+    assert.deepEqual(await holdState(page), released, 'duplicate release must not score or attack again');
+    const result = await finishRound(page);
+    assert.equal(result.finalScore, scenario.points);
+    assert.equal(result.perfect, scenario.judgement === 'perfect' ? 1 : 0);
+    assert.equal(result.good, scenario.judgement === 'good' ? 1 : 0);
+    assert.equal(result.miss, firstHold.id + (scenario.judgement === 'miss' ? 1 : 0));
+    assert.equal(result.judgedNotes, firstHold.id + 1, 'one completed hold is one judged note');
+    holdScenarios.push({ ...scenario, pressed, released, result });
+  }
+
+  await restartRound(page);
+  await page.setViewportSize({ width: 1920, height: 1200 });
+  const pointerStage = await page.locator('#gameStage').boundingBox();
+  assert.ok(pointerStage.y > 5, 'pointer release coordinate must be outside the letterboxed stage');
+  await setTime(page, firstHold.hitTime);
+  await page.mouse.move(1500, 850);
+  await page.mouse.down();
+  await setTime(page, firstHold.holdEndTime);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).score, 0, 'keyboard input cannot release a pointer-owned hold');
+  await page.mouse.move(5, 5);
+  await page.mouse.up();
+  await nextFrame(page);
+  assert.equal((await holdState(page)).score, 200, 'pointer release outside stage must finish a hold');
+  assert.equal((await holdState(page)).attacks.length, 2);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+
+  await restartRound(page);
+  await setTime(page, definitions.beforeHold.hitTime);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).combo, 1);
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  assert.equal((await holdState(page)).score, 100);
+  assert.equal((await holdState(page)).combo, 1, 'hold start must retain the existing combo');
+  await setTime(page, firstHold.holdEndTime - 0.25);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 200);
+  assert.equal((await holdState(page)).combo, 0, 'a missed hold release must reset an existing combo');
+  const comboReset = await finishRound(page);
+  assert.equal(comboReset.maxCombo, 1);
+  assert.equal(comboReset.perfect, 1);
+  assert.equal(comboReset.miss, 55);
+  assert.equal(comboReset.judgedNotes, 56);
+
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime);
+  await page.mouse.move(1500, 850);
+  await page.mouse.down();
+  await setTime(page, firstHold.holdEndTime);
+  await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1 })));
+  await page.mouse.up();
+  await nextFrame(page);
+  assert.equal((await holdState(page)).score, 100, 'pointer cancellation must miss the release endpoint');
+  assert.equal((await holdState(page)).combo, 0);
+
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  await setTime(page, firstHold.holdEndTime + 0.25);
+  const expiredHold = await holdState(page);
+  assert.equal(expiredHold.score, 100, 'unreleased hold must retain earned start points');
+  assert.equal(expiredHold.combo, 0);
+  assert.equal(expiredHold.sustained, false);
+  assert.equal(expiredHold.attacks.length, 2);
+  await page.keyboard.up('Space');
+  assert.deepEqual(await holdState(page), expiredHold, 'keyup after timeout must not repeat completion');
+
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime + 0.25);
+  assert.equal(await page.locator(`.note-hold[data-note-id="${firstHold.id}"]`).count(), 0,
+    'missed start must remove the head');
+  assert.equal(await page.locator(`.hold-note-tail-layer[data-note-id="${firstHold.id}"]`).count(), 0,
+    'missed start must remove the tail');
+  const missedStart = await finishRound(page);
+  assert.equal(missedStart.finalScore, 0);
+  assert.equal(missedStart.miss, firstHold.id + 1);
+  assert.equal(missedStart.accuracy, 0);
+
+  // Lifecycle cleanup must not create another attack after the game has stopped.
+  await restartRound(page);
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  await page.locator('#pauseButton').click();
+  await nextFrame(page);
+  const paused = await holdState(page);
+  assert.equal(paused.sustained, false);
+  assert.equal(paused.litPixels, 0);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).attacks.length, 1, 'paused release cannot fire an attack');
+  await finishRound(page);
+  const endedAttacks = (await holdState(page)).attacks.length;
+  await page.keyboard.press('Space');
+  await page.mouse.click(1500, 850);
+  assert.equal((await holdState(page)).attacks.length, endedAttacks);
+  await restartRound(page);
+  const restarted = await holdState(page);
+  assert.equal(restarted.score, 0);
+  assert.equal(restarted.sustained, false);
+  assert.equal(restarted.litPixels, 0);
+
+  await setTime(page, firstHold.hitTime);
+  await page.keyboard.down('Space');
+  injectingAudioError = true;
+  await page.evaluate(() => document.querySelector('#gameBgm').dispatchEvent(new Event('error')));
+  await page.locator('#audioLoadError').waitFor({ state: 'visible' });
+  await nextFrame(page);
+  const failedAudio = await holdState(page);
+  assert.equal(failedAudio.holding, false);
+  assert.equal(failedAudio.sustained, false);
+  assert.equal(failedAudio.tailLength, null);
+  assert.equal(failedAudio.litPixels, 0);
+  await page.keyboard.up('Space');
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).attacks.length, failedAudio.attacks.length,
+    'audio failure must clear input and suppress later attacks');
+  injectingAudioError = false;
+  assert.equal(expectedAudioErrors.length, 1);
+  assert.match(expectedAudioErrors[0], /BGM playback failed/);
+
+  await page.locator('#startButton').click();
+  await page.locator('#countdown').waitFor({ state: 'visible' });
+  await page.keyboard.press('Space');
+  await page.evaluate(() => window.__advanceSfxTime(3.05));
+  await page.waitForFunction(() => document.querySelector('#countdown').hidden
+    && !document.querySelector('#gameBgm').paused);
+  await setTime(page, definitions.normal.hitTime);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).score, 100, 'retry must reset a previously held input latch');
+
   assert.deepEqual(errors, [], 'browser must remain free of console and page errors');
-  process.stdout.write(`${JSON.stringify({ normalSamples, before, transition, after, arrived, hold, accelerationTransitions: 1, errors }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ normalSamples, before, transition, after, arrived, hold,
+    holdScenarios, comboReset, expiredHold, missedStart, paused, restarted, failedAudio,
+    expectedAudioErrors: expectedAudioErrors.map((message) => message.split('\n')[0]),
+    accelerationTransitions: 1, errors }, null, 2)}\n`);
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;
