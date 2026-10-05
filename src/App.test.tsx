@@ -60,9 +60,10 @@ describe("App", () => {
 
     await user.click(screen.getByRole("button", { name: "打开角色" }));
     await waitForTransition();
-    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
-    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
-    expect(screen.getByRole("button", { name: "已选择 RIFF" })).toHaveTextContent("SELECTED");
+    await user.click(screen.getByRole("button", { name: "确认选择 PIKO" }));
+    expect(screen.getByRole("button", { name: "已选择 PIKO" })).toHaveTextContent("SELECTED");
+    expect(screen.getByRole("main", { name: "角色选择" })).toBeInTheDocument();
+    expect(screen.getByTestId("screen-transition")).toHaveAttribute("data-phase", "idle");
 
     await user.click(screen.getByRole("button", { name: "返回首页" }));
     await waitForTransition();
@@ -71,14 +72,14 @@ describe("App", () => {
     await waitForTransition();
 
     expect(screen.getByRole("main", { name: "游戏占位页" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "PIKO 已准备就绪" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "返回大厅" }));
     await waitForTransition();
     expect(screen.getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "开始游戏" }));
     await waitForTransition();
-    expect(screen.getByRole("heading", { name: "RIFF 已准备就绪" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "PIKO 已准备就绪" })).toBeInTheDocument();
   });
 
   it("routes PLAY to hero selection when no hero has been confirmed", async () => {
@@ -102,8 +103,7 @@ describe("App", () => {
     await waitForTransition();
     await user.click(screen.getByRole("button", { name: "打开角色" }));
     await waitForTransition();
-    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
-    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "确认选择 PIKO" }));
     await user.click(screen.getByRole("button", { name: "返回首页" }));
     await waitForTransition();
 
@@ -115,7 +115,92 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: "打开角色" }));
     await waitForTransition();
 
+    expect(screen.getByRole("button", { name: "选择 PIKO" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it.each(["NIBBY", "MIRA", "RIFF", "BONGO"])("keeps %s as the draft after unavailable SELECT and refuses PLAY without PIKO", async (name) => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: `选择 ${name}` }));
+    const select = screen.getByRole("button", { name: `确认选择 ${name}` });
+    await user.click(select);
+
+    const dialog = screen.getByRole("dialog", { name: "该角色暂未开发，请选择 PIKO 开始游戏" });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(within(dialog).getByRole("button", { name: "知道了" })).toHaveFocus();
+    await user.click(within(dialog).getByRole("button", { name: "知道了" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(select).toHaveFocus();
+    expect(screen.getByRole("button", { name: `选择 ${name}` })).toHaveAttribute("aria-pressed", "true");
+    expect(select).toBeEnabled();
+
+    await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    await waitForTransition();
+    expect(screen.getByRole("main", { name: "角色选择" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "选择 PIKO" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("preserves confirmed PIKO after another hero SELECT", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "确认选择 PIKO" }));
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    await user.click(screen.getByRole("button", { name: "确认选择 RIFF" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "确认选择 RIFF" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "选择 PIKO" }));
+    expect(screen.getByRole("button", { name: "已选择 PIKO" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "返回首页" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    await waitForTransition();
+    expect(screen.getByRole("heading", { name: "PIKO 已准备就绪" })).toBeInTheDocument();
+  });
+
+  it("traps focus and blocks background actions while the hero notice is open", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "CLICK TO START" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await waitForTransition();
+    await user.click(screen.getByRole("button", { name: "选择 RIFF" }));
+    const select = screen.getByRole("button", { name: "确认选择 RIFF" });
+    const back = screen.getByRole("button", { name: "返回首页" });
+    const piko = screen.getByRole("button", { name: "选择 PIKO" });
+    const store = screen.getByRole("button", { name: "打开金币商店" });
+    await user.click(select);
+    const dialog = screen.getByRole("dialog");
+    const close = within(dialog).getByRole("button", { name: "知道了" });
+    expect(screen.getByRole("main", { name: "角色选择" }).parentElement).toHaveAttribute("inert");
+    await user.tab();
+    expect(close).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(close).toHaveFocus();
+    await user.click(dialog);
+    expect(dialog).toBeInTheDocument();
+    await user.click(piko);
+    await user.click(store);
+    await user.click(select);
+    await user.click(back);
+    await waitForTransition();
+    expect(screen.getByRole("dialog", { name: "该角色暂未开发，请选择 PIKO 开始游戏" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "选择 RIFF" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("main", { name: "角色选择" })).toBeInTheDocument();
+    await user.click(dialog.parentElement!);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(select).toHaveFocus();
   });
 
   it("restarts the current hero video with sound after a user selection", async () => {

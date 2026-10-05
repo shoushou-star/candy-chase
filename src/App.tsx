@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { StageFrame } from "./components/StageFrame";
+import { HeroUnavailableDialog } from "./components/HeroUnavailableDialog";
 import { StoreUnavailableDialog } from "./components/StoreUnavailableDialog";
 import { ScreenTransition, useScreenTransition } from "./features/game-flow/ScreenTransition";
 import type { StartGameHandler } from "./features/game-flow/types";
@@ -30,7 +31,7 @@ export function App() {
   };
 
   function play() {
-    if (confirmedHeroId === null) {
+    if (confirmedHeroId !== "piko") {
       openHeroSelect();
       return;
     }
@@ -84,32 +85,45 @@ function IntegratedHeroSelect({
 }: IntegratedHeroSelectProps) {
   const [playbackRequestId, setPlaybackRequestId] = useState(0);
   const [isStoreNoticeOpen, setStoreNoticeOpen] = useState(false);
+  const [isHeroNoticeOpen, setHeroNoticeOpen] = useState(false);
   const storeNoticeTrigger = useRef<HTMLButtonElement>(null);
+  const heroNoticeTrigger = useRef<HTMLButtonElement>(null);
   const assetLoadState = useHeroAssets(HEROES);
+  const isNoticeOpen = isStoreNoticeOpen || isHeroNoticeOpen;
 
   function selectHero(heroId: HeroId) {
-    if (isStoreNoticeOpen) return;
+    if (isNoticeOpen) return;
     onSelectHero(heroId);
     setPlaybackRequestId((previous) => previous + 1);
   }
 
   function openStore(trigger: HTMLButtonElement) {
-    if (isStoreNoticeOpen) return;
+    if (isNoticeOpen) return;
     storeNoticeTrigger.current = trigger;
     setStoreNoticeOpen(true);
   }
 
+  function confirmPlayableHero(heroId: HeroId) {
+    if (isNoticeOpen) return;
+    if (heroId !== "piko") {
+      setHeroNoticeOpen(true);
+      return;
+    }
+    onConfirm(heroId);
+  }
+
   return (
     <>
-      <div inert={isStoreNoticeOpen}>
+      <div inert={isNoticeOpen}>
         <HeroSelectPage
           selectedHeroId={selectedHeroId}
           confirmedHeroId={confirmedHeroId}
           playbackRequestId={playbackRequestId}
           assetLoadState={assetLoadState}
           onSelectHero={selectHero}
-          onConfirm={onConfirm}
-          onBack={onBack}
+          confirmButtonRef={heroNoticeTrigger}
+          onConfirm={confirmPlayableHero}
+          onBack={() => { if (!isNoticeOpen) onBack(); }}
           onOpenStore={openStore}
         />
       </div>
@@ -117,6 +131,11 @@ function IntegratedHeroSelect({
         open={isStoreNoticeOpen}
         triggerRef={storeNoticeTrigger}
         onClose={() => setStoreNoticeOpen(false)}
+      />
+      <HeroUnavailableDialog
+        open={isHeroNoticeOpen}
+        triggerRef={heroNoticeTrigger}
+        onClose={() => setHeroNoticeOpen(false)}
       />
     </>
   );

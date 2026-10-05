@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type RefObject } from "react";
 import { GameButton } from "../../components/GameButton";
 import coinsIcon from "../../assets/figma/icon-coins.svg";
 import energyIcon from "../../assets/figma/icon-energy.svg";
@@ -15,6 +15,7 @@ import "../../styles/hero-select.css";
 export interface HeroSelectPageProps {
   selectedHeroId: HeroId;
   confirmedHeroId?: HeroId | null;
+  confirmButtonRef?: RefObject<HTMLButtonElement | null>;
   playbackRequestId: number;
   assetLoadState: HeroAssetState;
   onSelectHero: (heroId: HeroId) => void;
@@ -26,6 +27,7 @@ export interface HeroSelectPageProps {
 export function HeroSelectPage({
   selectedHeroId,
   confirmedHeroId = null,
+  confirmButtonRef,
   playbackRequestId,
   assetLoadState,
   onSelectHero,
@@ -85,6 +87,7 @@ export function HeroSelectPage({
         <CarouselArrow direction={-1} onClick={() => selectAdjacent(-1)} />
         <CarouselArrow direction={1} onClick={() => selectAdjacent(1)} />
         <GameButton
+          ref={confirmButtonRef}
           className="hero-select-page__confirm"
           aria-label={isSelectedConfirmed ? `已选择 ${selectedHero.displayName}` : `确认选择 ${selectedHero.displayName}`}
           disabled={currentStatus !== "ready" || selectedHero.disabled || isSelectedConfirmed}
