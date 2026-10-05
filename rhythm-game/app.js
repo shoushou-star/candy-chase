@@ -181,7 +181,11 @@
     if (elements.countdown.textContent === 'HOLD') elements.countdown.hidden = true;
   }
 
-  function settleCancelledPlayback() {
+  function settleCancelledPlayback(version) {
+    // A newer playback lifecycle owns both media and SFX while it is starting.
+    // Stale continuations may only restore a lifecycle that still wants silence.
+    if (version !== lifecycleVersion
+      && !['paused', 'reengaging', 'idle', 'result'].includes(status)) return;
     if (status !== 'playing') bgmClock.pause();
     if (['paused', 'reengaging', 'idle', 'result'].includes(status)) void suspendSfx();
   }
@@ -199,11 +203,11 @@
       ]);
     } catch (error) {
       if (version === lifecycleVersion) showAudioLoadError(error);
-      else settleCancelledPlayback();
+      else settleCancelledPlayback(version);
       return;
     }
     if (version !== lifecycleVersion || status !== 'resuming-audio') {
-      settleCancelledPlayback();
+      settleCancelledPlayback(version);
       return;
     }
     if (nextStatus === 'countdown') {
@@ -533,13 +537,12 @@
     finishNote(note, Core.combineHoldJudgements(note.startJudgement, endJudgement));
   }
 
-  function handleReleaseInput(source, cancelled = false) {
+  function handleReleaseInput(source) {
     if (!isInputHeld || heldSource !== source) return;
     isInputHeld = false;
     heldSource = null;
     if (status !== 'playing' || !activeHold) return;
-    const endJudgement = cancelled ? 'miss'
-      : judgementOrMiss(bgmClock.currentTime, activeHold.holdEndTime);
+    const endJudgement = judgementOrMiss(bgmClock.currentTime, activeHold.holdEndTime);
     finishHold(endJudgement);
   }
 
@@ -654,10 +657,10 @@
     try {
       await bgmClock.playFromStart();
       if (version === lifecycleVersion && status === 'starting-audio') status = 'playing';
-      else settleCancelledPlayback();
+      else settleCancelledPlayback(version);
     } catch (error) {
       if (version === lifecycleVersion) showAudioLoadError(error);
-      else settleCancelledPlayback();
+      else settleCancelledPlayback(version);
     }
   }
 
@@ -694,7 +697,7 @@
       return;
     }
     if (version !== lifecycleVersion || status !== 'arming') {
-      settleCancelledPlayback();
+      settleCancelledPlayback(version);
       return;
     }
     elements.audioLoadError.hidden = true;
@@ -756,8 +759,9 @@
     handleReleaseInput(`pointer:${event.pointerId}`);
   });
 
-  window.addEventListener('pointercancel', (event) => {
-    handleReleaseInput(`pointer:${event.pointerId}`, true);
+  window.addEventListener('pointercancel', () => {
+    clearInputLatch();
+    void pauseGame();
   });
 
   document.addEventListener('visibilitychange', () => {

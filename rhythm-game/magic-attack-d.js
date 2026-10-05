@@ -17,6 +17,7 @@
   let running = false;
   let animationFrame = 0;
   let sustained = null;
+  let finishFlash = null;
 
   function findHost() {
     return document.querySelector('.game-shell, .game-stage, #game, main') || document.body;
@@ -35,6 +36,7 @@
   function clearEffects() {
     shots.length = 0;
     sustained = null;
+    finishFlash = null;
     canvas?.classList.remove('is-holding');
     cancelAnimationFrame(animationFrame);
     animationFrame = 0;
@@ -277,6 +279,23 @@
     return elapsed < duration + 100;
   }
 
+  function drawFinishFlash(flash, now) {
+    const progress = (now - flash.startedAt) / 260;
+    if (progress >= 1) return false;
+    const alpha = 1 - progress;
+    const scale = Math.min(width / DESIGN_WIDTH, height / DESIGN_HEIGHT);
+    glowDot(flash.end.x, flash.end.y, 6 * scale, '#ffffff', alpha);
+    sparkle(flash.end.x, flash.end.y, 10 * scale, '#fff6bd', alpha, Math.PI / 4);
+    const count = reducedMotion ? 6 : 12;
+    for (let index = 0; index < count; index += 1) {
+      const angle = index / count * Math.PI * 2;
+      const radius = (12 + progress * 24) * scale;
+      glowDot(flash.end.x + Math.cos(angle) * radius,
+        flash.end.y + Math.sin(angle) * radius, 2.2 * scale, COLORS[index % COLORS.length], alpha);
+    }
+    return true;
+  }
+
   function frame(now) {
     animationFrame = 0;
     ctx.clearRect(0, 0, width, height);
@@ -300,7 +319,8 @@
         else glowDot(point.x, point.y, particle.size, particle.color, fade);
       }
     }
-    if (shots.length || sustained) animationFrame = requestAnimationFrame(frame);
+    if (finishFlash && !drawFinishFlash(finishFlash, now)) finishFlash = null;
+    if (shots.length || sustained || finishFlash) animationFrame = requestAnimationFrame(frame);
     else running = false;
   }
 
@@ -308,6 +328,11 @@
     const phase = event.detail?.phase || 'burst';
     if (phase === 'hold-end') {
       clearEffects();
+      if (event.detail?.strength !== 'perfect' && event.detail?.strength !== 'good') return;
+      finishFlash = { startedAt: performance.now(), end: locateEndpoints().end };
+      drawFinishFlash(finishFlash, finishFlash.startedAt);
+      running = true;
+      animationFrame = requestAnimationFrame(frame);
       return;
     }
     if (phase !== 'burst' && phase !== 'hold-start') return;

@@ -49,6 +49,17 @@ async function realDelayedAudioRecovery(browserInstance) {
   try {
     await nativePage.addInitScript(() => {
       const nativePlay = HTMLMediaElement.prototype.play;
+      const nativeSfxResume = AudioContext.prototype.resume;
+      window.__nativeResumeContinuations = [];
+      window.__nativeAttacks = [];
+      window.addEventListener('rhythmgame:attack', (event) => window.__nativeAttacks.push(event.detail));
+      AudioContext.prototype.resume = function resume(...args) {
+        const resumed = nativeSfxResume.apply(this, args);
+        if (!window.__holdNativeSfxResumes) return resumed;
+        return resumed.then(() => new Promise((resolveResume) => {
+          window.__nativeResumeContinuations.push(resolveResume);
+        }));
+      };
       window.__nativePlayAttempts = [];
       HTMLMediaElement.prototype.play = function play(...args) {
         const attempt = {
@@ -123,9 +134,50 @@ async function realDelayedAudioRecovery(browserInstance) {
     }));
     assert.equal(playback.duration, 69.218005);
     assert.ok(delayedAudioRequests > 0);
+    // Keep native media playback and SFX, but hold the app's resume continuations
+    // to exercise A -> blur -> B -> settle A -> settle B deterministically.
+    await nativePage.locator('#pauseButton').click();
+    await nativePage.evaluate(() => { window.__holdNativeSfxResumes = true; });
+    await nativePage.locator('#resumeButton').click();
+    await nativePage.waitForFunction(() => window.__nativeResumeContinuations.length === 1
+      && !document.querySelector('#gameBgm').paused);
+    await nativePage.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await nativePage.locator('#pauseOverlay').waitFor({ state: 'visible' });
+    await nativePage.locator('#resumeButton').click();
+    await nativePage.waitForFunction(() => window.__nativeResumeContinuations.length === 2
+      && !document.querySelector('#gameBgm').paused);
+    await nativePage.evaluate(() => window.__nativeResumeContinuations[0]());
+    await nextRenderFrame(nativePage);
+    assert.equal(await nativePage.locator('#gameBgm').evaluate((media) => media.paused), false,
+      'stale Resume A cannot pause native media owned by Resume B');
+    await nativePage.keyboard.press('Space');
+    assert.deepEqual(await nativePage.evaluate(() => window.__nativeAttacks), [],
+      'native Resume B must keep input blocked until its continuation settles');
+    await nativePage.evaluate(() => window.__nativeResumeContinuations[1]());
+    await nextRenderFrame(nativePage);
+    const overlappingResume = await nativePage.evaluate(() => ({
+      mediaPaused: document.querySelector('#gameBgm').paused,
+      overlayHidden: document.querySelector('#pauseOverlay').hidden,
+    }));
+    assert.deepEqual(overlappingResume, { mediaPaused: false, overlayHidden: true });
+    const beforeResumeProgress = await nativePage.locator('#gameBgm').evaluate((media) => media.currentTime);
+    await nativePage.waitForFunction((previous) => document.querySelector('#gameBgm').currentTime > previous + 0.05,
+      beforeResumeProgress);
+    await nativePage.waitForFunction(() => document.querySelector('#gameBgm').currentTime
+      >= window.RhythmGameChart.NOTES[0].hitTime - 0.03, null, { timeout: 7000 });
+    await nativePage.keyboard.press('Space');
+    const nativeInput = await nativePage.evaluate(() => ({
+      score: Number(document.querySelector('#scoreValue').textContent.replaceAll(',', '')),
+      time: document.querySelector('#gameBgm').currentTime,
+      attacks: window.__nativeAttacks,
+    }));
+    assert.ok(nativeInput.score > 0,
+      `native Resume B must own advancing BGM and accept valid gameplay input: ${JSON.stringify(nativeInput)}`);
+    overlappingResume.score = await nativePage.locator('#scoreValue').textContent();
+    overlappingResume.input = nativeInput;
     assert.deepEqual(recoveryErrors, []);
     assert.deepEqual(pageErrors, []);
-    return { retry, playback, delayedAudioRequests, initialErrors, recoveryErrors, pageErrors };
+    return { retry, playback, overlappingResume, delayedAudioRequests, initialErrors, recoveryErrors, pageErrors };
   } finally {
     await context.close();
   }

@@ -138,6 +138,7 @@ async function sampleLateOvershoot(page, note) {
     window.__completions = [];
     window.__pauseCount = 0;
     window.__mediaPlayCount = 0;
+    window.__deferredSfxResumes = [];
     window.__setHidden = (hidden) => {
       Object.defineProperty(document, 'hidden', { configurable: true, value: hidden });
       document.dispatchEvent(new Event('visibilitychange'));
@@ -162,12 +163,14 @@ async function sampleLateOvershoot(page, note) {
         if (window.__deferNextSfxResume) {
           window.__deferNextSfxResume = false;
           await new Promise((resolveResume) => {
-            window.__resolveDeferredSfxResume = () => {
+            const settle = () => {
               this.state = 'running';
               window.__resolveDeferredSfxResume = null;
               resolveResume();
               queueMicrotask(() => { window.__deferredSfxResumeSettled = true; });
             };
+            window.__resolveDeferredSfxResume = settle;
+            window.__deferredSfxResumes.push(settle);
           });
           return;
         }
@@ -479,6 +482,15 @@ async function sampleLateOvershoot(page, note) {
     }
     await setTime(page, firstHold.holdEndTime + scenario.release);
     await page.keyboard.up('Space');
+    const immediateRelease = await holdState(page);
+    if (scenario.judgement === 'miss') {
+      assert.equal(immediateRelease.litPixels, 0, 'Miss release must clear without a success flash');
+    } else {
+      assert.ok(immediateRelease.litPixels > 0, 'successful release must immediately render its finish flash');
+      if (scenario.name === 'PP') {
+        await page.screenshot({ path: resolve(outputDir, 'rhythm-game-hold-finish.png') });
+      }
+    }
     await nextFrame(page);
     const released = await holdState(page);
     assert.equal(released.score, scenario.points);
@@ -486,21 +498,25 @@ async function sampleLateOvershoot(page, note) {
     assert.equal(released.holding, false);
     assert.equal(released.sustained, false);
     assert.equal(released.tailLength, null);
-    assert.equal(released.litPixels, 0, 'release must clear the sustained connection');
+    if (scenario.judgement === 'miss') assert.equal(released.litPixels, 0);
     assert.equal(released.attacks.length, 2);
     assert.equal(released.attacks[1].phase, 'hold-end');
     assert.equal(released.attacks[1].strength, scenario.judgement === 'miss' ? 'miss'
       : scenario.strength || (scenario.release ? 'good' : 'perfect'));
     await page.keyboard.up('Space');
     await nextFrame(page);
-    assert.deepEqual(await holdState(page), released, 'duplicate release must not score or attack again');
+    assert.deepEqual({ ...await holdState(page), litPixels: 0 }, { ...released, litPixels: 0 },
+      'duplicate release must not score or attack again');
+    await page.waitForTimeout(320);
+    await nextFrame(page);
+    assert.equal((await holdState(page)).litPixels, 0, 'finish flash must fully clean itself after 260ms');
     const result = await finishRound(page);
     assert.equal(result.finalScore, scenario.points);
     assert.equal(result.perfect, scenario.judgement === 'perfect' ? 1 : 0);
     assert.equal(result.good, scenario.judgement === 'good' ? 1 : 0);
     assert.equal(result.miss, scenario.judgement === 'miss' ? 80 : 79);
     assert.equal(result.judgedNotes, 80, 'completion must resolve all queued events, including each hold once');
-    holdScenarios.push({ ...scenario, pressed, released, result });
+    holdScenarios.push({ ...scenario, pressed, immediateRelease, released, result });
   }
 
   await restartRound(page);
@@ -539,15 +555,49 @@ async function sampleLateOvershoot(page, note) {
   assert.equal(comboReset.judgedNotes, 80);
 
   await restartRound(page);
-  await setTime(page, firstHold.hitTime);
+  await setTime(page, firstHold.hitTime + 0.15);
   await page.mouse.move(1500, 850);
   await page.mouse.down();
-  await setTime(page, firstHold.holdEndTime);
+  await setTime(page, firstHold.holdEndTime - 0.25);
+  const beforePointerCancel = await holdState(page);
   await page.evaluate(() => window.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 1 })));
   await page.mouse.up();
   await nextFrame(page);
-  assert.equal((await holdState(page)).score, 100, 'pointer cancellation must miss the release endpoint');
-  assert.equal((await holdState(page)).combo, 0);
+  assert.equal(await page.locator('#pauseOverlay').isVisible(), true, 'pointercancel must enter safe pause');
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true);
+  const pointerCancelled = await holdState(page);
+  assert.equal(pointerCancelled.score, 0, 'pointercancel must preserve the unresolved hold start');
+  assert.equal(pointerCancelled.combo, 0);
+  assert.equal(pointerCancelled.holding, true);
+  assert.equal(pointerCancelled.tailLength, beforePointerCancel.tailLength);
+  assert.equal(pointerCancelled.sustained, false);
+  assert.equal(pointerCancelled.litPixels, 0, 'cancellation must clear without a finish flash');
+  assert.deepEqual(pointerCancelled.attacks, [{ strength: 'good', phase: 'hold-start' }]);
+  await page.locator('#resumeButton').click();
+  assert.equal(await page.locator('#countdown').textContent(), 'HOLD');
+  assert.equal(await page.locator('#gameBgm').evaluate((media) => media.paused), true);
+  await page.keyboard.down('Space');
+  await page.waitForFunction(() => !document.querySelector('#gameBgm').paused);
+  assert.equal((await holdState(page)).score, 0, 'fresh input must re-enter without rejudging the start');
+  await setTime(page, firstHold.holdEndTime);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 150, 'cancelled pointer hold must retain Good start credit');
+  assert.equal((await holdState(page)).combo, 1);
+  assert.deepEqual((await holdState(page)).attacks, [
+    { strength: 'good', phase: 'hold-start' },
+    { strength: 'good', phase: 'hold-start' },
+    { strength: 'perfect', phase: 'hold-end' },
+  ]);
+  await page.keyboard.up('Space');
+  assert.equal((await holdState(page)).score, 150, 'duplicate release cannot complete the hold twice');
+  const beforeCancelledCompletion = await page.evaluate(() => window.__completions.length);
+  const pointerCancelResult = await finishRound(page);
+  await finishRound(page);
+  assert.equal(await page.evaluate(() => window.__completions.length), beforeCancelledCompletion + 1);
+  assert.equal(pointerCancelResult.finalScore, 150);
+  assert.equal(pointerCancelResult.good, 1);
+  assert.equal(pointerCancelResult.miss, 79);
+  assert.equal(pointerCancelResult.judgedNotes, 80);
 
   await restartRound(page);
   await setTime(page, firstHold.hitTime);
@@ -658,6 +708,39 @@ async function sampleLateOvershoot(page, note) {
   assert.equal(await page.evaluate(() => window.__getFakeSfxState()), 'suspended',
     'stale SFX resume settling during a newer HOLD deadline must re-suspend the context');
 
+  // Resume A must not pause the BGM already owned by pending Resume B.
+  await restartRound(page);
+  await page.locator('#pauseButton').click();
+  await page.evaluate(() => {
+    window.__deferredSfxResumes.length = 0;
+    window.__deferNextSfxResume = true;
+  });
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => window.__deferredSfxResumes.length === 1);
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  await page.locator('#pauseOverlay').waitFor({ state: 'visible' });
+  await page.evaluate(() => { window.__deferNextSfxResume = true; });
+  await page.locator('#resumeButton').click();
+  await page.waitForFunction(() => window.__deferredSfxResumes.length === 2);
+  await page.evaluate(() => window.__deferredSfxResumes[0]());
+  await nextFrame(page);
+  const afterStaleResume = await page.locator('#gameBgm').evaluate((media) => ({ paused: media.paused }));
+  await page.keyboard.press('Space');
+  assert.deepEqual(await page.evaluate(() => window.__attacks), [], 'pending Resume B must still gate input');
+  await page.evaluate(() => window.__deferredSfxResumes[1]());
+  await nextFrame(page);
+  const overlappingResume = await page.evaluate(() => ({
+    mediaPaused: document.querySelector('#gameBgm').paused,
+    overlayHidden: document.querySelector('#pauseOverlay').hidden,
+    audioState: window.__getFakeSfxState(),
+  }));
+  await setTime(page, definitions.normal.hitTime);
+  await page.keyboard.press('Space');
+  assert.equal((await holdState(page)).score, 100, 'the current resume must accept gameplay input');
+  assert.deepEqual(overlappingResume, { mediaPaused: false, overlayHidden: true, audioState: 'running' },
+    'settling Resume A then Resume B must never accept gameplay with paused BGM');
+  assert.equal(afterStaleResume.paused, false, 'Resume A cannot pause BGM owned by pending Resume B');
+
   await restartRound(page);
   await setTime(page, firstHold.hitTime);
   await page.keyboard.down('Space');
@@ -683,6 +766,7 @@ async function sampleLateOvershoot(page, note) {
   process.stdout.write(`${JSON.stringify({ normalSamples, before, transition, after, arrived, hold,
     lateHoldUnpressed, headBeforePress, headAfterPress, normalLateOvershoot, speedLateOvershoot,
     lifecycle, holdScenarios, comboReset, expiredHold, missedStart, paused, restarted, failedAudio,
+    pointerCancelled, pointerCancelResult, afterStaleResume, overlappingResume,
     expectedAudioErrors: expectedAudioErrors.map((message) => message.split('\n')[0]),
     accelerationTransitions: 1, errors }, null, 2)}\n`);
 })().catch((error) => {
