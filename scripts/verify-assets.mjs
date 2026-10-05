@@ -36,6 +36,7 @@ const requiredFiles = [
   'src/assets/figma/icon-energy.svg',
   'src/assets/figma/icon-gems.svg',
   'src/assets/lobby/lobby-background.png',
+  'src/assets/lobby/lobby-background.mp4',
   'src/assets/lobby/daily-challenge-art.png',
   'src/assets/lobby/profile-avatar.png',
   ...lobbySvgNames.map((name) => `src/assets/lobby/${name}.svg`),

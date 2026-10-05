@@ -1,4 +1,17 @@
 {
+  "videoStateBefore": {
+    "autoplay": true,
+    "currentTime": 0.172228,
+    "duration": 6.041667,
+    "height": 1080,
+    "loop": true,
+    "muted": true,
+    "paused": false,
+    "readyState": 4,
+    "width": 1920
+  },
+  "videoCurrentTimeAfter500ms": 0.69042,
+  "videoCurrentTimeAfterLoop": 0.17134,
   "buttonNames": [
     "增加金币",
     "增加能量",
@@ -82,7 +95,7 @@
     "scale(0.95)",
     "scale(1)"
   ],
-  "clickAnimationTransformAt90ms": "matrix(0.987083, 0, 0, 0.987083, 0, 0)",
+  "clickAnimationTransformAt90ms": "matrix(0.987129, 0, 0, 0.987129, 0, 0)",
   "clickAnimationClassAfter410ms": false,
   "tabOrder": [
     "增加金币",

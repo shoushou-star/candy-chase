@@ -30,6 +30,33 @@ const viewports = [
   await page.goto("http://127.0.0.1:4173/", { waitUntil: "networkidle" });
   await page.getByRole("main", { name: "游戏大厅" }).waitFor();
   await page.waitForFunction(() => document.querySelector("main")?.getAttribute("aria-busy") !== "true");
+  await page.waitForSelector("video.lobby-page__background-video.is-ready");
+  const videoStateBefore = await page.locator("video.lobby-page__background-video").evaluate((video) => ({
+    autoplay: video.autoplay,
+    currentTime: video.currentTime,
+    duration: video.duration,
+    height: video.videoHeight,
+    loop: video.loop,
+    muted: video.muted,
+    paused: video.paused,
+    readyState: video.readyState,
+    width: video.videoWidth,
+  }));
+  await page.waitForTimeout(500);
+  const videoCurrentTimeAfter500ms = await page.locator("video.lobby-page__background-video").evaluate((video) => video.currentTime);
+  if (!videoStateBefore.autoplay || !videoStateBefore.loop || !videoStateBefore.muted || videoStateBefore.paused
+    || videoStateBefore.width !== 1920 || videoStateBefore.height !== 1080
+    || videoCurrentTimeAfter500ms <= videoStateBefore.currentTime) {
+    throw new Error(`Background video is not silently looping and advancing: ${JSON.stringify({ videoStateBefore, videoCurrentTimeAfter500ms })}`);
+  }
+  await page.locator("video.lobby-page__background-video").evaluate((video) => {
+    video.currentTime = Math.max(0, video.duration - 0.15);
+  });
+  await page.waitForTimeout(450);
+  const videoCurrentTimeAfterLoop = await page.locator("video.lobby-page__background-video").evaluate((video) => video.currentTime);
+  if (videoCurrentTimeAfterLoop >= 1) {
+    throw new Error(`Background video did not loop back to the beginning: ${videoCurrentTimeAfterLoop}`);
+  }
 
   const buttonNames = await page.getByRole("button").evaluateAll((buttons) =>
     buttons.map((button) => button.getAttribute("aria-label")),
@@ -129,6 +156,9 @@ const viewports = [
   await page.screenshot({ path: resolve(outputDir, "lobby-2048x1152.png") });
 
   const report = {
+    videoStateBefore,
+    videoCurrentTimeAfter500ms,
+    videoCurrentTimeAfterLoop,
     buttonNames,
     viewportResults,
     hoverTransform,

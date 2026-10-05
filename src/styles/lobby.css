@@ -7,10 +7,13 @@
   isolation: isolate;
 }
 
-.lobby-page__background,
+.lobby-page__background-fallback,
+.lobby-page__background-video,
 .lobby-page__overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lobby-page__background { z-index: -2; object-fit: cover; }
-.lobby-page__overlay { z-index: -1; background: linear-gradient(90deg, rgb(5 3 36 / 48%) 0%, rgb(10 3 43 / 4%) 28%, rgb(10 3 43 / 6%) 68%, rgb(5 3 36 / 54%) 100%); }
+.lobby-page__background-fallback { z-index: -3; object-fit: cover; }
+.lobby-page__background-video { z-index: -2; object-fit: cover; opacity: 0; transition: opacity 320ms ease; }
+.lobby-page__background-video.is-ready { opacity: 1; }
+.lobby-page__overlay { z-index: -1; background: linear-gradient(90deg, rgb(5 3 36 / 32%) 0%, rgb(10 3 43 / 3%) 28%, rgb(10 3 43 / 4%) 68%, rgb(5 3 36 / 36%) 100%); }
 
 .lobby-button,
 .lobby-currency__plus { border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
