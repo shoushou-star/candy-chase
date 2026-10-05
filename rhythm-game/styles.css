@@ -240,16 +240,33 @@ img {
     0 0 34px rgba(112, 225, 255, 0.72);
 }
 
-.note-fallback-0 {
+.note-fallback-normal {
   background: radial-gradient(circle at 68% 25%, #fff 0 6%, #ff9fc5 10%, #f23583 58%, #b20c68 100%);
 }
 
-.note-fallback-1 {
+.note-fallback-speed {
   background: radial-gradient(circle at 68% 25%, #fff 0 6%, #ffe995 10%, #ffb516 58%, #e27600 100%);
 }
 
-.note-fallback-2 {
+.note-fallback-hold {
   background: radial-gradient(circle at 68% 25%, #fff 0 6%, #baf7ff 10%, #18bfe7 58%, #1267c8 100%);
+}
+
+.note-speed.is-accelerating {
+  animation: candy-accelerate 220ms ease-out;
+}
+
+@keyframes candy-accelerate {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.16;
+    filter:
+      drop-shadow(0 0 14px rgba(255, 255, 255, 1))
+      drop-shadow(0 0 30px rgba(255, 224, 92, 0.96));
+  }
 }
 
 .hit-target {

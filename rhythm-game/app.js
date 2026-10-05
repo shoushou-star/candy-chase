@@ -13,11 +13,11 @@
   const chartMaxScore = Core.calculateChartMaxScore(Chart.NOTES);
 
   const DESIGN = Object.freeze({ width: 2048, height: 1152 });
-  const CANDY_SOURCES = Object.freeze([
-    'assets/candies/candy-pink.png',
-    'assets/candies/candy-yellow.png',
-    'assets/candies/candy-blue.png',
-  ]);
+  const CANDY_SOURCES = Object.freeze({
+    normal: 'assets/candies/candy-pink.png',
+    speed: 'assets/candies/candy-yellow.png',
+    hold: 'assets/candies/candy-blue.png',
+  });
   const JUDGEMENT_SOURCES = Object.freeze({
     perfect: 'assets/ui/judgements/perfect.png',
     good: 'assets/ui/judgements/good.png',
@@ -237,14 +237,13 @@
 
   function createNoteElement(note) {
     const image = document.createElement('img');
-    image.className = 'note';
+    image.className = `note note-${note.type}`;
     image.alt = '';
     image.draggable = false;
-    const colorIndex = note.id % CANDY_SOURCES.length;
-    image.src = CANDY_SOURCES[colorIndex];
+    image.src = CANDY_SOURCES[note.type];
     image.addEventListener('error', () => {
       image.removeAttribute('src');
-      image.classList.add('note-fallback', `note-fallback-${colorIndex}`);
+      image.classList.add('note-fallback', `note-fallback-${note.type}`);
     }, { once: true });
     image.style.left = '0px';
     image.style.top = '0px';
@@ -265,16 +264,15 @@
     elements.notes.replaceChildren();
   }
 
-  function pointForNote(note, gameTime) {
+  function pointForNote(note, gameTime, progress) {
     const elapsed = gameTime - note.spawnTime;
-    if (elapsed <= Core.CONFIG.travelTimeSeconds) {
-      const progress = clamp(elapsed / Core.CONFIG.travelTimeSeconds, 0, 1);
+    if (elapsed <= Chart.META.travelTimeSeconds) {
       return elements.path.getPointAtLength(pathLength * progress);
     }
 
     const end = elements.path.getPointAtLength(pathLength);
-    const speed = pathLength / Core.CONFIG.travelTimeSeconds;
-    const overshoot = (elapsed - Core.CONFIG.travelTimeSeconds) * speed;
+    const speed = pathLength / Chart.META.travelTimeSeconds;
+    const overshoot = (elapsed - Chart.META.travelTimeSeconds) * speed;
     return {
       x: end.x + endTangent.x * overshoot,
       y: end.y + endTangent.y * overshoot,
@@ -288,7 +286,15 @@
       }
       if (note.state !== 'active' || !note.element) continue;
 
-      const point = pointForNote(note, gameTime);
+      const progress = Core.travelProgress(note, gameTime, Chart.META.travelTimeSeconds);
+      const point = pointForNote(note, gameTime, progress);
+      note.element.dataset.progress = progress.toFixed(4);
+      if (note.type === 'speed' && gameTime >= note.accelerationAt && !note.didAccelerate) {
+        note.didAccelerate = true;
+        const element = note.element;
+        element.classList.add('is-accelerating');
+        window.setTimeout(() => element.classList.remove('is-accelerating'), 220);
+      }
       const grow = smoothstep((gameTime - note.spawnTime) / SPAWN_GROW_SECONDS);
       note.element.style.left = `${(point.x / DESIGN.width) * 100}%`;
       note.element.style.top = `${(point.y / DESIGN.height) * 100}%`;
@@ -399,6 +405,7 @@
       element: null,
       tailElement: null,
       startJudgement: null,
+      didAccelerate: false,
     }));
   }
 
