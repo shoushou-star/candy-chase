@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run typecheck && vite build",
+    "build": "npm run typecheck && vite build && node scripts/copy-game-runtime.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:game": "node --test rhythm-game/tests/*.test.js rhythm-game/attack-event-contract.test.js",
+    "test:runtime": "node --test scripts/copy-game-runtime.test.mjs",
     "verify:assets": "node scripts/verify-assets.mjs"
   },
   "dependencies": {

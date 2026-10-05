@@ -1,4 +1,4 @@
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,6 +41,35 @@ const lobbySvgNames = [
   'unread-badge',
 ];
 
+const gameRuntimeFiles = [
+  'index.html', 'app.js', 'game-core.js', 'game-chart.js', 'audio-clock.js',
+  'styles.css', 'countdown-assets.js', 'countdown-assets.css',
+  'magic-attack-d.js', 'magic-attack-d.css',
+];
+const settlementAssets = [
+  'background.png', 'stage-clear.png', 'star-lit.png', 'crown.svg',
+  'good-note.svg', 'miss-note.svg', 'next.svg', 'perfect-note.svg',
+  'record-crown.svg', 'retry.svg', 'settlement-intro.mp4', 'settlement-loop.mp4',
+];
+
+function filesUnder(relativeDirectory) {
+  const directory = resolve(projectRoot, relativeDirectory);
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = `${relativeDirectory}/${entry.name}`;
+    return entry.isDirectory() ? filesUnder(relativePath) : [relativePath];
+  });
+}
+
+const gameAssets = filesUnder('rhythm-game/assets');
+const gameReferenceFiles = [
+  ...readFileSync(resolve(projectRoot, 'rhythm-game/index.html'), 'utf8')
+    .matchAll(/(?:src|href)=["']([^"']+)["']/g),
+].map((match) => match[1].split('?')[0]);
+const indirectGameAssets = gameRuntimeFiles.flatMap((file) => [
+  ...readFileSync(resolve(projectRoot, 'rhythm-game', file), 'utf8')
+    .matchAll(/["'](assets\/[^"']+)["']/g),
+].map((match) => match[1]));
+
 const requiredFiles = [
   ...backgroundNames.map((name) => `src/assets/figma/hero-${name}-background.png`),
   ...cardNames.map((name) => `src/assets/figma/card-${name}.png`),
@@ -54,6 +83,13 @@ const requiredFiles = [
   'src/assets/lobby/profile-avatar.png',
   ...lobbySvgNames.map((name) => `src/assets/lobby/${name}.svg`),
   ...loadingAssets,
+  'src/assets/lobby/lobby-background.mp4',
+  'src/assets/game-flow/pregame-intro.mp4',
+  ...settlementAssets.map((name) => `src/assets/settlement/${name}`),
+  ...gameRuntimeFiles.map((name) => `rhythm-game/${name}`),
+  ...gameReferenceFiles.map((name) => `rhythm-game/${name}`),
+  ...indirectGameAssets.map((name) => `rhythm-game/${name}`),
+  ...gameAssets,
 ];
 
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -69,7 +105,7 @@ function pngDimensions(path) {
   return [header.readUInt32BE(16), header.readUInt32BE(20)];
 }
 
-for (const relativePath of requiredFiles) {
+for (const relativePath of new Set(requiredFiles)) {
   const path = resolve(projectRoot, relativePath);
   let info;
   try {
@@ -109,4 +145,4 @@ for (const relativePath of [
   console.log(`${relativePath}: 2048×1152`);
 }
 
-console.log(`Verified ${requiredFiles.length} required assets.`);
+console.log(`Verified ${new Set(requiredFiles).size} required assets, including the game reference closure and settlement media.`);
