@@ -2226,5 +2226,69 @@
       "Known minor QA timeout options/port classification, small recovery buttons and dynamic note listener references await final branch review.",
       "Current build includes the five preserved user files; their uncommitted state is intentional."
     ]
+  },
+  "finalFixSnapshot": {
+    "capturedAt": "2026-10-06T05:35:20.994Z",
+    "preOwnCommitCodeHead": "41bf9859d5fece50b775a14c12e6f0f5a5609b27",
+    "headMeaning": "The code HEAD before this final-fix commit; source hashes below identify the pending final-fix contents, not that historical HEAD.",
+    "changedSources": [
+      {
+        "path": "src/features/settlement/SettlementSequence.tsx",
+        "sha256": "f30f8263599d87b83f23ebdeff5e8ae8f71cf50950e19fb3aa55cd2818e57769"
+      },
+      {
+        "path": "src/features/settlement/SettlementSequence.test.tsx",
+        "sha256": "05892f23fd8a535058c9c1f7abe5ddca68154718711a2f38301665d3376b6927"
+      },
+      {
+        "path": "scripts/play-session-browser-qa.cjs",
+        "sha256": "17683228dc0155606050a2d612e7481d14c9c0659f5ce4d5b2436228709f059e"
+      },
+      {
+        "path": "scripts/play-session-browser-qa.test.cjs",
+        "sha256": "9e07759d8ff71e5ed3d1f63020e088a0e90315104e68c8a21af87aa16f1e9827"
+      },
+      {
+        "path": "rhythm-game/README.md",
+        "sha256": "bef2334eae864c4eaf76feab721163a5d731aa7daa631c3a681ebab57e566945"
+      }
+    ],
+    "protectedExistingFiles": [
+      {
+        "path": "docs/qa/game-flow-browser-qa.json",
+        "sha256": "7c5ee53d3743b9150c82031fd99d8a1be7fa11078eb02b8636a2535eeb87fe6f",
+        "matchesTask1": true
+      },
+      {
+        "path": "src/features/lobby/LobbyPage.test.tsx",
+        "sha256": "2e07131c14e9274418a8901b60685c73e00d2ad03b2e7510b3484fb59ca95a60",
+        "matchesTask1": true
+      },
+      {
+        "path": "src/features/lobby/LobbyPage.tsx",
+        "sha256": "a67c53d22284c22245a30b873e3a571dd1cb097455acf59dc788be9379bf100d",
+        "matchesTask1": true
+      },
+      {
+        "path": "src/styles/lobby.css",
+        "sha256": "5610137cc5ad1dd5a1c8c132cd8c16d155ef0c71279e0646810affb297dba96d",
+        "matchesTask1": true
+      },
+      {
+        "path": "src/assets/lobby/lobby-background.mp4",
+        "sha256": "36100511a25f4f3e58016106fdd7764411c08621354384ea0b569da7e2930919",
+        "matchesTask1": true
+      }
+    ],
+    "originalSourceCheck": {
+      "count": 53,
+      "allMatch": true
+    },
+    "historicalEvidenceUnmodified": true,
+    "limitations": [
+      "Independent Git rebuild remains blocked by the protected untracked lobby video; current local workingtree delivery only.",
+      "Real speaker listening, actual OS hidden, true browser policy denial and touch remain unknown.",
+      "Dynamic note reference retention, small recovery controls, extra media entry and diagnostic noise remain deferred reviewed Minors."
+    ]
   }
 }

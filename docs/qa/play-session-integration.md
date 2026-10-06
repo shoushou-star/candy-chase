@@ -16,10 +16,11 @@ node scripts/play-session-browser-qa.cjs
 npm run build
 npm run preview -- --host 127.0.0.1 --port 4180
 $env:BASE_URL = 'http://127.0.0.1:4180'
+$env:QA_MODE = 'production'
 node scripts/play-session-browser-qa.cjs
 ```
 
-`BASE_URL` 默认是 `http://127.0.0.1:4176`。优先寻找已安装的 Playwright，找不到则使用 `C:/Users/25283/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright`，不安装新依赖。单独验证弹窗可设置 `QA_CASES=dialogs`；默认完整验收约四分钟，包括自然播放一局和独立故障上下文。
+`BASE_URL` 默认是 `http://127.0.0.1:4176`。`QA_MODE` 仅接受 `development|production`，显式 production 在任何端口执行 HTTP/MIME/hash 检查；省略时保留兼容默认（4180 生产，其他端口开发），无效值在浏览器启动前报错。优先寻找已安装的 Playwright，找不到则使用 `C:/Users/25283/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright`，不安装新依赖。单独验证弹窗可设置 `QA_CASES=dialogs`；默认完整验收约四分钟，包括自然播放一局和独立故障上下文。
 
 最终证据是 [开发 JSON](play-session/development/report.json) 与 [生产 JSON](play-session/production/report.json)：最终脚本均通过，分别在04:13:10.513Z、04:13:08.913Z结束。每个 case 分开记录 consoleErrors、pageErrors、requestfailed、媒体取消请求与 HTTP 错误。`initial-*`、`strictmode-injection-failure.json` 是诊断历史，不是最终验收结果。正常路径必须四类错误均为空；预期故障绝不并入正常路径后统一“忽略”。
 
@@ -106,3 +107,19 @@ QA 脚本另有两个低优先级待审查项：`waitForFunction` 的部分 time
 开发服务仍为 `http://127.0.0.1:4176/`（session 36618），生产预览为 `http://127.0.0.1:4180/`（session 51763）。HTTP 核对后已请求在 Codex 打开 `http://127.0.0.1:4176/?delivery=task8-20261006T043336Z`；工具返回 `queued`，因此仅确认打开请求已排队，尚未确认可见标签页。
 
 置信度：来源/保护哈希、HTTP/资源与文档边界为高；Task 7 桌面截图的视觉判断为中；实际扬声器听感、主观节拍、真实系统后台 hidden、真实浏览器策略拒绝、触屏体验为未知。最终全分支复审与这些人工观察仍未完成。
+
+## 最终修复波次：迟到播放 Promise 与 QA 参数
+
+此前最终审查确认结算媒体错误之后，旧 intro.play() 拒绝可能把已显示的成绩和启用的出口退回等待手势。现加入 effect 生命周期、请求身份和同步阶段检查；error/ended/unmount 使旧请求失效。只有当前有效 NotAllowedError 在 intro 尚未显示成绩时请求真实手势；decode 错误继续到循环或静态 fallback。离开时 intro/loop 均暂停归零，迟到成功也停止已卸载或已放弃的媒体；StrictMode 旧请求不暂停正在播放的第二轮 intro。2.75 秒显示、3.9 秒预播、自然 ended 启用正常出口及既有约120ms CSS 交叉淡化未改变。
+
+TDD：首轮结算14例中7例按预期失败，直接断言可见成绩、可用出口和卸载媒体状态；QA4例全部失败。自审另捕获 StrictMode 第一轮迟到成功在当前 error 后复活 intro，17例中该1例 RED 后补终态保护。最终结算 Sequence/Page、App、PlaySession 共4文件62例通过；QA参数4例通过；typecheck 与非删除 build（129模块、11运行文件）通过。全量220 React/57游戏/1运行发布/97素材回归在最后两条终态条件修正前通过；该修正后以62例覆盖复验，提交后的最终全量门禁由主控执行，不能把此前220例冒充该门禁。
+
+QA参数测试实际执行脚本的资源函数与等待边界：4197显式 production 执行 HTTP/MIME/hash，4180显式 development 跳过资源检查，兼容端口默认保留，无效模式同步失败；倒计时/BGM/结算的12000/15000/12000ms分别作为第三 options 参数。它们不是源码字符串或仅语法检查。
+
+新证据单独保存在 [开发结算 smoke](play-session/final-fix-development/report.json) 和 [最终生产结算 smoke](play-session/final-fix-production/report.json)。开发在05:31:47.966Z通过；最终重建版本生产在05:36:25.892Z通过，37项 HTTP/MIME/SHA256 全匹配当前 dist（非删除构建保留的旧 JS/CSS 也在资源清单中，不冒充当前入口）。两环境正常结算视频自然播放至 ended（intro duration 4.062993秒，loop 4.064秒），Retry 真实点击后两媒体均 detached、paused、time=0，Next真实点击回大厅。正常四类错误均为0。新2048×1152截图保存成绩与完整Retry/Next；已直接查看开发正常截图，显示没有裁切。
+
+错误 case 的媒体HTTP404是真实网络失败，但 pending play与迟到拒绝是控制注入；策略 case 的 NotAllowedError、媒体error事件、迟到成功也是控制注入，恢复/Next是实际点击。三个 case 均用 synthetic MessageEvent 交付零分成绩，以聚焦结算；本波次未重复69秒自然游戏流，Task7的自然十字段证据继续作为历史保留。开发 smoke 与 `pre-self-review-*` 生产报告来自最后 StrictMode 终态条件修正前，最新生产 report来自修正后的重建版；既有 development/production/checks历史文件无diff，未覆盖。
+
+复现新smoke：设置 `QA_MODE=development`、`BASE_URL=http://127.0.0.1:4176` 或 `QA_MODE=production`、实际生产预览URL，再设置 `QA_CASES=settlement` 执行 `node scripts/play-session-browser-qa.cjs`。参数行为回归执行 `node --test scripts/play-session-browser-qa.test.cjs`。README现明确来源项目专属QA脚本未迁入，提供这里真实存在的集成入口。计划Task2–7复选项按账本完成记录核对，Task3真实策略拒绝的未知限制保留。
+
+来源清单新增 `finalFixSnapshot`，使用实际变更源码hash及提交前HEAD `41bf9859d5fece50b775a14c12e6f0f5a5609b27`，该HEAD不是本修复内容的SHA；原Task8快照不改写。53个原始来源与5个保护文件SHA256仍匹配Task1。保护的大厅MP4仍未跟踪，本次不暂存它或大厅旧修改，因此仅交付当前本地工作树，独立纯Git重建/合并仍需大厅依赖归属授权。动态note监听引用、小恢复按钮、media独立entry及环境诊断噪声为审查后延期的Minor；实际扬声器、真实OS hidden/策略拒绝、触屏仍未知。最终修复的独立复审尚待主控一次定向复审。

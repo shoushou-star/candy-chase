@@ -7,9 +7,11 @@ let playwright;
 try { playwright = require('playwright'); }
 catch { playwright = require('C:/Users/25283/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'); }
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4176';
-const mode = new URL(BASE_URL).port === '4180' ? 'production' : 'development';
+const mode = process.env.QA_MODE ?? (new URL(BASE_URL).port === '4180' ? 'production' : 'development');
+if (!['development', 'production'].includes(mode)) throw new Error('QA_MODE must be development or production');
 const onlyDialogs = process.env.QA_CASES === 'dialogs';
-const output = resolve('docs/qa/play-session', onlyDialogs ? `${mode}-dialog-regression` : mode);
+const onlySettlement = process.env.QA_CASES === 'settlement';
+const output = resolve('docs/qa/play-session', onlySettlement ? `final-fix-${mode}` : onlyDialogs ? `${mode}-dialog-regression` : mode);
 mkdirSync(output, { recursive: true });
 const sizes = [[2048, 1152], [1920, 1080], [1366, 768], [1280, 720]];
 const fields = ['finalScore', 'maxCombo', 'perfect', 'good', 'miss', 'accuracy', 'repairPercent', 'starRating', 'totalNotes', 'judgedNotes'];
@@ -87,15 +89,15 @@ async function running(page) {
   const game = await frame(page);
   // Recovery is a real click, needed if this browser actually denies the iframe audio context.
   if (await game.locator('#audioRecoveryButton').isVisible()) await game.locator('#audioRecoveryButton').click();
-  await game.waitForFunction(() => !document.querySelector('#countdown').hidden, { timeout: 12000 });
+  await game.waitForFunction(() => !document.querySelector('#countdown').hidden, null, { timeout: 12000 });
   return game;
 }
-async function waitBgm(game) { await game.waitForFunction(() => document.querySelector('#gameBgm').currentTime > 0.4, { timeout: 15000 }); }
+async function waitBgm(game) { await game.waitForFunction(() => document.querySelector('#gameBgm').currentTime > 0.4, null, { timeout: 15000 }); }
 async function settlement(page, expected) {
   await screen(page, 'settlement');
   const gesture = page.getByRole('button', { name: '播放结算动画', exact: true });
   if (await gesture.isVisible()) await gesture.click();
-  await page.waitForFunction(() => !document.querySelector('.settlement-action--next')?.disabled, { timeout: 12000 });
+  await page.waitForFunction(() => !document.querySelector('.settlement-action--next')?.disabled, null, { timeout: 12000 });
   assert.equal(await page.getByRole('region', { name: `得分 ${expected.finalScore.toLocaleString('en-US')}`, exact: true }).count(), 1);
   for (const [label, key] of [['PERFECT', 'perfect'], ['GOOD', 'good'], ['MISS', 'miss']]) assert.equal(await page.getByRole('article', { name: `${label} ${expected[key]}`, exact: true }).count(), 1);
   assert.equal(await page.getByRole('region', { name: `最大连击 ${expected.maxCombo}`, exact: true }).count(), 1);
@@ -291,9 +293,83 @@ async function resources() {
   }
   assert.ok(videos.some(p => p.includes('pregame-intro'))); assert.ok(runtime.includes('rhythm-game/embed-bridge.js'));
 }
+async function settlementSmoke() {
+  const enter = async page => { await select(page); await play(page); const game = await running(page); await waitBgm(game); await inject(page, zero); await screen(page, 'settlement'); };
+  {
+    const { ctx, page, item } = await context('final fix: natural settlement media, real Retry/Next, controlled host result');
+    await enter(page);
+    const gesture = page.getByRole('button', { name: '播放结算动画', exact: true });
+    if (await gesture.isVisible()) await gesture.click();
+    await page.waitForFunction(() => document.querySelector('.settlement-media__intro').currentTime > 0.3, null, { timeout: 12000 });
+    item.intro = await media(page, '.settlement-media__intro');
+    assert.equal(item.intro.muted, false);
+    await page.waitForFunction(() => document.querySelector('.settlement-ui').classList.contains('settlement-ui--visible'), null, { timeout: 12000 });
+    assert.ok(await page.getByRole('button', { name: '继续', exact: true }).isDisabled());
+    await settlement(page, zero);
+    item.loop = await media(page, '.settlement-media__loop');
+    assert.equal(item.loop.muted, true);
+    await page.evaluate(() => { window.__finalFixMedia = [...document.querySelectorAll('.settlement-media video')]; });
+    await page.screenshot({ path: join(output, 'settlement-normal.png') });
+    await page.getByRole('button', { name: '重新挑战', exact: true }).click();
+    const retry = await running(page); await waitBgm(retry);
+    item.detached = await page.evaluate(() => window.__finalFixMedia.map(m => ({ connected: m.isConnected, paused: m.paused, time: m.currentTime })));
+    assert.ok(item.detached.every(m => !m.connected && m.paused && m.time === 0));
+    assert.equal(await page.locator('video[aria-label="游戏开场视频"]').count(), 0);
+    await inject(page, zero); await settlement(page, zero);
+    await page.getByRole('button', { name: '继续', exact: true }).click(); await screen(page, 'lobby');
+    item.label = 'Settlement videos played naturally; host complete results were synthetic MessageEvents; real Retry/Next clicks.';
+    assert.equal(item.consoleErrors.length, 0); assert.equal(item.pageErrors.length, 0); assert.equal(item.requestfailed.length, 0); assert.equal(item.httpErrors.length, 0);
+    await ctx.close();
+  }
+  {
+    const { ctx, page, item } = await context('final fix: actual intro HTTP404 plus controlled pending play late rejection', async ctx => {
+      await ctx.route(/settlement-intro.*\.mp4/, route => route.request().resourceType() === 'media' ? route.fulfill({ status: 404, contentType: 'video/mp4', body: '' }) : route.continue());
+      await ctx.addInitScript(() => {
+        const original = HTMLMediaElement.prototype.play;
+        window.__finalFixRejects = [];
+        HTMLMediaElement.prototype.play = function () {
+          if (this.getAttribute('aria-label') === '结算开场动画') return new Promise((resolve, reject) => window.__finalFixRejects.push(reject));
+          return original.call(this);
+        };
+      });
+    });
+    await enter(page); await settlement(page, zero);
+    await page.evaluate(() => window.__finalFixRejects.forEach(reject => reject(new DOMException('controlled late decode rejection', 'NotSupportedError'))));
+    await settlement(page, zero);
+    assert.equal(await page.getByRole('button', { name: '播放结算动画', exact: true }).count(), 0);
+    await page.screenshot({ path: join(output, 'settlement-error-late-reject.png') });
+    assert.ok(item.httpErrors.some(e => e.status === 404)); assert.equal(item.pageErrors.length, 0);
+    await page.getByRole('button', { name: '重新挑战', exact: true }).click(); await running(page);
+    item.label = 'Real HTTP404 media failure; intro play Promises and late rejection are controlled; results synthetic; Retry real click.';
+    await ctx.close();
+  }
+  {
+    const { ctx, page, item } = await context('final fix: controlled policy click/error/late successful gesture play', async ctx => ctx.addInitScript(() => {
+      const original = HTMLMediaElement.prototype.play;
+      window.__finalFixAllow = false;
+      document.addEventListener('click', event => { if (event.target.closest?.('button')?.getAttribute('aria-label') === '播放结算动画') window.__finalFixAllow = true; }, true);
+      HTMLMediaElement.prototype.play = function () {
+        if (this.getAttribute('aria-label') !== '结算开场动画') return original.call(this);
+        if (!window.__finalFixAllow) return Promise.reject(new DOMException('controlled policy', 'NotAllowedError'));
+        window.__finalFixIntro = this;
+        return new Promise(resolve => { window.__finalFixResolve = resolve; });
+      };
+    }));
+    await enter(page); await page.getByRole('button', { name: '播放结算动画', exact: true }).click();
+    await page.evaluate(() => window.__finalFixIntro.dispatchEvent(new Event('error')));
+    await settlement(page, zero);
+    await page.evaluate(() => window.__finalFixResolve());
+    await settlement(page, zero);
+    assert.equal(await page.getByRole('button', { name: '播放结算动画', exact: true }).count(), 0);
+    await page.getByRole('button', { name: '继续', exact: true }).click(); await screen(page, 'lobby');
+    item.label = 'Policy rejection, media error event and play Promise resolution controlled; gesture/Next are real clicks; actual OS policy unknown.';
+    assert.equal(item.pageErrors.length, 0); await ctx.close();
+  }
+}
 (async () => {
   browser = await playwright.chromium.launch({ channel: 'msedge', headless: true });
-  if (onlyDialogs) await dialogs();
+  if (onlySettlement) { await resources(); await settlementSmoke(); }
+  else if (onlyDialogs) await dialogs();
   else { await resources(); await dialogs(); await natural(); await faults(); }
   report.status = 'passed'; report.finishedAt = new Date().toISOString(); progress('全部脚本断言通过。');
 })().catch(error => { report.status = 'failed'; report.error = error.stack; process.exitCode = 1; console.error(error); })

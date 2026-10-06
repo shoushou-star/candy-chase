@@ -61,8 +61,8 @@ window.addEventListener('rhythmgame:complete', (event) => {
 
 ```powershell
 node --test rhythm-game/tests/audio-asset.test.js rhythm-game/tests/audio-clock.test.js rhythm-game/tests/game-chart.test.js rhythm-game/tests/game-core.test.js rhythm-game/attack-event-contract.test.js
-node rhythm-game/tests/hud-browser-qa.cjs
-node rhythm-game/tests/gameplay-note-types-qa.cjs
+node --test scripts/play-session-browser-qa.test.cjs
+node scripts/play-session-browser-qa.cjs
 node --check rhythm-game/game-core.js
 node --check rhythm-game/game-chart.js
 node --check rhythm-game/audio-clock.js
@@ -71,4 +71,14 @@ node --check rhythm-game/magic-attack-d.js
 ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 rhythm-game/assets/audio/game-bgm.m4a
 ```
 
-`gameplay-note-types-qa.cjs` 使用 Edge 和受控媒体时钟检查谱面运动、判定、暂停/继续、长按、重开及结算生命周期，并在 `docs/qa/` 写入截图。受控时钟用于自动化回归，不代表真实音频的主观节拍听感测试。
+集成浏览器检查先启动根项目开发服务（默认 `http://127.0.0.1:4176`），使用实际存在的 `scripts/play-session-browser-qa.cjs` 从 App 入口验收。生产预览可在任意端口显式指定模式，例如：
+
+```powershell
+$env:BASE_URL = 'http://127.0.0.1:4197'
+$env:QA_MODE = 'production'
+node scripts/play-session-browser-qa.cjs
+```
+
+`QA_MODE` 仅接受 `development` 或 `production`；省略时保留旧默认（4180 为 production，其他端口为 development）。`QA_CASES=settlement` 可单独运行结算修复 smoke，并写入独立 `docs/qa/play-session/final-fix-<mode>/` 目录。
+
+来源游戏项目的 `rhythm-game/tests/hud-browser-qa.cjs` 和 `rhythm-game/tests/gameplay-note-types-qa.cjs` 没有迁入本集成工作树；这些命令只能在包含它们的来源项目执行，不能当作本集成的已执行证据。来源 `gameplay-note-types-qa.cjs` 使用 Edge 和受控媒体时钟检查谱面运动、判定、暂停/继续、长按、重开及结算生命周期。受控时钟不代表真实音频的主观节拍听感测试。

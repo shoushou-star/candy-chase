@@ -1,0 +1,241 @@
+{
+  "baseUrl": "http://127.0.0.1:4176",
+  "mode": "development",
+  "startedAt": "2026-10-06T05:30:22.869Z",
+  "cases": [
+    {
+      "name": "final fix: natural settlement media, real Retry/Next, controlled host result",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "intro": {
+        "time": 0.312996,
+        "duration": 4.062993,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4"
+      },
+      "loop": {
+        "time": 0.022991,
+        "duration": 4.064,
+        "muted": true,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": true,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4"
+      },
+      "detached": [
+        {
+          "connected": false,
+          "paused": true,
+          "time": 0
+        },
+        {
+          "connected": false,
+          "paused": true,
+          "time": 0
+        }
+      ],
+      "label": "Settlement videos played naturally; host complete results were synthetic MessageEvents; real Retry/Next clicks."
+    },
+    {
+      "name": "final fix: actual intro HTTP404 plus controlled pending play late rejection",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "status": 404
+        }
+      ],
+      "label": "Real HTTP404 media failure; intro play Promises and late rejection are controlled; results synthetic; Retry real click."
+    },
+    {
+      "name": "final fix: controlled policy click/error/late successful gesture play",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "label": "Policy rejection, media error event and play Promise resolution controlled; gesture/Next are real clicks; actual OS policy unknown."
+    }
+  ],
+  "screenshots": [],
+  "resources": [],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T05:31:47.966Z"
+}
