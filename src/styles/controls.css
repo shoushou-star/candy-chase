@@ -19,3 +19,18 @@
   color: var(--foreground);
   text-align: center;
 }
+
+.store-dialog-panel .game-button {
+  min-width: 180px;
+  min-height: 72px;
+  margin-top: 12px;
+  padding: 16px 32px;
+  border: 2px solid var(--hero-yellow-bright);
+  border-radius: 16px;
+  background: var(--hero-yellow);
+  color: var(--hero-ink);
+  font-family: var(--font-family);
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+}

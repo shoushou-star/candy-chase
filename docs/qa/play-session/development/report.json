@@ -1,0 +1,2147 @@
+{
+  "baseUrl": "http://127.0.0.1:4176",
+  "mode": "development",
+  "startedAt": "2026-10-06T04:09:29.238Z",
+  "cases": [
+    {
+      "name": "real hero/store dialogs: readable close target at all four sizes",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "buttons": [
+        {
+          "kind": "hero",
+          "width": 1280,
+          "height": 720,
+          "box": {
+            "x": 583.75,
+            "y": 363.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 15,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 1366,
+          "height": 768,
+          "box": {
+            "x": 623,
+            "y": 387.60418701171875,
+            "width": 120,
+            "height": 48
+          },
+          "style": {
+            "fontSizeRendered": 16,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 1920,
+          "height": 1080,
+          "box": {
+            "x": 875.625,
+            "y": 545.068359375,
+            "width": 168.75,
+            "height": 67.5
+          },
+          "style": {
+            "fontSizeRendered": 22.5,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 2048,
+          "height": 1152,
+          "box": {
+            "x": 934,
+            "y": 581.40625,
+            "width": 180,
+            "height": 72
+          },
+          "style": {
+            "fontSizeRendered": 24,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1280,
+          "height": 720,
+          "box": {
+            "x": 583.75,
+            "y": 363.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 15,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1366,
+          "height": 768,
+          "box": {
+            "x": 623,
+            "y": 387.60418701171875,
+            "width": 120,
+            "height": 48
+          },
+          "style": {
+            "fontSizeRendered": 16,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1920,
+          "height": 1080,
+          "box": {
+            "x": 875.625,
+            "y": 545.068359375,
+            "width": 168.75,
+            "height": 67.5
+          },
+          "style": {
+            "fontSizeRendered": 22.5,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 2048,
+          "height": 1152,
+          "box": {
+            "x": 934,
+            "y": 581.40625,
+            "width": 180,
+            "height": 72
+          },
+          "style": {
+            "fontSizeRendered": 24,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "natural App video/game + Retry/Next; controlled seek only on Retry",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "unconfirmedPlayOpensHero": true,
+      "unavailableHeroPreservesPiko": true,
+      "introEarly": {
+        "time": 0.505885,
+        "duration": 12.064,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4"
+      },
+      "noKeyboardSkip": true,
+      "focusedFrame": true,
+      "countdown": "3",
+      "introNaturalEnded": {
+        "at": 20474,
+        "type": "ended",
+        "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+        "time": 12.064,
+        "duration": 12.064,
+        "muted": false,
+        "volume": 1
+      },
+      "introAfterExit": {
+        "paused": true,
+        "time": 0,
+        "connected": false
+      },
+      "bgmEarly": {
+        "time": 0.414389,
+        "duration": 69.218005,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a"
+      },
+      "bgmLater": {
+        "time": 3.938029,
+        "duration": 69.218005,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a"
+      },
+      "actualFocusPause": {
+        "paused1": {
+          "time": 3.947541,
+          "duration": 69.218005,
+          "muted": false,
+          "volume": 1,
+          "paused": true,
+          "ended": false,
+          "loop": false,
+          "controls": false,
+          "src": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a"
+        },
+        "paused2": {
+          "time": 3.947541,
+          "duration": 69.218005,
+          "muted": false,
+          "volume": 1,
+          "paused": true,
+          "ended": false,
+          "loop": false,
+          "controls": false,
+          "src": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a"
+        }
+      },
+      "bgmAfterComplete": {
+        "paused": true,
+        "time": 0,
+        "ended": false,
+        "connected": true
+      },
+      "capture": {
+        "messages": [
+          {
+            "at": 8640.199999928474,
+            "data": {
+              "type": "rhythmgame:ready",
+              "runId": 1
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 95735.69999992847,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 1,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          }
+        ],
+        "media": [
+          {
+            "at": 286.10000002384186,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 331.7999999523163,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4454.100000023842,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4454.199999928474,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4455.100000023842,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.000558,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 4456.299999952316,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.001721,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5028.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000285,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5029.100000023842,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000632,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5829.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 5830,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 7786.799999952316,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000315,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 7787.100000023842,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000633,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 8076.399999976158,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8076.5,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8076.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8318,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 20473.899999976158,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 12.064,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 20474,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 12.064,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.29999995232,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.5,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.69999992847,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 96044.69999992847,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0.001335,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.19999992847,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.29999995232,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.39999997616,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000555,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 100164.39999997616,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000592,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 104296.60000002384,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000166,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          }
+        ]
+      },
+      "naturalResult": {
+        "finalScore": 0,
+        "maxCombo": 0,
+        "perfect": 0,
+        "good": 0,
+        "miss": 80,
+        "accuracy": 0,
+        "repairPercent": 0,
+        "starRating": 0,
+        "totalNotes": 80,
+        "judgedNotes": 80
+      },
+      "settlementAfterRetry": [
+        {
+          "paused": true,
+          "connected": false
+        },
+        {
+          "paused": true,
+          "connected": false
+        }
+      ],
+      "retryNewFrame": true,
+      "rejectedMessages": [
+        "old runId",
+        "wrong source",
+        "wrong origin"
+      ],
+      "duplicateStartSent": true,
+      "retryResult": {
+        "finalScore": 0,
+        "maxCombo": 0,
+        "perfect": 0,
+        "good": 0,
+        "miss": 80,
+        "accuracy": 0,
+        "repairPercent": 0,
+        "starRating": 0,
+        "totalNotes": 80,
+        "judgedNotes": 80
+      },
+      "nextRetainsPikoAndPlayReplaysIntro": true,
+      "finalCapture": {
+        "messages": [
+          {
+            "at": 8640.199999928474,
+            "data": {
+              "type": "rhythmgame:ready",
+              "runId": 1
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 95735.69999992847,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 1,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 108480.60000002384,
+            "data": {
+              "type": "rhythmgame:ready",
+              "runId": 2
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 108507.29999995232,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 1,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 108508.5,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 2,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": false
+          },
+          {
+            "at": 108509.79999995232,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 2,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": false,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 112354.69999992847,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 2,
+              "result": {
+                "finalScore": 0,
+                "maxCombo": 0,
+                "perfect": 0,
+                "good": 0,
+                "miss": 80,
+                "accuracy": 0,
+                "repairPercent": 0,
+                "starRating": 0,
+                "totalNotes": 80,
+                "judgedNotes": 80
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          },
+          {
+            "at": 117028.19999992847,
+            "data": {
+              "type": "rhythmgame:complete",
+              "runId": 1,
+              "result": {
+                "finalScore": 99999
+              }
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": false
+          },
+          {
+            "at": 118719.5,
+            "data": {
+              "type": "rhythmgame:ready",
+              "runId": 3
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          }
+        ],
+        "media": [
+          {
+            "at": 286.10000002384186,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 331.7999999523163,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4454.100000023842,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4454.199999928474,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4455.100000023842,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.000558,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 4456.299999952316,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.001721,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5028.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000285,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5029.100000023842,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000632,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5829.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 5830,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 7786.799999952316,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000315,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 7787.100000023842,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000633,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 8076.399999976158,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8076.5,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8076.699999928474,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 8318,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 20473.899999976158,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 12.064,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 20474,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 12.064,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.29999995232,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.5,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 95933.69999992847,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 96044.69999992847,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0.001335,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.19999992847,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.29999995232,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 100164.39999997616,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000555,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 100164.39999997616,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000592,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 104296.60000002384,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000166,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 112543.69999992847,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 112543.89999997616,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 112543.89999997616,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 112581.89999997616,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0.001068,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 112883.39999997616,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 0,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 116861.79999995232,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000158,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 116861.79999995232,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+            "time": 0.000244,
+            "duration": 4.064,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 117004.19999992847,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 117004.29999995232,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+            "time": 4.062993,
+            "duration": 4.062993,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 117349.89999997616,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000218,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 117350.19999992847,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.00044,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 118320.89999997616,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.001735,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 118321,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.001854,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 118538.60000002384,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 118538.60000002384,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 118538.69999992847,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 118574,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": 12.064,
+            "muted": false,
+            "volume": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "controlled pregame HTTP404 fallback",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "status": 404
+        }
+      ],
+      "fallbackBgm": {
+        "time": 0.41358,
+        "duration": 69.218005,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/rhythm-game/assets/audio/game-bgm.m4a"
+      },
+      "expectedHttp404": true,
+      "capture": {
+        "messages": [
+          {
+            "at": 6526.399999976158,
+            "data": {
+              "type": "rhythmgame:ready",
+              "runId": 1
+            },
+            "sameOrigin": true,
+            "fromCurrentFrame": true
+          }
+        ],
+        "media": [
+          {
+            "at": 315.89999997615814,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 340.5,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 0,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4467.100000023842,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4467.200000047684,
+            "type": "ended",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+            "time": 4.064,
+            "duration": 4.064,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 4467.600000023842,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.000186,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 4468.600000023842,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+            "time": 0.001153,
+            "duration": 6.08,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5007.899999976158,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000086,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5008,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000179,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5749.299999952316,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+            "time": 0.000174,
+            "duration": 4.062993,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5749.5,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+            "time": 0.000356,
+            "duration": 4.062993,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5867.899999976158,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000124,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 5868,
+            "type": "playing",
+            "src": "http://127.0.0.1:4176/src/assets/lobby/lobby-background.mp4",
+            "time": 0.000274,
+            "duration": 6.041667,
+            "muted": true,
+            "volume": 1
+          },
+          {
+            "at": 6172.200000047684,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 6172.200000047684,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 6172.299999952316,
+            "type": "play",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 6177.600000023842,
+            "type": "error",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          },
+          {
+            "at": 6177.899999976158,
+            "type": "pause",
+            "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+            "time": 0,
+            "duration": null,
+            "muted": false,
+            "volume": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "controlled NotAllowedError and visibility hidden/visible",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "injectedVisibility": {
+        "a": {
+          "time": 0.536481,
+          "duration": 12.064,
+          "muted": false,
+          "volume": 1,
+          "paused": true,
+          "ended": false,
+          "loop": false,
+          "controls": false,
+          "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4"
+        },
+        "b": {
+          "time": 0.536481,
+          "duration": 12.064,
+          "muted": false,
+          "volume": 1,
+          "paused": true,
+          "ended": false,
+          "loop": false,
+          "controls": false,
+          "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4"
+        },
+        "c": {
+          "time": 1.259095,
+          "duration": 12.064,
+          "muted": false,
+          "volume": 1,
+          "paused": false,
+          "ended": false,
+          "loop": false,
+          "controls": false,
+          "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4"
+        }
+      },
+      "actualPolicyDenial": "unknown",
+      "actualBackgroundHidden": "unknown"
+    },
+    {
+      "name": "controlled game-ready delay: final frame, 10s timeout, reload",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [
+        {
+          "url": "http://127.0.0.1:4176/rhythm-game/index.html?embed=1&runId=1",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "document"
+        }
+      ],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "lastVideoFrame": {
+        "time": 12.064,
+        "duration": 12.064,
+        "muted": false,
+        "volume": 1,
+        "paused": true,
+        "ended": true,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4"
+      },
+      "reloadedWithoutVideo": true
+    },
+    {
+      "name": "controlled invalid result, error exits and NEW RECORD/duplicate complete",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "status": 404
+        }
+      ],
+      "firstEqualHigherRecordAndDuplicate": true,
+      "label": "Synthetic MessageEvents test host rejection/record branches only; these scores are not real playthrough evidence."
+    }
+  ],
+  "screenshots": [
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-fixed-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-fixed-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-fixed-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-fixed-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\store-dialog-fixed-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\store-dialog-fixed-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\store-dialog-fixed-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\store-dialog-fixed-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\hero-dialog-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "pregame-video",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\pregame-video-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "pregame-video",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\pregame-video-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "pregame-video",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\pregame-video-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "pregame-video",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\pregame-video-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "gameplay",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\gameplay-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "gameplay",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\gameplay-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "gameplay",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\gameplay-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "gameplay",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\gameplay-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "game-pause",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\game-pause-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "game-pause",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\game-pause-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "game-pause",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\game-pause-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "game-pause",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\game-pause-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "settlement",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\settlement-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "settlement",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\settlement-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "settlement",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\settlement-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "settlement",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\settlement-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "policy-gesture",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\policy-gesture-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "policy-gesture",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\policy-gesture-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "policy-gesture",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\policy-gesture-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "policy-gesture",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\policy-gesture-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "ready-timeout",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\ready-timeout-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "ready-timeout",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\ready-timeout-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "ready-timeout",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\ready-timeout-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "ready-timeout",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development\\ready-timeout-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "resources": [],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T04:13:10.513Z"
+}

@@ -1,0 +1,33 @@
+Command: npm run build (after scoped dialog CSS change; exit 0)
+
+> hero-select-web@0.1.0 build
+> npm run typecheck && vite build && node scripts/copy-game-runtime.mjs
+
+> hero-select-web@0.1.0 typecheck
+> tsc -b
+
+vite v8.3.1 building client environment for production...
+transforming...
+✓ 129 modules transformed.
+rendering chunks...
+computing gzip size...
+
+Current root references dist/assets/app-36NRszUU.css and dist/assets/app-BGLSVbLO.js.
+The long individual asset-size table is omitted from this excerpt.
+
+✓ built in 471ms
+Published 11 game runtime files and assets.
+
+Earlier build before dialog CSS:
+✓ built in 1.36s
+Published 11 game runtime files and assets.
+
+Development server startup:
+  VITE v8.3.1  ready in 657 ms
+  ➜  Local:   http://127.0.0.1:4176/
+
+Production preview:
+  ➜  Local:   http://127.0.0.1:4180/
+
+These Vite lines are timing/status output, not warnings. Fresh Vitest jsdom performance advice
+and Git LF/CRLF warning wording are saved verbatim in checks.txt.

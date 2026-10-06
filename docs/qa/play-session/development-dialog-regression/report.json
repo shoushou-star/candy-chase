@@ -1,0 +1,286 @@
+{
+  "baseUrl": "http://127.0.0.1:4176",
+  "mode": "development",
+  "startedAt": "2026-10-06T03:59:48.734Z",
+  "cases": [
+    {
+      "name": "real hero/store dialogs: readable close target at all four sizes",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "buttons": [
+        {
+          "kind": "hero",
+          "width": 1280,
+          "height": 720,
+          "box": {
+            "x": 583.75,
+            "y": 363.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 15,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 1366,
+          "height": 768,
+          "box": {
+            "x": 626.75,
+            "y": 387.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 15,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 1920,
+          "height": 1080,
+          "box": {
+            "x": 903.75,
+            "y": 543.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 22.5,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "hero",
+          "width": 2048,
+          "height": 1152,
+          "box": {
+            "x": 939.625,
+            "y": 581.068359375,
+            "width": 168.75,
+            "height": 67.5
+          },
+          "style": {
+            "fontSizeRendered": 22.5,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1280,
+          "height": 720,
+          "box": {
+            "x": 550,
+            "y": 365.40625,
+            "width": 180,
+            "height": 72
+          },
+          "style": {
+            "fontSizeRendered": 24,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1366,
+          "height": 768,
+          "box": {
+            "x": 626.75,
+            "y": 387.37890625,
+            "width": 112.5,
+            "height": 45
+          },
+          "style": {
+            "fontSizeRendered": 15,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 1920,
+          "height": 1080,
+          "box": {
+            "x": 900,
+            "y": 543.6041870117188,
+            "width": 120,
+            "height": 48
+          },
+          "style": {
+            "fontSizeRendered": 16,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        },
+        {
+          "kind": "store",
+          "width": 2048,
+          "height": 1152,
+          "box": {
+            "x": 939.625,
+            "y": 581.068359375,
+            "width": 168.75,
+            "height": 67.5
+          },
+          "style": {
+            "fontSizeRendered": 24,
+            "background": "rgb(255, 199, 53)",
+            "color": "rgb(32, 19, 63)"
+          }
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\hero-dialog-fixed-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\hero-dialog-fixed-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\hero-dialog-fixed-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "hero-dialog-fixed",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\hero-dialog-fixed-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\store-dialog-fixed-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\store-dialog-fixed-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\store-dialog-fixed-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "store-dialog-fixed",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\play-session\\development-dialog-regression\\store-dialog-fixed-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "resources": [],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T03:59:59.034Z"
+}
