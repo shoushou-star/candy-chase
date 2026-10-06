@@ -1,0 +1,116 @@
+{
+  "targetUrl": "http://127.0.0.1:4174/gameplay.html",
+  "viewports": [
+    {
+      "innerWidth": 1920,
+      "innerHeight": 1080,
+      "devicePixelRatio": 1,
+      "stage": {
+        "width": 1920,
+        "height": 1080
+      },
+      "elements": {
+        ".gameplay-hud__score-card": {
+          "width": 532.265625,
+          "height": 55.9375,
+          "widthRatio": 0.2772216796875,
+          "heightRatio": 0.05179398148148148,
+          "fontSize": "22.08px",
+          "strongFontSize": 22.08,
+          "strongFontWidthRatio": 0.0115,
+          "labelFontSize": 22.08,
+          "labelFontWidthRatio": 0.0115
+        },
+        ".gameplay-hud__time": {
+          "width": 154.390625,
+          "height": 53.9375,
+          "widthRatio": 0.08041178385416667,
+          "heightRatio": 0.04994212962962963,
+          "fontSize": "22.08px",
+          "strongFontSize": 22.08,
+          "strongFontWidthRatio": 0.0115,
+          "labelFontSize": 22.08,
+          "labelFontWidthRatio": 0.0115
+        },
+        ".gameplay-hud__combo": {
+          "width": 95.37188720703125,
+          "height": 100.25157165527344,
+          "widthRatio": 0.04967285792032878,
+          "heightRatio": 0.09282552931043837,
+          "fontSize": "16px",
+          "strongFontSize": 96,
+          "strongFontWidthRatio": 0.05,
+          "labelFontSize": 21.12,
+          "labelFontWidthRatio": 0.011000000000000001
+        },
+        ".gameplay-debug": {
+          "width": 166.296875,
+          "height": 15,
+          "widthRatio": 0.08661295572916666,
+          "heightRatio": 0.013888888888888888,
+          "fontSize": "13.44px",
+          "strongFontSize": null,
+          "strongFontWidthRatio": null,
+          "labelFontSize": 13.44,
+          "labelFontWidthRatio": 0.007
+        }
+      }
+    },
+    {
+      "innerWidth": 2480,
+      "innerHeight": 1340,
+      "devicePixelRatio": 1,
+      "stage": {
+        "width": 2382.21875,
+        "height": 1339.984375
+      },
+      "elements": {
+        ".gameplay-hud__score-card": {
+          "width": 661.921875,
+          "height": 70.96875,
+          "widthRatio": 0.2778594010310766,
+          "heightRatio": 0.05296237129630709,
+          "fontSize": "27.3955px",
+          "strongFontSize": 27.3955,
+          "strongFontWidthRatio": 0.011499993440988574,
+          "labelFontSize": 27.3955,
+          "labelFontWidthRatio": 0.011499993440988574
+        },
+        ".gameplay-hud__time": {
+          "width": 190.6875,
+          "height": 66.96875,
+          "widthRatio": 0.08004617544043761,
+          "heightRatio": 0.0499772618617288,
+          "fontSize": "27.3955px",
+          "strongFontSize": 27.3955,
+          "strongFontWidthRatio": 0.011499993440988574,
+          "labelFontSize": 27.3955,
+          "labelFontWidthRatio": 0.011499993440988574
+        },
+        ".gameplay-hud__combo": {
+          "width": 118.307861328125,
+          "height": 125.26873779296875,
+          "widthRatio": 0.0496628873096247,
+          "heightRatio": 0.09348522276087641,
+          "fontSize": "16px",
+          "strongFontSize": 119.111,
+          "strongFontWidthRatio": 0.05000002623604571,
+          "labelFontSize": 26.2044,
+          "labelFontWidthRatio": 0.01099999737639543
+        },
+        ".gameplay-debug": {
+          "width": 206.359375,
+          "height": 19,
+          "widthRatio": 0.08662486390051291,
+          "heightRatio": 0.0141792698142469,
+          "fontSize": "16.6755px",
+          "strongFontSize": null,
+          "strongFontWidthRatio": null,
+          "labelFontSize": 16.6755,
+          "labelFontWidthRatio": 0.006999986881977148
+        }
+      }
+    }
+  ],
+  "hudScalesWithStage": true
+}

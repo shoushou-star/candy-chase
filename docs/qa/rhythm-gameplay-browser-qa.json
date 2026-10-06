@@ -1,0 +1,68 @@
+{
+  "targetUrl": "http://127.0.0.1:4174/gameplay.html",
+  "canvasResolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "largeStartOverlay": {
+    "titleFontWidthRatio": 0.065,
+    "buttonHeightRatio": 0.06131365740740741
+  },
+  "result": {
+    "title": "星光待续",
+    "text": "STAR JAR RESTORATION\n星光待续\n10%\n糖罐修复率\nPERFECT\n3\nGOOD\n0\nMISS\n27\nMAX COMBO\n1\n重新开始"
+  },
+  "largeResultOverlay": {
+    "titleFontWidthRatio": 0.065,
+    "gridWidthRatio": 0.43999837239583334,
+    "buttonHeightRatio": 0.06131365740740741
+  },
+  "viewportResults": [
+    {
+      "width": 1280,
+      "height": 720,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "width": 1400,
+      "height": 900,
+      "stage": {
+        "x": 0,
+        "y": 56.25,
+        "width": 1400,
+        "height": 787.5
+      }
+    }
+  ],
+  "narrowResultFit": {
+    "fits": true,
+    "stage": {
+      "x": 0,
+      "y": 76,
+      "width": 640,
+      "height": 360
+    },
+    "heading": {
+      "x": 230.390625,
+      "y": 159.640625,
+      "width": 179.203125,
+      "height": 40.3125
+    },
+    "restart": {
+      "x": 230,
+      "y": 325.359375,
+      "width": 180,
+      "height": 43
+    }
+  },
+  "restartTime": 0.21,
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "httpErrors": []
+}

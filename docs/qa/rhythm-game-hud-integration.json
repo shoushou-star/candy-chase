@@ -1,0 +1,294 @@
+{
+  "targetUrl": "file:///D:/05%20ai%E4%BD%9C%E5%93%81%E9%9B%86/04/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/rhythm-game/index.html?qa=hud",
+  "topHud": {
+    "scorePanel": true,
+    "scoreStar": true,
+    "comboLabelPanel": true,
+    "comboValuePanel": true,
+    "pauseButton": true
+  },
+  "startHidden": true,
+  "countdown": {
+    "hudHidden": false,
+    "progress": "0",
+    "earnedStars": 0
+  },
+  "active": {
+    "progress": 63,
+    "earnedStars": 3,
+    "hud": {
+      "x": 523.203125,
+      "y": 974.171875,
+      "width": 873.59375,
+      "height": 75.59375
+    },
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 1080
+    },
+    "character": {
+      "x": 0,
+      "y": 437.8125,
+      "width": 618.75,
+      "height": 618.75
+    },
+    "pointerEvents": "none",
+    "scoreText": "5,700"
+  },
+  "attacksBeforePause": 0,
+  "pausedBeforeInput": {
+    "pressed": "true",
+    "overlayVisible": true,
+    "audioState": "suspended",
+    "mediaPaused": true,
+    "attackCount": 0
+  },
+  "pausedAfterInput": {
+    "attackCount": 0,
+    "scoreText": "5,700"
+  },
+  "resumed": {
+    "pressed": "false",
+    "overlayHidden": true,
+    "audioState": "running",
+    "mediaPaused": false
+  },
+  "compact": {
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "hud": {
+      "x": 348.8046875,
+      "y": 649.453125,
+      "width": 582.390625,
+      "height": 50.390625
+    },
+    "scorePanel": {
+      "x": 19.1875,
+      "y": 23.03125,
+      "width": 273.15625,
+      "height": 55.171875
+    },
+    "controls": {
+      "x": 938,
+      "y": 23.03125,
+      "width": 322.8125,
+      "height": 58.15625
+    }
+  },
+  "small": {
+    "stage": {
+      "x": 0,
+      "y": 6.4375,
+      "width": 658,
+      "height": 370.125
+    },
+    "scorePanel": {
+      "x": 9.859375,
+      "y": 18.28125,
+      "width": 140.421875,
+      "height": 28.359375
+    },
+    "scoreStar": {
+      "x": 18.40625,
+      "y": 21.40625,
+      "width": 22.109375,
+      "height": 22.109375
+    },
+    "controls": {
+      "x": 482.1875,
+      "y": 18.28125,
+      "width": 165.953125,
+      "height": 29.890625
+    },
+    "comboGroup": {
+      "x": 482.1875,
+      "y": 18.28125,
+      "width": 129.4375,
+      "height": 29.890625
+    },
+    "comboLabel": {
+      "x": 482.1875,
+      "y": 20.96875,
+      "width": 82.84375,
+      "height": 24.5
+    },
+    "comboValue": {
+      "x": 552.09375,
+      "y": 18.28125,
+      "width": 59.53125,
+      "height": 29.890625
+    },
+    "comboLabelRightRadius": 999,
+    "comboLabelZ": 1,
+    "comboValueZ": 2
+  },
+  "playbackStart": {
+    "duration": 69.218005,
+    "calls": [
+      {
+        "muted": true,
+        "time": 0,
+        "sfxTime": 0
+      },
+      {
+        "muted": false,
+        "time": 0,
+        "sfxTime": 3.05
+      }
+    ]
+  },
+  "finalStarCount": 5,
+  "result": {
+    "resultVisible": true,
+    "hudHidden": true,
+    "completionDetails": [
+      {
+        "finalScore": 9200,
+        "maxCombo": 80,
+        "perfect": 80,
+        "good": 0,
+        "miss": 0,
+        "accuracy": 100,
+        "repairPercent": 100,
+        "starRating": 5,
+        "totalNotes": 80,
+        "judgedNotes": 80
+      }
+    ]
+  },
+  "restart": {
+    "hudHidden": false,
+    "progress": "0",
+    "earnedStars": 0,
+    "mediaTime": 0,
+    "mediaPaused": true,
+    "score": "0",
+    "combo": "0",
+    "heads": 0,
+    "tails": 0,
+    "judgedVisible": false
+  },
+  "frozenAt20": {
+    "progress": "29",
+    "notes": [
+      {
+        "id": "20",
+        "style": "left: 58.7297%; top: 47.0276%; transform: scale(1);",
+        "dash": null
+      },
+      {
+        "id": "21",
+        "style": "left: 67.5927%; top: 44.523%; transform: scale(1);",
+        "dash": null
+      },
+      {
+        "id": "22",
+        "style": "left: 80.9079%; top: 40.6287%; transform: scale(1);",
+        "dash": null
+      }
+    ]
+  },
+  "frozenAfterSeek": {
+    "progress": "29",
+    "notes": [
+      {
+        "id": "20",
+        "style": "left: 58.7297%; top: 47.0276%; transform: scale(1);",
+        "dash": null
+      },
+      {
+        "id": "21",
+        "style": "left: 67.5927%; top: 44.523%; transform: scale(1);",
+        "dash": null
+      },
+      {
+        "id": "22",
+        "style": "left: 80.9079%; top: 40.6287%; transform: scale(1);",
+        "dash": null
+      }
+    ]
+  },
+  "rebuiltRound": {
+    "finalScore": 9200,
+    "maxCombo": 80,
+    "perfect": 80,
+    "good": 0,
+    "miss": 0,
+    "accuracy": 100,
+    "repairPercent": 100,
+    "starRating": 5,
+    "totalNotes": 80,
+    "judgedNotes": 80
+  },
+  "audioRecovery": {
+    "initialReadiness": true,
+    "loadFailure": {
+      "retryEnabled": true,
+      "buttonText": "RETRY",
+      "mediaPaused": true,
+      "mediaTime": 0
+    },
+    "playFailure": {
+      "retryEnabled": true,
+      "startVisible": true,
+      "hudHidden": true,
+      "mediaPaused": true,
+      "completions": 0
+    },
+    "callsBeforePlaying": 4,
+    "expectedAudioErrors": [
+      "Error: BGM metadata failed to load\n    at HTMLAudioElement.onError (file:///D:/05%20ai%E4%BD%9C%E5%93%81%E9%9B%86/04/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/rhythm-game/audio-clock.js:51:18)\n    at window.__failMediaLoad (<anonymous>:57:42)\n    at eval (eval at evaluate (:311:30), <anonymous>:1:14)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+      "Error: Controlled BGM playback failure\n    at HTMLAudioElement.play (<anonymous>:24:15)\n    at AudioClock.playFromStart (file:///D:/05%20ai%E4%BD%9C%E5%93%81%E9%9B%86/04/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/rhythm-game/audio-clock.js:80:24)\n    at beginBgmPlayback (file:///D:/05%20ai%E4%BD%9C%E5%93%81%E9%9B%86/04/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/rhythm-game/app.js?v=5:658:22)\n    at frame (file:///D:/05%20ai%E4%BD%9C%E5%93%81%E9%9B%86/04/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6/rhythm-game/app.js?v=5:605:14)"
+    ]
+  },
+  "realRecovery": {
+    "retry": {
+      "countdownVisible": true,
+      "errorHidden": true,
+      "duration": 69.218005,
+      "playAttempts": [
+        {
+          "muted": true,
+          "inClick": true,
+          "state": "fulfilled"
+        }
+      ]
+    },
+    "playback": {
+      "currentTime": 0.115213,
+      "duration": 69.218005,
+      "paused": false
+    },
+    "overlappingResume": {
+      "mediaPaused": false,
+      "overlayHidden": true,
+      "score": "100",
+      "input": {
+        "score": 100,
+        "time": 4.991813,
+        "attacks": [
+          {
+            "strength": "perfect",
+            "phase": "burst"
+          }
+        ]
+      }
+    },
+    "delayedAudioRequests": 1,
+    "initialErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Error: BGM metadata failed to load\n    at HTMLAudioElement.onError (http://rhythm-game-qa.test/audio-clock.js:51:18)"
+    ],
+    "recoveryErrors": [],
+    "pageErrors": []
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}
