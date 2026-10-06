@@ -1,0 +1,134 @@
+{
+  "baseUrl": "http://127.0.0.1:4176",
+  "mode": "development",
+  "startedAt": "2026-10-06T08:03:46.261Z",
+  "cases": [
+    {
+      "name": "natural intro / controlled settlement result / actual video frames",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/game-flow/pregame-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-intro.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4176/src/assets/settlement/settlement-loop.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "seeks": [],
+      "particles": [
+        {
+          "width": 2048,
+          "height": 1152,
+          "embedded": {
+            "width": 2048,
+            "height": 1152
+          },
+          "direct": {
+            "width": 2048,
+            "height": 1152
+          }
+        },
+        {
+          "width": 1920,
+          "height": 1080,
+          "embedded": {
+            "width": 1920,
+            "height": 1080
+          },
+          "direct": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "width": 1366,
+          "height": 768,
+          "embedded": {
+            "width": 1365,
+            "height": 768
+          },
+          "direct": {
+            "width": 1366,
+            "height": 768
+          }
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "embedded": {
+            "width": 1280,
+            "height": 720
+          },
+          "direct": {
+            "width": 1280,
+            "height": 720
+          }
+        }
+      ],
+      "beforeFrame": {
+        "ready": "false",
+        "background": "rgb(5, 11, 85)"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "phase": "particles",
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\video-handoff\\development\\particles-1280x720.png"
+    }
+  ],
+  "resources": [],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T08:04:19.902Z"
+}

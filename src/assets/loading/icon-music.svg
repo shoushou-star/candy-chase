@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="62" height="64.4167" viewBox="0 0 62 64.4167" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon Refined / Music" filter="url(#filter0_d_0_48)">
+<path id="Vector" d="M21.5278 12.9167L53.3889 6.88889V40.4722C53.3889 47.3611 48.2222 52.5278 41.3333 52.5278C35.3056 52.5278 31 49.0833 31 43.9167C31 39.6111 36.1667 35.3056 42.1944 35.3056C44.7778 35.3056 47.3611 36.1667 49.0833 37.0278V18.9444L25.8333 23.25V47.3611C25.8333 54.25 20.6667 59.4167 13.7778 59.4167C7.75 59.4167 3.44444 55.9722 3.44444 50.8056C3.44444 46.5 8.61111 42.1944 14.6389 42.1944C17.2222 42.1944 19.8056 43.0556 21.5278 43.9167V12.9167Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_d_0_48" x="-3" y="-1" width="68" height="68" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.207843 0 0 0 0 0.0627451 0 0 0 0 0.435294 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_48"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_48" result="shape"/>
+</filter>
+</defs>
+</svg>

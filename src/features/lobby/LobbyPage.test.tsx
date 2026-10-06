@@ -19,18 +19,17 @@ describe("LobbyPage", () => {
     expect(screen.queryByLabelText("有未读邮件")).not.toBeInTheDocument();
   });
 
-  it("uses a silent looping video while retaining the static background fallback", () => {
+  it("fades in a silent looping background video over the static fallback", () => {
     const { container } = render(<LobbyPage state={DEFAULT_LOBBY_STATE} assetsReady />);
-    const video = container.querySelector("video");
+    const video = container.querySelector("video.lobby-page__background-video");
     const fallback = container.querySelector("img.lobby-page__background-fallback");
 
-    expect(video).not.toBeNull();
+    expect(fallback).toBeInTheDocument();
     expect(video).toHaveProperty("autoplay", true);
     expect(video).toHaveProperty("loop", true);
     expect(video).toHaveProperty("muted", true);
     expect(video).toHaveAttribute("playsinline");
     expect(video).not.toHaveClass("is-ready");
-    expect(fallback).toBeInTheDocument();
 
     fireEvent.canPlay(video!);
     expect(video).toHaveClass("is-ready");
@@ -74,6 +73,26 @@ describe("LobbyPage", () => {
     for (const [name] of cases) await user.click(screen.getByRole("button", { name }));
 
     expect(onAction.mock.calls.map(([action]) => action)).toEqual(cases.map(([, action]) => action));
+  });
+
+  it("exposes dedicated HERO and PLAY navigation callbacks", async () => {
+    const user = userEvent.setup();
+    const onOpenHeroSelect = vi.fn();
+    const onPlay = vi.fn();
+    render(
+      <LobbyPage
+        state={DEFAULT_LOBBY_STATE}
+        assetsReady
+        onOpenHeroSelect={onOpenHeroSelect}
+        onPlay={onPlay}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "打开角色" }));
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+
+    expect(onOpenHeroSelect).toHaveBeenCalledOnce();
+    expect(onPlay).toHaveBeenCalledOnce();
   });
 
   it("keeps a visible click animation active after a quick pointer click", async () => {

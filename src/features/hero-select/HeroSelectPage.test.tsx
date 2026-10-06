@@ -37,6 +37,16 @@ function ControlledPage({ initialHeroId = "piko" }: { initialHeroId?: HeroId }) 
 }
 
 describe("HeroSelectPage", () => {
+  it("renders the back control with a dedicated rounded vector arrow", () => {
+    render(<HeroSelectPage {...props()} />);
+
+    const back = screen.getByRole("button", { name: "返回首页" });
+    const icon = back.querySelector("svg");
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+    expect(back).not.toHaveTextContent("←");
+  });
+
   it("renders the approved target copy, rarity, and currency balances", () => {
     render(<HeroSelectPage {...props()} />);
 

@@ -41,10 +41,10 @@
 
 **Interfaces:** 生产与开发均在 `/rhythm-game/index.html` 提供同源游戏；视频通过 Vite import；结算入口 `SettlementSequence(props)`。
 
-- [ ] 记录三个工作区 `git status --short --branch` 与 `git rev-parse HEAD`，列出游戏 index.html 中引用的脚本、样式和素材，按引用闭包同步，包括未跟踪的倒计时与角色素材。保留旧集成背景改动。复制规格/计划到执行工作树，状态改为已确认。
-- [ ] 对源与复制件用 SHA256 校验并写来源清单；复制二进制使用 Copy-Item，文本编辑使用 apply_patch，不覆盖内容不一致的目标文件前先检查 diff。源文件保持原样。
-- [ ] 迁入 SettlementSequence、SettlementPage、sessionRecord、相应测试和实际 import 的素材/样式，不迁入 Demo 假成绩作为主入口。
-- [ ] 在 `copy-game-runtime.mjs` 中采用如下白名单复制结构，实际 runtimeFiles 从 HTML 引用核对：
+- [x] 记录三个工作区 `git status --short --branch` 与 `git rev-parse HEAD`，列出游戏 index.html 中引用的脚本、样式和素材，按引用闭包同步，包括未跟踪的倒计时与角色素材。保留旧集成背景改动。复制规格/计划到执行工作树，状态改为已确认。
+- [x] 对源与复制件用 SHA256 校验并写来源清单；复制二进制使用 Copy-Item，文本编辑使用 apply_patch，不覆盖内容不一致的目标文件前先检查 diff。源文件保持原样。
+- [x] 迁入 SettlementSequence、SettlementPage、sessionRecord、相应测试和实际 import 的素材/样式，不迁入 Demo 假成绩作为主入口。
+- [x] 在 `copy-game-runtime.mjs` 中采用如下白名单复制结构，实际 runtimeFiles 从 HTML 引用核对：
 
 ```js
 import { cpSync, mkdirSync } from 'node:fs';
@@ -56,8 +56,8 @@ for (const file of runtimeFiles) cpSync(`rhythm-game/${file}`, `dist/rhythm-game
 cpSync('rhythm-game/assets', 'dist/rhythm-game/assets', { recursive: true });
 ```
 
-- [ ] build 脚本在 Vite build 后调用复制脚本；Task 3 加入 embed-bridge.js 白名单。Vitest include 限定 `src/**/*.test.{ts,tsx}`，Node 原生测试单独运行，防止误报无 Vitest suite。
-- [ ] 执行 `npm run verify:assets`、`npm run build`；确认 dist 的游戏 HTML、BGM、倒计时、JS/CSS 和结算视频非空。记录原有失败与新增失败；提交明确资源/配置文件，不把无关 package 变化纳入。
+- [x] build 脚本在 Vite build 后调用复制脚本；Task 3 加入 embed-bridge.js 白名单。Vitest include 限定 `src/**/*.test.{ts,tsx}`，Node 原生测试单独运行，防止误报无 Vitest suite。
+- [x] 执行 `npm run verify:assets`、`npm run build`；确认 dist 的游戏 HTML、BGM、倒计时、JS/CSS 和结算视频非空。记录原有失败与新增失败；提交明确资源/配置文件，不把无关 package 变化纳入。
 
 ### Task 2: 成绩与消息契约
 
@@ -65,7 +65,7 @@ cpSync('rhythm-game/assets', 'dist/rhythm-game/assets', { recursive: true });
 
 **Interfaces:** `RhythmGameResult` 全字段类型；`parseResult(value: unknown): RhythmGameResult | null`；`toSettlementProps(result)`；`recordResult(result, previousBest: number | null)` 返回 `{ bestScore, isNewRecord }`；`isCurrentGameMessage(event, frameWindow, origin, runId): boolean`。
 
-- [ ] 写行为测试，先观察失败：
+- [x] 写行为测试，先观察失败：
 
 ```ts
 const completed = { finalScore: 9200, maxCombo: 80, perfect: 80, good: 0,
@@ -82,9 +82,9 @@ it('compares before updating the session best', () => {
 });
 ```
 
-- [ ] 实现字段存在、有限、非负、计数整数、星级 0–5、百分比 0–100、计数相等与 maxCombo ≤ totalNotes 校验；不依赖当前谱面常量。将 finalScore/starRating 映射到 score/stars。
-- [ ] 消息定义 ready/start/complete 判别联合；当前来源必须同时满足 `event.source === frameWindow`、`event.origin === origin`、对象 runId 等于当前整数 runId。测试错 origin、错 source、旧 runId、非对象及缺字段。
-- [ ] 运行 `npm test -- --run src/features/game-flow/result.test.ts src/features/game-flow/bridge.test.ts`，修正至通过。提交本任务 4 个文件。
+- [x] 实现字段存在、有限、非负、计数整数、星级 0–5、百分比 0–100、计数相等与 maxCombo ≤ totalNotes 校验；不依赖当前谱面常量。将 finalScore/starRating 映射到 score/stars。
+- [x] 消息定义 ready/start/complete 判别联合；当前来源必须同时满足 `event.source === frameWindow`、`event.origin === origin`、对象 runId 等于当前整数 runId。测试错 origin、错 source、旧 runId、非对象及缺字段。
+- [x] 运行 `npm test -- --run src/features/game-flow/result.test.ts src/features/game-flow/bridge.test.ts`，修正至通过。提交本任务 4 个文件。
 
 ### Task 3: 游戏嵌入桥接
 
@@ -92,9 +92,9 @@ it('compares before updating the session best', () => {
 
 **Interfaces:** URL `/rhythm-game/index.html?embed=1&runId=N`；ready/start/complete 协议同 Task 2。桥接模块暴露 `createEmbedBridge({ window, runId, prepare, start, dispose })`，start 调用现有启动函数。
 
-- [ ] 写实际桥接行为测试（Node test、fake parent 与可控制的 prepare promise）：prepare 未完成不发送 ready；完成后发送一次；错误 parent/origin/runId 不启动；两个合法 start 仅调用一次；游戏完成事件原样传出 result；dispose 后不处理输入。
-- [ ] 执行 `node --test rhythm-game/tests/embed-bridge.test.js`，确认失败点来自缺失桥接功能。
-- [ ] 在 app 初始化底部接入桥接，嵌入模式隐藏 START/result overlay、等待资源及 BGM metadata 可用后 ready；启动调用原有音频解锁与倒计时入口并 resetInput。不要通过点击隐藏按钮替代生命周期接口。
+- [x] 写实际桥接行为测试（Node test、fake parent 与可控制的 prepare promise）：prepare 未完成不发送 ready；完成后发送一次；错误 parent/origin/runId 不启动；两个合法 start 仅调用一次；游戏完成事件原样传出 result；dispose 后不处理输入。
+- [x] 执行 `node --test rhythm-game/tests/embed-bridge.test.js`，确认失败点来自缺失桥接功能。
+- [x] 在 app 初始化底部接入桥接，嵌入模式隐藏 START/result overlay、等待资源及 BGM metadata 可用后 ready；启动调用原有音频解锁与倒计时入口并 resetInput。不要通过点击隐藏按钮替代生命周期接口。
 
 ```js
 const embedded = new URLSearchParams(location.search).get('embed') === '1';
@@ -105,9 +105,9 @@ window.addEventListener('rhythmgame:complete', event => {
 });
 ```
 
-- [ ] 游戏退出执行清理入口，停止 BGM/SFX 和动画，并取消桥接监听；保留独立页面旧结果与 START。
-- [ ] 运行 `node --test rhythm-game/tests/*.test.js rhythm-game/attack-event-contract.test.js` 和相关 `node --check`。浏览器验证隐藏预加载时无声、start 后倒计时且 BGM 推进；真实策略拒绝显示可点击的音频恢复入口，不能假称自动音频已验收。
-- [ ] 提交桥接与必要 app/index 增量及测试，不修改判定或谱面。
+- [x] 游戏退出执行清理入口，停止 BGM/SFX 和动画，并取消桥接监听；保留独立页面旧结果与 START。
+- [x] 运行 `node --test rhythm-game/tests/*.test.js rhythm-game/attack-event-contract.test.js` 和相关 `node --check`。浏览器验证隐藏预加载时无声、start 后倒计时且 BGM 推进；真实策略拒绝显示可点击的音频恢复入口，不能假称自动音频已验收。（证据限制：真实浏览器策略拒绝仍未知；Task 7 受控 NotAllowedError 与真实点击通过，不能替代真实策略证据。）
+- [x] 提交桥接与必要 app/index 增量及测试，不修改判定或谱面。
 
 ### Task 4: PIKO 确认与未开发提示
 
@@ -115,9 +115,9 @@ window.addEventListener('rhythmgame:complete', event => {
 
 **Interfaces:** `HeroUnavailableDialog({ open, triggerRef, onClose })`；确认分支仅 piko 调用 setConfirmedHeroId。
 
-- [ ] 添加交互测试：选 riff → SELECT → 提示 → 关闭 → riff 仍选中；已确认 piko 后其他 SELECT 不覆盖；piko SELECT 保存但不自动跳转。
-- [ ] 运行对应 React 测试观察失败。
-- [ ] 复用 StoreUnavailableDialog 的样式和 focus/Escape/Tab 处理创建专用文案组件，打开时隔离底层输入，关闭回到 SELECT 触发按钮。App 中草稿与确认保持独立：
+- [x] 添加交互测试：选 riff → SELECT → 提示 → 关闭 → riff 仍选中；已确认 piko 后其他 SELECT 不覆盖；piko SELECT 保存但不自动跳转。
+- [x] 运行对应 React 测试观察失败。
+- [x] 复用 StoreUnavailableDialog 的样式和 focus/Escape/Tab 处理创建专用文案组件，打开时隔离底层输入，关闭回到 SELECT 触发按钮。App 中草稿与确认保持独立：
 
 ```ts
 function confirmPlayableHero(heroId: HeroId) {
@@ -126,15 +126,15 @@ function confirmPlayableHero(heroId: HeroId) {
 }
 ```
 
-- [ ] 大厅 PLAY 对 confirmedHeroId 做 piko 检查，其他状态打开角色页。运行新增案例及原角色/大厅回归测试；提交只含本任务文件。
+- [x] 大厅 PLAY 对 confirmedHeroId 做 piko 检查，其他状态打开角色页。运行新增案例及原角色/大厅回归测试；提交只含本任务文件。
 
 ### Task 5: iframe 容器、有声视频与双条件启动
 
 **Files:** Create `GameplayFrame.tsx`、`PregameVideo.tsx`、`PlaySession.tsx` 及各自 `.test.tsx`，均位于 `src/features/game-flow`；Create `src/styles/play-session.css`。
 
-**Interfaces:** `GameplayFrame({runId, active, onReady, onComplete, onError})`；`PregameVideo({onFinished})`；`PlaySession({runId, playIntro, onComplete, onRetryLoad, onReturnToLobby})`。onComplete 参数为 RhythmGameResult，组件内先校验来源，再交给 Task 2 parseResult。
+**Interfaces:** `GameplayFrame({runId, active, onReady, onComplete, onError})`；`PregameVideo({onFinished})`；`PlaySession({runId, playIntro, onComplete, onRetryLoad, onReturnToLobby, onGameplayStarted?})`。onComplete 参数为 RhythmGameResult，组件内先校验来源，再交给 Task 2 parseResult。可选 `onGameplayStarted(): void` 每局实际激活时调用一次，使 Task 6 更新顶层页面状态，但不重建同一 iframe。
 
-- [ ] 添加测试覆盖两种 ready/ended 顺序、重复事件、超时、Retry 跳视频、背景暂停和策略拒绝：
+- [x] 添加测试覆盖两种 ready/ended 顺序、重复事件、超时、Retry 跳视频、背景暂停和策略拒绝：
 
 ```ts
 it('does not start until both video and game are ready', () => {
@@ -150,10 +150,10 @@ it('does not start until both video and game are ready', () => {
 });
 ```
 
-- [ ] GameplayFrame 监听在挂载时安装，load 不代表 ready；为 iframe 设置同源 URL 与 autoplay 权限；预加载时隐藏并 inert，active 后焦点进入 iframe并只发送一次 start。拒绝旧局与重复 complete，无效合法来源成绩触发 onError。
-- [ ] PregameVideo import MP4，使用 ref.play() 检查 promise：NotAllowedError 显示“点击继续播放”，媒体 error 则 onFinished；ended 去重。visibilitychange 隐藏暂停、可见续播，续播拒绝保留手势入口。等待交接时不归零；unmount 暂停并归零。
-- [ ] PlaySession 维护 ready/finished/error，条件成立才 active；finished 且未 ready 开始 10000ms 计时，超时出现“重新加载”“返回大厅”；重新加载由 App 更新 runId，保存 intro 已完成状态，不重看视频。Retry 场景 playIntro=false，等待 ready 后直接 start。
-- [ ] React 测试通过后用真实浏览器核对自动音频、窗口切换及媒体错误，不把 jsdom 媒体 mock 当作声音播放证据。提交本任务文件。
+- [x] GameplayFrame 监听在挂载时安装，load 不代表 ready；为 iframe 设置同源 URL 与 autoplay 权限；预加载时隐藏并 inert，active 后焦点进入 iframe并只发送一次 start。拒绝旧局与重复 complete，无效合法来源成绩触发 onError。
+- [x] PregameVideo import MP4，使用 ref.play() 检查 promise：NotAllowedError 显示“点击继续播放”，媒体 error 则 onFinished；ended 去重。visibilitychange 隐藏暂停、可见续播，续播拒绝保留手势入口。等待交接时不归零；unmount 暂停并归零。
+- [x] PlaySession 维护 ready/finished/error，条件成立才 active；finished 且未 ready 开始 10000ms 计时，超时出现“重新加载”“返回大厅”；重新加载由 App 更新 runId，保存 intro 已完成状态，不重看视频。Retry 场景 playIntro=false，等待 ready 后直接 start。
+- [x] React 测试通过后用真实浏览器核对自动音频、窗口切换及媒体错误，不把 jsdom 媒体 mock 当作声音播放证据。提交本任务文件。
 
 ### Task 6: 接入顶层流程与真实结算
 
@@ -161,40 +161,40 @@ it('does not start until both video and game are ready', () => {
 
 **Interfaces:** AppScreen 加入 pregame-video/gameplay/settlement；使用 runId、latestResult、sessionBestScore、isNewRecord 和 playIntro。保留旧占位页文件，主流程不再使用它。
 
-- [ ] 添加测试：确认 PIKO → 返回 → PLAY → 视频/ready → 游戏完成 → 真实结算；重复 complete 不更新纪录；Retry 新 runId 无前置视频；Next 保留 PIKO；首次/更高/相等分数纪录分支。
-- [ ] 在屏幕状态中保持同一 PlaySession 实例从 pregame-video 进入 gameplay，不能转场时卸载预加载 iframe；只在 runId 改变、结算或返回大厅时卸载。
-- [ ] 首次有效 result 到达时先 recordResult 再更新最高分，保留新纪录布尔值，映射结算 props：
+- [x] 添加测试：确认 PIKO → 返回 → PLAY → 视频/ready → 游戏完成 → 真实结算；重复 complete 不更新纪录；Retry 新 runId 无前置视频；Next 保留 PIKO；首次/更高/相等分数纪录分支。
+- [x] 利用 PlaySession 的 onGameplayStarted 更新顶层 gameplay 状态；在屏幕状态中保持同一 PlaySession 实例从 pregame-video 进入 gameplay，不能转场时卸载预加载 iframe；只在 runId 改变、结算或返回大厅时卸载。
+- [x] 首次有效 result 到达时先 recordResult 再更新最高分，保留新纪录布尔值，映射结算 props：
 
 ```tsx
 <SettlementSequence {...toSettlementProps(latestResult)}
   isNewRecord={isNewRecord} onRetry={retryGame} onNext={returnToLobby} />
 ```
 
-- [ ] Retry 设置最新成绩为空、runId+1、playIntro=false；Next 回大厅保留 confirmedHeroId 与 sessionBestScore。预览中游戏开始后前置视频声音已停，结束后旧结果框不闪出。
-- [ ] 执行 App、桥接、角色、结算序列定向测试；提交本任务文件。
+- [x] Retry 设置最新成绩为空、runId+1、playIntro=false；Next 回大厅保留 confirmedHeroId 与 sessionBestScore。预览中游戏开始后前置视频声音已停，结束后旧结果框不闪出。
+- [x] 执行 App、桥接、角色、结算序列定向测试；提交本任务文件。
 
 ### Task 7: 完整浏览器闭环与生产发布验证
 
 **Files:** Create `scripts/play-session-browser-qa.cjs`；Update `scripts/verify-assets.mjs`；Create `docs/qa/play-session-integration.md` 与专属截图/报告。
 
-- [ ] 脚本接受 `BASE_URL`，从加载页真实操作角色选择与 PLAY，不能仅绕过 App 在独立游戏页面验证。记录 console error、pageerror、requestfailed 与完成数据。
-- [ ] 验证前置视频时间推进、声音属性、无跳过；视频结束才倒计时；BGM currentTime 推进；玩完一局确认结算数字与捕获成绩一致。可以增加受控谱面时间案例以测试满分，但必须另有真实媒体推进证据。
-- [ ] 测试 Retry iframe 不同实例、Next 返回、旧 runId 消息忽略；资源错误/延迟、NotAllowedError、失焦暂停、重复完成和非法成绩分支。
-- [ ] 2048×1152、1920×1080、1366×768、1280×720 截图检查舞台、视频完整度、按钮、iframe 与弹窗；记录人工听感与触屏未覆盖项。
-- [ ] 运行 `npm test -- --run`、Node 游戏测试、`npm run typecheck`、`npm run verify:assets`、`npm run build`、`git diff --check`。构建后用 `npm run preview -- --host 127.0.0.1 --port 4180`，确认 `/rhythm-game/index.html`、BGM、每个运行脚本及视频均返回正确 MIME 与 HTTP 200，并在生产预览跑闭环。
-- [ ] 若自动化依赖缺失先定位已有 bundled/runtime 依赖，不擅自改变项目 dependencies；若仍无法运行，报告实际缺口，不能声称浏览器验收通过。
+- [x] 脚本接受 `BASE_URL`，从加载页真实操作角色选择与 PLAY，不能仅绕过 App 在独立游戏页面验证。记录 console error、pageerror、requestfailed 与完成数据。
+- [x] 验证前置视频时间推进、声音属性、无跳过；视频结束才倒计时；BGM currentTime 推进；玩完一局确认结算数字与捕获成绩一致。可以增加受控谱面时间案例以测试满分，但必须另有真实媒体推进证据。
+- [x] 测试 Retry iframe 不同实例、Next 返回、旧 runId 消息忽略；资源错误/延迟、NotAllowedError、失焦暂停、重复完成和非法成绩分支。
+- [x] 2048×1152、1920×1080、1366×768、1280×720 截图检查舞台、视频完整度、按钮、iframe 与弹窗；记录人工听感与触屏未覆盖项。
+- [x] 运行 `npm test -- --run`、Node 游戏测试、`npm run typecheck`、`npm run verify:assets`、`npm run build`、`git diff --check`。构建后用 `npm run preview -- --host 127.0.0.1 --port 4180`，确认 `/rhythm-game/index.html`、BGM、每个运行脚本及视频均返回正确 MIME 与 HTTP 200，并在生产预览跑闭环。
+- [x] 若自动化依赖缺失先定位已有 bundled/runtime 依赖，不擅自改变项目 dependencies；若仍无法运行，报告实际缺口，不能声称浏览器验收通过。
 
 ### Task 8: 交付与预览
 
 **Files:** `docs/qa/play-session-integration.md`、计划复选项及来源清单。
 
-- [ ] 对照规格 9 条验收逐项写证据或具体限制；来源 manifest 记录最终版本与资源哈希。
-- [ ] 查 final diff，保护已有 `docs/qa/game-flow-browser-qa.json` 修改，确认本任务未改变无关源工作区、未删除文件。
-- [ ] 保持集成工作区 Vite 在 4176 运行；HTTP 检查后调用 open_in_codex 打开最新预览。若工具返回 queued，只报告已请求打开，不能声称确认了可见标签页。
-- [ ] 交付说明已实现行为、测试结果、浏览器真实音频情况及仍未完成的人工复审项；不将游戏来源对话的旧测试报告作为本次新鲜验收。
+- [x] 对照规格 9 条验收逐项写证据或具体限制；来源 manifest 记录最终版本与资源哈希。
+- [x] 查 final diff，保护已有 `docs/qa/game-flow-browser-qa.json` 修改，确认本任务未改变无关源工作区、未删除文件。
+- [x] 保持集成工作区 Vite 在 4176 运行；HTTP 检查后调用 open_in_codex 打开最新预览。若工具返回 queued，只报告已请求打开，不能声称确认了可见标签页。
+- [x] 交付说明已实现行为、测试结果、浏览器真实音频情况及仍未完成的人工复审项；不将游戏来源对话的旧测试报告作为本次新鲜验收。
 
 ## 自审与执行交接
 
 规格全部章节已映射到任务：来源/生产资源 Task 1；通信/成绩 Task 2–3；角色 Task 4；视频/时序/错误 Task 5；主流程/纪录/出口 Task 6；生命周期与实际发布 Task 3、5、7；最终验收 Task 7–8。接口名称与 runId 在全部任务一致。
 
-默认执行方式为当前会话逐任务执行（executing-plans）。用户明确要求子代理时才改用委派方式。计划准备完成，等待开始实施指令。
+默认执行方式为当前会话逐任务执行（executing-plans）。用户已确认计划并授权委派实施；Task 1 资源固定与发布已完成验证，后续任务继续按依赖顺序推进。

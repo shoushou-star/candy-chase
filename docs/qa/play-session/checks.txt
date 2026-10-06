@@ -1,0 +1,126 @@
+# Fresh Task 7 checks after scoped dialog CSS fix
+# Commands: npm test -- --run; npm run test:game; npm run test:runtime; npm run typecheck; npm run verify:assets; git diff --check
+# Each command is followed by an exit-code guard; final exit 0.
+
+> hero-select-web@0.1.0 test
+> vitest --run
+
+
+ RUN  v5.0.2 C:/Users/25283/.codex/worktrees/game-flow-integration/游戏操作文件
+
+
+ Test Files  21 passed (21)
+      Tests  209 passed (209)
+   Start at  12:10:16
+   Duration  40.75s (environment 53%, tests 21%, setup 14%, transform 8%, import 4%)
+
+Environment  jsdom was created 21 times · 111.96s total, 53% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+
+> hero-select-web@0.1.0 test:game
+> node --test rhythm-game/tests/*.test.js rhythm-game/attack-event-contract.test.js
+
+✔ successful perfect hold-end immediately paints a bounded endpoint flash and cleans it (9.5685ms)
+✔ successful good hold-end immediately paints a bounded endpoint flash and cleans it (3.3164ms)
+✔ Miss hold-end clears without success flash (2.0698ms)
+✔ rhythmgame:pause clears the hold finish flash immediately (1.2685ms)
+✔ rhythmgame:reset clears the hold finish flash immediately (0.8474ms)
+✔ rhythmgame:complete clears the hold finish flash immediately (0.7214ms)
+✔ app.js remains the only keyboard and pointer input owner (0.5416ms)
+✔ valid gameplay input dispatches one semantic attack event with strength (0.4054ms)
+✔ app owns release input and exposes semantic hold phases (1.1862ms)
+✔ effect renderer cleans up sustained feedback at restart and audio failure (0.9207ms)
+✔ effect renderer clears on the existing game-complete event (0.327ms)
+✔ pausing dispatches a semantic event that clears active attack particles (0.325ms)
+✔ legacy SVG attack renderer and layer are removed (0.6191ms)
+✔ the complete BGM is packaged and wired with a relative URL (7.1359ms)
+✔ AudioClock starts, pauses, resumes, and resets the injected media (4.1999ms)
+✔ media timestamps and end state are authoritative on every read (0.2493ms)
+✔ whenReady waits for metadata before resolving the loaded duration (0.4207ms)
+✔ whenReady exposes asynchronous media loading failure (0.7141ms)
+✔ whenReady rejects an existing media error without waiting for another event (0.3399ms)
+✔ loaded metadata with no positive finite duration fails readiness (0.5615ms)
+✔ unlock starts muted playback synchronously and restores the prior mute state (0.2082ms)
+✔ unlock restores the prior mute state when playback is denied (0.1969ms)
+✔ playFromStart rewinds before playback and exposes a playback rejection (0.2014ms)
+✔ resume preserves the timestamp and exposes a playback rejection (0.3031ms)
+✔ AudioClock requires an injected media element (0.3862ms)
+✔ waits for preparation before announcing ready exactly once with the same-origin target (4.4356ms)
+✔ only the current same-origin parent start can start the round, once (0.871ms)
+✔ forwards the original complete result once only after the round has started (1.0559ms)
+✔ dispose cancels pending ready and all input, and cleans the game once (0.4986ms)
+✔ pagehide disposes an active bridge and stops future messages (2.9551ms)
+✔ actual app releases Space consumption and its registered listeners on dispose (7.3252ms)
+✔ the approved chart has exact duration, counts, and boundaries (4.4124ms)
+✔ holds last two beats and never overlap another judgement (0.6515ms)
+✔ judgeOffsetMs includes both positive and negative Perfect boundaries (1.4124ms)
+✔ judgeOffsetMs includes both positive and negative Good boundaries (0.1779ms)
+✔ judgeOffsetMs returns none immediately outside the Good window (0.1354ms)
+✔ buildBeatSchedule creates the 116 playable beats for the default round (0.4555ms)
+✔ applyJudgement updates score, combo, best combo and hit counters (1.1701ms)
+✔ Miss resets current combo without reducing score or maximum combo (0.19ms)
+✔ none represents an empty press and leaves score state unchanged (0.1754ms)
+✔ calculateMusicProgress clamps the audio-clock position to the round (0.1718ms)
+✔ calculateRoundMetrics uses weighted accuracy and actual schedule capacity (0.2933ms)
+✔ calculateRoundMetrics applies the approved grade boundaries (0.3881ms)
+✔ buildCompletionDetail exposes the complete future result-page contract (0.2499ms)
+✔ formatHudScore uses readable thousands separators without legacy zero padding (1.2366ms)
+✔ validateChart accepts the approved chart and rejects overlapping hold judgements (1.5931ms)
+✔ validateChart enforces note identity, type, finite times and chart ordering (0.9441ms)
+✔ validateChart requires a hold end after its head and protects the release boundary (0.8779ms)
+✔ validateChart requires speed acceleration strictly inside its travel interval (0.8859ms)
+✔ speed progress is slow before 65 percent and still reaches one on time (0.2781ms)
+✔ travelProgress clamps all note types and uses the approved speed curve (0.236ms)
+✔ combineHoldJudgements applies the approved score matrix (0.2582ms)
+✔ applyNoteResult increments combo once for a completed hold (0.1222ms)
+✔ applyNoteResult keeps partial hold points but counts a miss once and resets combo (0.2094ms)
+✔ the approved chart maximum is 9200 (0.1543ms)
+✔ weighted metrics use earned points and resolved capacity, including partial hold misses (0.1535ms)
+✔ metrics handle empty rounds and clamp excessive points (0.1019ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 57
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 779.4303
+
+> hero-select-web@0.1.0 test:runtime
+> node --test scripts/copy-game-runtime.test.mjs
+
+✔ publishes the standalone runtime and nested assets without publishing tests or clearing existing output (488.4275ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 719.3355
+
+> hero-select-web@0.1.0 typecheck
+> tsc -b
+
+
+> hero-select-web@0.1.0 verify:assets
+> node scripts/verify-assets.mjs
+
+src/assets/figma/hero-piko-background.png: 2048×1152
+src/assets/figma/hero-riff-background.png: 2048×1152
+src/assets/figma/hero-bongo-background.png: 2048×1152
+src/assets/figma/hero-nibby-background.png: 2048×1152
+src/assets/figma/hero-mira-background.png: 2048×1152
+src/assets/lobby/lobby-background.png: 2048×1152
+src/assets/loading/loading-background.png: 2048×1152
+src/assets/loading/loading-logo.png: 2048×1152
+Verified 97 required assets, including the game reference closure and settlement media.
+warning: in the working copy of 'docs/qa/game-flow-browser-qa.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/superpowers/plans/2026-10-06-play-game-settlement-integration-implementation.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/verify-assets.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/features/lobby/LobbyPage.test.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/features/lobby/LobbyPage.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/styles/controls.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/styles/lobby.css', LF will be replaced by CRLF the next time Git touches it

@@ -1,0 +1,17 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="62" height="67" viewBox="0 0 62 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon Refined / Notice" filter="url(#filter0_d_0_32)">
+<path id="Vector" d="M31 4.30556C27.5556 4.30556 24.9722 6.88889 24.9722 10.3333V12.0556C16.3611 14.6389 10.3333 22.3889 10.3333 32.7222V43.9167L4.30556 50.8056H57.6944L51.6667 43.9167V32.7222C51.6667 22.3889 45.6389 14.6389 37.0278 12.0556V10.3333C37.0278 6.88889 34.4444 4.30556 31 4.30556Z" fill="white"/>
+<path id="Vector_2" d="M23.25 54.25C24.1111 59.4167 27.5556 62 31 62C34.4444 62 37.8889 59.4167 38.75 54.25H23.25Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_d_0_32" x="-3" y="-1" width="68" height="68" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="2"/>
+<feGaussianBlur stdDeviation="1.5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.207843 0 0 0 0 0.0627451 0 0 0 0 0.435294 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_32"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_32" result="shape"/>
+</filter>
+</defs>
+</svg>

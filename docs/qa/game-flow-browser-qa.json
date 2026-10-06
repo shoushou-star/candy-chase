@@ -1,0 +1,51 @@
+{
+  "confirmedHeroPreserved": "true",
+  "refreshStartsAtLoading": true,
+  "stageMeasurements": [
+    {
+      "width": 2048,
+      "height": 1152,
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "width": 1400,
+      "height": 900,
+      "stage": {
+        "x": 0,
+        "y": 56.25,
+        "width": 1400,
+        "height": 787.5
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "abortedMediaRequests": [
+    "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/videos/hero-nibby.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/videos/hero-piko.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/videos/hero-mira.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/videos/hero-bongo.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/videos/hero-riff.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/loading/loading-intro.mp4 net::ERR_ABORTED",
+    "http://127.0.0.1:4176/src/assets/loading/loading-loop.mp4 net::ERR_ABORTED"
+  ],
+  "httpErrors": []
+}

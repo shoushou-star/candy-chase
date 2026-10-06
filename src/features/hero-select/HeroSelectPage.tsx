@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, type RefObject } from "react";
 import { GameButton } from "../../components/GameButton";
 import coinsIcon from "../../assets/figma/icon-coins.svg";
 import energyIcon from "../../assets/figma/icon-energy.svg";
@@ -14,6 +14,8 @@ import "../../styles/hero-select.css";
 
 export interface HeroSelectPageProps {
   selectedHeroId: HeroId;
+  confirmedHeroId?: HeroId | null;
+  confirmButtonRef?: RefObject<HTMLButtonElement | null>;
   playbackRequestId: number;
   assetLoadState: HeroAssetState;
   onSelectHero: (heroId: HeroId) => void;
@@ -24,6 +26,8 @@ export interface HeroSelectPageProps {
 
 export function HeroSelectPage({
   selectedHeroId,
+  confirmedHeroId = null,
+  confirmButtonRef,
   playbackRequestId,
   assetLoadState,
   onSelectHero,
@@ -32,6 +36,7 @@ export function HeroSelectPage({
   onOpenStore,
 }: HeroSelectPageProps) {
   const selectedHero = getHeroById(selectedHeroId);
+  const isSelectedConfirmed = confirmedHeroId === selectedHeroId;
   const currentStatus = assetLoadState[selectedHeroId];
   const playbackKey = `${selectedHeroId}-${playbackRequestId}`;
   const [revealedPlaybackKey, setRevealedPlaybackKey] = useState<string | null>(null);
@@ -63,7 +68,13 @@ export function HeroSelectPage({
       <div className="hero-select-page__overlay" aria-hidden="true" />
       <header className="hero-select-page__header">
         <GameButton className="hero-select-page__back" aria-label="返回首页" onClick={onBack}>
-          <span aria-hidden="true">←</span>
+          <svg
+            className="hero-select-page__back-icon"
+            aria-hidden="true"
+            viewBox="0 0 64 64"
+          >
+            <path d="M34 14 16 32l18 18M18 32h31" />
+          </svg>
         </GameButton>
         <div className="hero-select-page__currencies">
           <CurrencyCounter name="金币" iconSrc={coinsIcon} value={623736} onOpenStore={onOpenStore} />
@@ -76,12 +87,13 @@ export function HeroSelectPage({
         <CarouselArrow direction={-1} onClick={() => selectAdjacent(-1)} />
         <CarouselArrow direction={1} onClick={() => selectAdjacent(1)} />
         <GameButton
+          ref={confirmButtonRef}
           className="hero-select-page__confirm"
-          aria-label={`确认选择 ${selectedHero.displayName}`}
+          aria-label={isSelectedConfirmed ? `已选择 ${selectedHero.displayName}` : `确认选择 ${selectedHero.displayName}`}
           disabled={currentStatus !== "ready" || selectedHero.disabled}
           onClick={() => onConfirm(selectedHeroId)}
         >
-          SELECT
+          {isSelectedConfirmed ? "SELECTED" : "SELECT"}
         </GameButton>
         <HeroCardList
           selectedHeroId={selectedHeroId}

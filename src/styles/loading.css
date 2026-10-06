@@ -1,0 +1,49 @@
+.loading-page {
+  --loading-progress: 0;
+  position: relative;
+  width: 2048px;
+  height: 1152px;
+  overflow: hidden;
+  background: #6f2fd0;
+  isolation: isolate;
+}
+
+.loading-page__background,
+.loading-page__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.loading-page__background { z-index: 0; user-select: none; }
+.loading-page__video { z-index: 1; opacity: 0; transition: opacity 120ms linear; }
+.loading-page__video--active { opacity: 1; }
+
+.loading-page__logo { position: absolute; z-index: 2; left: 531px; top: 546px; width: 907px; height: 510px; object-fit: cover; pointer-events: none; user-select: none; }
+.loading-controls { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.loading-control { position: absolute; width: 108px; height: 108px; }
+.loading-control--sound { left: 48px; top: 48px; }
+.loading-control--music { left: 48px; top: 180px; }
+.loading-control--settings { left: 1892px; top: 48px; }
+.loading-control--account { left: 48px; top: 999px; }
+.loading-control--notice { left: 1892px; top: 999px; }
+.loading-control__candy { position: absolute; left: -13px; top: -8px; width: 134px; height: 134px; max-width: none; }
+.loading-control__icon { position: absolute; left: 23px; top: 23px; width: 62px; height: 62px; }
+
+.loading-progress { position: absolute; z-index: 4; left: 633px; top: 1022px; width: 760px; height: 76px; box-sizing: border-box; border: 6px solid #fff; border-radius: 38px; background: rgb(255 255 255 / 4%); box-shadow: 0 8px 20px rgb(55 16 122 / 35%), inset 0 3px 5px rgb(255 255 255 / 24%); color: inherit; font: inherit; }
+.loading-progress--complete { padding: 0; cursor: pointer; transition: filter 120ms ease, transform 120ms ease; }
+.loading-progress--complete:hover { filter: brightness(1.08); }
+.loading-progress--complete:active { transform: translateY(3px) scale(0.99); }
+.loading-progress--complete:focus-visible { outline: 7px solid #ffd047; outline-offset: 7px; }
+.loading-progress__track { position: absolute; left: 8px; top: 6px; width: 732px; height: 52px; overflow: visible; border-radius: 26px; background: linear-gradient(180deg, #5b25c4 0%, #7438d6 100%); box-shadow: inset 0 4px 8px rgb(45 12 111 / 34%); }
+.loading-progress__fill { position: absolute; left: 4px; top: 4px; width: calc(16px + (692px * var(--loading-progress))); height: 44px; border-radius: 22px; background: linear-gradient(180deg, #ffdb57 0%, #ffd047 50%, #ffc43c 100%); box-shadow: inset 0 4px 4px rgb(255 255 255 / 36%), inset 0 -4px 4px rgb(225 139 24 / 22%); will-change: width; }
+.loading-progress__star { position: absolute; z-index: 2; left: calc(5px + (692px * var(--loading-progress))); top: -3px; width: 58px; height: 58px; will-change: left; }
+.loading-progress__star img { position: absolute; left: -4px; top: -3px; width: 67px; height: 65px; max-width: none; }
+.loading-progress__label { position: absolute; z-index: 3; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; font-size: 36px; font-weight: 700; line-height: 52px; text-align: center; text-shadow: 0 3px 4px rgb(58 26 111 / 48%); }
+
+.loading-start-overlay { position: absolute; inset: 0; z-index: 5; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 0; border: 0; color: #fff; background: rgb(31 10 72 / 22%); cursor: pointer; }
+.loading-start-overlay__panel { display: flex; min-width: 360px; padding: 24px 42px 22px; border: 5px solid #fff; border-radius: 48px; flex-direction: column; align-items: center; background: linear-gradient(180deg, #8d4ee7 0%, #5925b7 100%); box-shadow: 0 10px 28px rgb(53 15 112 / 42%), inset 0 4px 5px rgb(255 255 255 / 24%); transform: translateY(120px); }
+.loading-start-overlay__title { font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; font-size: 44px; font-weight: 800; line-height: 1.15; text-shadow: 0 3px 4px rgb(58 26 111 / 48%); }
+.loading-start-overlay__hint { margin-top: 8px; font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif; font-size: 20px; font-weight: 700; opacity: 0.9; }
+.loading-start-overlay:focus-visible .loading-start-overlay__panel { outline: 7px solid #ffd047; outline-offset: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-progress__fill,
+  .loading-progress__star { will-change: auto; }
+  .loading-page__video { transition: none; }
+}

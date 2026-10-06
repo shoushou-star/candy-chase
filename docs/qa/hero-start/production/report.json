@@ -1,0 +1,308 @@
+{
+  "baseUrl": "http://127.0.0.1:4180",
+  "mode": "production",
+  "startedAt": "2026-10-06T08:47:25.148Z",
+  "cases": [
+    {
+      "name": "打开角色 -> SELECT -> direct start",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "intro": {
+        "time": 0.213699,
+        "duration": 12.064,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4"
+      },
+      "playbackRate": 1,
+      "starts": [
+        {
+          "at": 12194.600000023842,
+          "data": {
+            "type": "rhythmgame:start",
+            "runId": 1
+          },
+          "sameOrigin": true,
+          "fromCurrentFrame": false
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "name": "开始游戏 -> SELECT -> direct start",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "intro": {
+        "time": 0.220191,
+        "duration": 12.064,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4"
+      },
+      "playbackRate": 1,
+      "starts": [
+        {
+          "at": 12199.600000023842,
+          "data": {
+            "type": "rhythmgame:start",
+            "runId": 1
+          },
+          "sameOrigin": true,
+          "fromCurrentFrame": false
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "name": "saved selection / unavailable hero / lobby PLAY",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    {
+      "phase": "start-dialog",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\start-dialog-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "start-dialog",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\start-dialog-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "start-dialog",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\start-dialog-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "start-dialog",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\start-dialog-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 2048,
+      "height": 1152,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\hero-dialog-2048x1152.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 2048,
+        "height": 1152
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1920,
+      "height": 1080,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\hero-dialog-1920x1080.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1366,
+      "height": 768,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\hero-dialog-1366x768.png",
+      "stage": {
+        "x": 0.33331298828125,
+        "y": 0,
+        "width": 1365.3334350585938,
+        "height": 768
+      }
+    },
+    {
+      "phase": "hero-dialog",
+      "width": 1280,
+      "height": 720,
+      "path": "C:\\Users\\25283\\.codex\\worktrees\\game-flow-integration\\游戏操作文件\\docs\\qa\\hero-start\\production\\hero-dialog-1280x720.png",
+      "stage": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "resources": [],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T08:48:20.586Z"
+}

@@ -4,16 +4,19 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   build: {
+    emptyOutDir: false,
     rollupOptions: {
       input: {
         app: "index.html",
         gameplay: "gameplay.html",
+        media: "src/features/game-flow/media.ts",
       },
+      preserveEntrySignatures: "strict",
     },
   },
   test: {
+    include: ["src/**/*.test.{ts,tsx}"],
     environment: "jsdom",
-    include: ["src/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     setupFiles: ["./src/test/setup.ts"],
   },
 });

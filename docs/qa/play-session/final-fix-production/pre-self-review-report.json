@@ -1,0 +1,489 @@
+{
+  "baseUrl": "http://127.0.0.1:4180",
+  "mode": "production",
+  "startedAt": "2026-10-06T05:32:27.014Z",
+  "cases": [
+    {
+      "name": "final fix: natural settlement media, real Retry/Next, controlled host result",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-intro-817LF-Kz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-loop-DEU6Uckw.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "intro": {
+        "time": 0.320096,
+        "duration": 4.062993,
+        "muted": false,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": false,
+        "controls": false,
+        "src": "http://127.0.0.1:4180/assets/settlement-intro-817LF-Kz.mp4"
+      },
+      "loop": {
+        "time": 0.000525,
+        "duration": 4.064,
+        "muted": true,
+        "volume": 1,
+        "paused": false,
+        "ended": false,
+        "loop": true,
+        "controls": false,
+        "src": "http://127.0.0.1:4180/assets/settlement-loop-DEU6Uckw.mp4"
+      },
+      "detached": [
+        {
+          "connected": false,
+          "paused": true,
+          "time": 0
+        },
+        {
+          "connected": false,
+          "paused": true,
+          "time": 0
+        }
+      ],
+      "label": "Settlement videos played naturally; host complete results were synthetic MessageEvents; real Retry/Next clicks."
+    },
+    {
+      "name": "final fix: actual intro HTTP404 plus controlled pending play late rejection",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-loop-DEU6Uckw.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/rhythm-game/assets/audio/game-bgm.m4a",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-intro-817LF-Kz.mp4",
+          "status": 404
+        }
+      ],
+      "label": "Real HTTP404 media failure; intro play Promises and late rejection are controlled; results synthetic; Retry real click."
+    },
+    {
+      "name": "final fix: controlled policy click/error/late successful gesture play",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "requestfailed": [],
+      "abortedMediaRequests": [
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-intro-C9jHM2JX.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/loading-loop-B-kAU6Zz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-piko-C2t61brI.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-riff-CcfqRdJV.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-nibby-DIaIKpil.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-mira-MRJLyLRF.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/hero-bongo-_Ue1CVGY.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/pregame-intro-UYv4V1aM.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-intro-817LF-Kz.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        },
+        {
+          "url": "http://127.0.0.1:4180/assets/settlement-loop-DEU6Uckw.mp4",
+          "error": "net::ERR_ABORTED",
+          "resourceType": "media"
+        }
+      ],
+      "httpErrors": [],
+      "label": "Policy rejection, media error event and play Promise resolution controlled; gesture/Next are real clicks; actual OS policy unknown."
+    }
+  ],
+  "screenshots": [],
+  "resources": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "mime": "text/html;charset=utf-8",
+      "bytes": 523,
+      "sha256": "8806db44b6a778f45d61991f11cd122bfa1b31a0f6acb3e8d30156ae8d3d758c"
+    },
+    {
+      "path": "rhythm-game/app.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 30291,
+      "sha256": "e1dc5d4c22274356e4aaaf041e33dc81f6c86115113affbb242e54e189c60133"
+    },
+    {
+      "path": "rhythm-game/audio-clock.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 2657,
+      "sha256": "b8192cd020353598f4e577dbdced7caf7a87bc1897d1ef0aa76c0a8ffd187709"
+    },
+    {
+      "path": "rhythm-game/countdown-assets.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 1473,
+      "sha256": "fb5f042412614a07d6634f8ca2122c228025dc4f7295b0853186c6d6cd36890d"
+    },
+    {
+      "path": "rhythm-game/countdown-assets.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 2660,
+      "sha256": "3e8e2c6f1fa35ea02e53c7724bea48ac9b06d95834b92942cf41f13a992fcca9"
+    },
+    {
+      "path": "rhythm-game/embed-bridge.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 1697,
+      "sha256": "997eb2c5158c12ca450b223ce108f754b06b6f234d5bcf9218a0cacbae95b482"
+    },
+    {
+      "path": "rhythm-game/game-chart.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 1802,
+      "sha256": "885ea98a328b76d06ba112b5692cbc843fdada9ff0cd8d0a0436c26c2ca5e56e"
+    },
+    {
+      "path": "rhythm-game/game-core.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 9151,
+      "sha256": "7f592c455344930c56d85ad8b1ac5f2553e210e151ab4035dcecd9985603e440"
+    },
+    {
+      "path": "rhythm-game/index.html",
+      "status": 200,
+      "mime": "text/html;charset=utf-8",
+      "bytes": 8934,
+      "sha256": "5f5ba5cef4cc1f55ce76747c22e27c825b57853d7539a405abeda03775e56fa6"
+    },
+    {
+      "path": "rhythm-game/magic-attack-d.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 659,
+      "sha256": "7832c7ced51495cbe2d51317ef07def208cdbc90f15359114474ed6a44020b04"
+    },
+    {
+      "path": "rhythm-game/magic-attack-d.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 14900,
+      "sha256": "46bba4c0838d4c1a0dde189ca0dfd465d04c0390674ceaa7613c8b595865cb12"
+    },
+    {
+      "path": "rhythm-game/styles.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 17826,
+      "sha256": "3ca86d77e0cc0bc3b48dbeadf4d92390d7b42f312e52cf3d9cbd35055b7314d6"
+    },
+    {
+      "path": "assets/app-36NRszUU.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 38028,
+      "sha256": "213fa3ab0267f57892ca0a038f7a9e18c9c80b4cff5d19ad7fc21490fe0e95d4"
+    },
+    {
+      "path": "assets/app-BGLSVbLO.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 302426,
+      "sha256": "9d5a8ed1eb14d9f487691ca5159dbbbf01ddcf90fdafe25d3a2390f939a2653b"
+    },
+    {
+      "path": "assets/app-BN6XPfo3.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 37738,
+      "sha256": "047e54a4fc5f21d13e2736ed1f77e36efd72f4086cb8b38ed5b4ba769a284813"
+    },
+    {
+      "path": "assets/app-C74Y9LbB.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 302426,
+      "sha256": "9d5a8ed1eb14d9f487691ca5159dbbbf01ddcf90fdafe25d3a2390f939a2653b"
+    },
+    {
+      "path": "assets/app-D0exXpFz.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 281508,
+      "sha256": "5861efaeea4e9a9d276439fb240a73f05415c99c2b0bf24c57d1a7476181c9a9"
+    },
+    {
+      "path": "assets/app-DbYd89xZ.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 28377,
+      "sha256": "a46ae39488bc91adcf48f8ce0b66911f1c9affa8c779698666df46f52d97bb84"
+    },
+    {
+      "path": "assets/app-iTfJpNXL.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 303505,
+      "sha256": "1604a2f4b807b20ae93169ec9eb25167d5f1d4d9b9ea74470400a6be52b87d2e"
+    },
+    {
+      "path": "assets/index-CrNu8Gup.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 281508,
+      "sha256": "5861efaeea4e9a9d276439fb240a73f05415c99c2b0bf24c57d1a7476181c9a9"
+    },
+    {
+      "path": "assets/index-DbYd89xZ.css",
+      "status": 200,
+      "mime": "text/css",
+      "bytes": 28377,
+      "sha256": "a46ae39488bc91adcf48f8ce0b66911f1c9affa8c779698666df46f52d97bb84"
+    },
+    {
+      "path": "assets/media-BWAG7rOB.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 202,
+      "sha256": "b1862171d97262bf9a04c74806b509dbbe9c316b1a820b414a0a028da27aaf5a"
+    },
+    {
+      "path": "assets/media-Cp8gkqWw.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 155,
+      "sha256": "d7e081fc81033d183205c9b969a627042e8be42389210decf2708c8028d51700"
+    },
+    {
+      "path": "assets/media-qdYUe10r.js",
+      "status": 200,
+      "mime": "text/javascript",
+      "bytes": 130,
+      "sha256": "432e21443b27daa11bf042200f1f3b11c238c773bd9dedc69fb21ebb64e24d5a"
+    },
+    {
+      "path": "rhythm-game/assets/audio/game-bgm.m4a",
+      "status": 200,
+      "mime": "audio/mp4",
+      "bytes": 1103831,
+      "sha256": "1018cfa53812d0eac8086d9b196ef87c0f9caa1a29998419609e8553f9d74773"
+    },
+    {
+      "path": "assets/hero-bongo-_Ue1CVGY.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 5390468,
+      "sha256": "cb2e11774071ea53120c46350d3dc4f3776b60da0601570c0eb178cda9edf479"
+    },
+    {
+      "path": "assets/hero-mira-MRJLyLRF.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 5044268,
+      "sha256": "6c329a39c4a2f63706c69918ea75cad5f41bbda6b43bd81cc6e64f849f677754"
+    },
+    {
+      "path": "assets/hero-nibby-DIaIKpil.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 6039753,
+      "sha256": "862491ab49ceaa23b6e2b7b9211c8ed6286630988859f5be5c718455a7f3813e"
+    },
+    {
+      "path": "assets/hero-piko-C2t61brI.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 4759034,
+      "sha256": "683769e97b1aa31212def65bf5474c4c1acfbb60217576ec1a8913bdd16b2409"
+    },
+    {
+      "path": "assets/hero-riff-CcfqRdJV.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 5142072,
+      "sha256": "6961c8a9bc0c9b96e094ed362ac1d6d8e2b3795150ccfad333d6e42285cbe8c0"
+    },
+    {
+      "path": "assets/loading-intro-C9jHM2JX.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 4088831,
+      "sha256": "af498f6503cba40136083d210e513ccce7e7a74d49ce9442c30424c0ff15ffed"
+    },
+    {
+      "path": "assets/loading-loop-B-kAU6Zz.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 4554688,
+      "sha256": "d1238d6dadd08df847eb590775fb0a31d21f9a2d05969c9f066b70c105b1b533"
+    },
+    {
+      "path": "assets/lobby-background-DcADuLVX.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 4403955,
+      "sha256": "36100511a25f4f3e58016106fdd7764411c08621354384ea0b569da7e2930919"
+    },
+    {
+      "path": "assets/pregame-intro-UYv4V1aM.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 16918412,
+      "sha256": "5fab4831ace8b9ad0efa4721621a37f6d876bc5c0ef5600059935b5d0b2e6f41"
+    },
+    {
+      "path": "assets/settlement-intro-817LF-Kz.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 3987576,
+      "sha256": "80ec5ce7c8841471bd8d9916061cdb476eb728689df4ab25a1fe802b41c636c2"
+    },
+    {
+      "path": "assets/settlement-loop-DEU6Uckw.mp4",
+      "status": 200,
+      "mime": "video/mp4",
+      "bytes": 3777813,
+      "sha256": "d1461300aee155ef9677031b6cd5354778f8bba98bdbe41440d1215561bf1295"
+    }
+  ],
+  "limits": [
+    "Headless Edge: speaker listening and touchscreen not tested.",
+    "Actual OS/background hidden state and actual browser-policy denial are not established by injected cases."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-06T05:33:51.967Z"
+}
