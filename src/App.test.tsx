@@ -15,6 +15,10 @@ vi.mock("./features/hero-select/useHeroAssets", () => ({
   })),
 }));
 
+vi.mock("./features/lobby/useLobbyAssets", () => ({
+  useLobbyAssets: vi.fn(() => "ready"),
+}));
+
 describe("App", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -23,6 +27,15 @@ describe("App", () => {
     const stage = screen.getByRole("region", { name: "游戏画面" });
     expect(within(stage).getByRole("main", { name: "游戏大厅" })).toBeInTheDocument();
     expect(within(stage).queryByRole("main", { name: "角色选择" })).not.toBeInTheDocument();
+  });
+
+  it("starts the rhythm game when PLAY is clicked", async () => {
+    const assign = vi.fn();
+    Object.defineProperty(window, "location", { configurable: true, value: { assign } });
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "开始游戏" }));
+    expect(assign).toHaveBeenCalledWith("/rhythm-game/");
   });
 
   it("restarts the current hero video with sound after a user selection", async () => {

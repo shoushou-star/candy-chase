@@ -10,7 +10,7 @@
 | 项 | 内容 |
 |---|---|
 | 技术栈 | Vite 8 + React 19 + TypeScript 7 + Phaser 4（依赖另含 @fontsource/montserrat） |
-| 构建/测试 | `npm run build`（tsc 类型检查 + vite build）、`npm run test:run`（Vitest + Testing Library + jsdom） |
+| 构建/测试 | `npm run build`（tsc 类型检查 + vite build）、`npm run test:run`（Vitest，仅扫 src/）；rhythm-game 测试用 `node --test`（见其 README） |
 | 应用形态 | **双入口 MPA**：`index.html`（主应用）+ `gameplay.html`（玩法原型页） |
 | 另有独立子项目 | `rhythm-game/`：零构建、零依赖的原生 JS 正式版节奏游戏（自有 HTML/JS/CSS/素材/测试） |
 | 设计分辨率 | 2048×1152（`StageFrame` 等比缩放适配视口，两侧留黑边）；玩法页 1920×1080（Phaser Scale.FIT） |
@@ -26,7 +26,7 @@
 ├─ netlify.toml               # Netlify 构建配置（build=npm run build, publish=dist）
 ├─ assets/                    # 根级静态素材（hero-logos、大厅黑胶、结算标题抠图）
 ├─ src/                       # React 应用源码（见 §3）
-├─ rhythm-game/               # 独立原生 JS 正式版节奏游戏（见 §4）
+├─ public/rhythm-game/         # 独立原生 JS 正式版节奏游戏（public/ 目录，dev 与构建产物均直接可访问，见 §4）
 ├─ scripts/                   # 资源校验 + 3 个 Playwright 浏览器 QA 脚本（见 §6）
 └─ docs/                      # 设计规格/实现计划/QA 证据 + 本代码地图（见 §7）
 ```
@@ -38,7 +38,7 @@
 ```
 src/
 ├─ main.tsx / gameplay-main.tsx     # 两个入口的挂载文件
-├─ App.tsx (+test)                  # 根组件 = StageFrame + LobbyPage（暂未传 onAction）
+├─ App.tsx (+test)                  # 根组件 = StageFrame + LobbyPage；PLAY 已接线 → 跳转 /rhythm-game/
 ├─ components/                      # GameButton / StageFrame(2048×1152 缩放容器) / StoreUnavailableDialog
 ├─ pages/                           # TemporaryHomePage / GamePlaceholderPage（占位页）
 ├─ features/hero-select/            # 英雄选择模块：HeroSelectExperience 容器 + 页面/卡片/货币组件
@@ -52,11 +52,11 @@ src/
 
 ### 3.2 页面流程与导航
 
-1. **游戏大厅**（index.html 当前唯一屏幕）：视频背景、玩家资料条、三货币、PLAY、菜单/每日/工具按钮。按钮 `onAction` 回调契约已就绪但**暂未接线**。
+1. **游戏大厅**（index.html 当前唯一屏幕）：视频背景、玩家资料条、三货币、PLAY、菜单/每日/工具按钮。**PLAY 已接线**（App.tsx 中跳转 `/rhythm-game/` 正式版游戏），其余按钮 onAction 暂为 no-op。
 2. **英雄选择流**（`HeroSelectExperience`，已实现已测试，**暂未被入口挂载**）：临时首页 → 英雄选择页（视频背景+轮播+SELECT）→ 游戏占位页。
 3. **玩法原型**（gameplay.html 直接访问）：开始遮罩 → 2s 倒计时 + HUD（修复率/倒计时/COMBO/判定）→ 结算遮罩。
 
-⚠️ 两个 HTML 入口之间**没有任何代码级跳转**（无路由库、无 window.location、无 `<a>`）；`index.html` 标题仍为"角色选择"，实际渲染的是大厅（历史遗留）。大厅 PLAY → 游戏的衔接计划见 `docs/superpowers/plans/2026-10-06-play-game-settlement-integration-implementation.md`（**尚未实施**，embed-bridge.js 不存在）。
+⚠️ 大厅 PLAY 现已直接跳转 `/rhythm-game/` 正式版；但 `gameplay.html` 灰盒原型页仍只能通过 URL 直接访问，且 `index.html` 标题仍为"角色选择"（历史遗留）。完整流程（PLAY→前置视频→游戏 iframe 嵌入→结算回大厅）计划见 `docs/superpowers/plans/2026-10-06-play-game-settlement-integration-implementation.md`（**尚未实施**，embed-bridge.js 不存在）。
 
 ### 3.3 架构模式
 
@@ -69,7 +69,7 @@ src/
 | | ① `rhythm-game/`（**正式版**） | ② `src/gameplay/`（灰盒原型） |
 |---|---|---|
 | 技术 | 原生 JS + DOM/SVG + Canvas 特效，零构建 | React + Phaser 4 Graphics 矢量绘制 |
-| 入口 | `rhythm-game/index.html`（静态服务器直接访问） | 根 `gameplay.html`（Vite 构建） |
+| 入口 | `public/rhythm-game/index.html`（dev 与构建产物均访问 `/rhythm-game/`） | 根 `gameplay.html`（Vite 构建） |
 | 谱面 | 80 事件（48 normal/20 speed/12 hold），BPM120，69.2s | 30 事件（20 normal/6 rush/4 hold），45s |
 | 判定 | Perfect ±100ms / Good ±200ms | ±90ms / ±180ms |
 | 计分 | 满分 9200，星级阈值 20/40/60/75/90% | 加权修复率，三档标题 |
@@ -78,7 +78,7 @@ src/
 | 核心文件 | `app.js`(状态机+渲染) `game-core.js`(纯逻辑,UMD) `game-chart.js` `audio-clock.js` `magic-attack-d.js`(闪粉魔法光波特效,监听 rhythmgame:* 事件) `countdown-assets.js/css`(寄生式倒计时 PNG 替换层) | `render/GameplayScene.ts` `render/createGameplayGame.ts` `render/motion.ts` `domain/{RhythmSession,chart,judgement,score}.ts` `audio/PrototypeAudio.ts` `styles/gameplay.css` |
 | 测试 | `rhythm-game/tests/`（6 文件：判定/计分/谱面/时钟/BGM 打包/2 个浏览器回归 .cjs） | `src/gameplay/**` 内 6 个 .test 文件 |
 
-素材清单（`rhythm-game/assets/`，共 15 文件）：audio 1（BGM 1.1MB）、backgrounds 1、candies 3（粉=normal/黄=speed/蓝=hold）、characters 3（企鹅 idle/success/miss）、ui 7（判定点 + 倒计时 1~3 + 判定图 perfect/good/miss）。`effect-preview.html` 是 4 种攻击特效的决策样片，与运行时无关。
+素材清单（`public/rhythm-game/assets/`，共 15 文件）：audio 1（BGM 1.1MB）、backgrounds 1、candies 3（粉=normal/黄=speed/蓝=hold）、characters 3（企鹅 idle/success/miss）、ui 7（判定点 + 倒计时 1~3 + 判定图 perfect/good/miss）。`effect-preview.html` 是 4 种攻击特效的决策样片，与运行时无关。
 
 ## 5. 音频架构要点（正式版）
 
@@ -105,9 +105,7 @@ src/
 ## 8. 构建与部署（Netlify）
 
 - 配置见根目录 `netlify.toml`：`command = "npm run build"`，`publish = "dist"`。
-- `dist/` 含两个入口（index.html + gameplay.html）及全部 src 引用素材。
-- ⚠️ **已知缺口**：`rhythm-game/` 正式版不在 Vite 构建产物中（不在 public/ 目录，Vite 不拷贝）。上线正式版需二选一：移入 `public/rhythm-game/`（dev/build 均可访问），或构建后追加拷贝步骤。若按 10-06 计划改为 iframe 嵌入则需一并处理。
-- ⚠️ `package.json` name 仍为 `hero-select-web`，与仓库名 candy-chase 不一致（不影响构建）。
+- `dist/` 含两个入口（index.html + gameplay.html）、全部 src 引用素材，以及 `dist/rhythm-game/` 正式版（public/ 目录原样拷贝）。大厅 PLAY 按钮跳转 `/rhythm-game/`，线上完整体验：**大厅 → 正式版游戏**。
 - vite 未设 `base`：如将来部署到子路径（如 作品集域名/game/）需添加 `base` 后重build。
 
 ## 9. 维护约定

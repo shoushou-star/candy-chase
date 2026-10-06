@@ -4,9 +4,9 @@
 
 ## 运行
 
-在仓库根目录启动静态服务器后访问 `/rhythm-game/`，或直接用浏览器打开 `rhythm-game/index.html`。点击 `START` 并等待 3 秒倒计时；浏览器需要允许用户操作后播放音频。
+在仓库根目录启动静态服务器后访问 `/rhythm-game/`（`npm run dev` 与构建产物均直接可用），或直接用浏览器打开 `public/rhythm-game/index.html`。点击 `START` 并等待 3 秒倒计时；浏览器需要允许用户操作后播放音频。
 
-正式 BGM 位于 `rhythm-game/assets/audio/game-bgm.m4a`，完整时长约 69.218 秒。谱面有 80 个事件，首个判定时间为 4.981 秒；谱面末尾事件在 66.8818 秒，随后音乐自然结束并结算。
+正式 BGM 位于 `public/rhythm-game/assets/audio/game-bgm.m4a`，完整时长约 69.218 秒。谱面有 80 个事件，首个判定时间为 4.981 秒；谱面末尾事件在 66.8818 秒，随后音乐自然结束并结算。
 
 ## 操作和音符
 
@@ -60,15 +60,15 @@ window.addEventListener('rhythmgame:complete', (event) => {
 从仓库根目录运行：
 
 ```powershell
-node --test rhythm-game/tests/audio-asset.test.js rhythm-game/tests/audio-clock.test.js rhythm-game/tests/game-chart.test.js rhythm-game/tests/game-core.test.js rhythm-game/attack-event-contract.test.js
-node rhythm-game/tests/hud-browser-qa.cjs
-node rhythm-game/tests/gameplay-note-types-qa.cjs
-node --check rhythm-game/game-core.js
-node --check rhythm-game/game-chart.js
-node --check rhythm-game/audio-clock.js
-node --check rhythm-game/app.js
-node --check rhythm-game/magic-attack-d.js
-ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 rhythm-game/assets/audio/game-bgm.m4a
+node --test public/rhythm-game/tests/audio-asset.test.js public/rhythm-game/tests/audio-clock.test.js public/rhythm-game/tests/game-chart.test.js public/rhythm-game/tests/game-core.test.js public/rhythm-game/attack-event-contract.test.js
+node public/rhythm-game/tests/hud-browser-qa.cjs
+node public/rhythm-game/tests/gameplay-note-types-qa.cjs
+node --check public/rhythm-game/game-core.js
+node --check public/rhythm-game/game-chart.js
+node --check public/rhythm-game/audio-clock.js
+node --check public/rhythm-game/app.js
+node --check public/rhythm-game/magic-attack-d.js
+ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 public/rhythm-game/assets/audio/game-bgm.m4a
 ```
 
 `gameplay-note-types-qa.cjs` 使用 Edge 和受控媒体时钟检查谱面运动、判定、暂停/继续、长按、重开及结算生命周期，并在 `docs/qa/` 写入截图。受控时钟用于自动化回归，不代表真实音频的主观节拍听感测试。
