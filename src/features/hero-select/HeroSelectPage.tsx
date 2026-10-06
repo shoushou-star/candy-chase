@@ -90,7 +90,7 @@ export function HeroSelectPage({
           ref={confirmButtonRef}
           className="hero-select-page__confirm"
           aria-label={isSelectedConfirmed ? `已选择 ${selectedHero.displayName}` : `确认选择 ${selectedHero.displayName}`}
-          disabled={currentStatus !== "ready" || selectedHero.disabled || isSelectedConfirmed}
+          disabled={currentStatus !== "ready" || selectedHero.disabled}
           onClick={() => onConfirm(selectedHeroId)}
         >
           {isSelectedConfirmed ? "SELECTED" : "SELECT"}

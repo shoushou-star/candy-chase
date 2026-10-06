@@ -60,6 +60,7 @@ async function select(page, exercise = false) {
   await screen(page, 'hero-select');
   await page.getByRole('button', { name: '确认选择 PIKO', exact: true }).click();
   await page.getByRole('button', { name: '已选择 PIKO', exact: true }).waitFor();
+  await page.getByRole('button', { name: '继续选角色', exact: true }).click();
   if (exercise) {
     await page.getByRole('button', { name: '选择 RIFF', exact: true }).click();
     await page.getByRole('button', { name: '确认选择 RIFF', exact: true }).click();

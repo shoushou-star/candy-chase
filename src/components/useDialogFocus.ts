@@ -4,9 +4,10 @@ interface DialogFocusOptions {
   open: boolean;
   triggerRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
+  containerRef?: RefObject<HTMLDivElement | null>;
 }
 
-export function useDialogFocus({ open, triggerRef, onClose }: DialogFocusOptions) {
+export function useDialogFocus({ open, triggerRef, onClose, containerRef }: DialogFocusOptions) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -21,7 +22,14 @@ export function useDialogFocus({ open, triggerRef, onClose }: DialogFocusOptions
         onCloseRef.current();
       } else if (event.key === "Tab") {
         event.preventDefault();
-        closeButtonRef.current?.focus();
+        const buttons = containerRef?.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])');
+        if (buttons?.length) {
+          const items = Array.from(buttons);
+          const current = items.indexOf(document.activeElement as HTMLButtonElement);
+          const next = current < 0 ? (event.shiftKey ? items.length - 1 : 0)
+            : (current + (event.shiftKey ? -1 : 1) + items.length) % items.length;
+          items[next].focus();
+        } else closeButtonRef.current?.focus();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -29,7 +37,7 @@ export function useDialogFocus({ open, triggerRef, onClose }: DialogFocusOptions
       document.removeEventListener("keydown", handleKeyDown);
       triggerRef.current?.focus();
     };
-  }, [open, triggerRef]);
+  }, [open, triggerRef, containerRef]);
 
   return closeButtonRef;
 }

@@ -39,6 +39,35 @@ describe("settlement video sequence", () => {
     expect(loop.preload).toBe("auto");
   });
 
+  it("covers the static result background until the browser presents the first intro frame", async () => {
+    const callbacks = new Map<HTMLVideoElement, VideoFrameRequestCallback>();
+    const request = vi.fn(function (this: HTMLVideoElement, callback: VideoFrameRequestCallback) { callbacks.set(this, callback); return 7; });
+    Object.defineProperty(HTMLVideoElement.prototype, 'requestVideoFrameCallback', { configurable: true, value: request });
+    Object.defineProperty(HTMLVideoElement.prototype, 'cancelVideoFrameCallback', { configurable: true, value: vi.fn() });
+    const view = render(<SettlementSequence {...result} />);
+    try {
+      expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'false');
+      fireEvent.loadedData(screen.getByLabelText('结算开场动画'));
+      expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'false');
+      const intro = screen.getByLabelText('结算开场动画') as HTMLVideoElement;
+      await act(async () => callbacks.get(intro)!(0, {} as VideoFrameCallbackMetadata));
+      expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'true');
+    } finally {
+      view.unmount();
+      delete (HTMLVideoElement.prototype as Partial<HTMLVideoElement>).requestVideoFrameCallback;
+      delete (HTMLVideoElement.prototype as Partial<HTMLVideoElement>).cancelVideoFrameCallback;
+    }
+  });
+
+  it("uses loadeddata only as the first-frame fallback for browsers without frame callbacks", () => {
+    render(<SettlementSequence {...result} />);
+    expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'false');
+    fireEvent.loadedData(screen.getByLabelText('结算循环动画'));
+    expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'false');
+    fireEvent.loadedData(screen.getByLabelText('结算开场动画'));
+    expect(screen.getByTestId('settlement-media')).toHaveAttribute('data-frame-ready', 'true');
+  });
+
   it("reveals the UI at 2.75 seconds while keeping actions locked", () => {
     render(<SettlementSequence {...result} />);
     const intro = screen.getByLabelText("结算开场动画") as HTMLVideoElement;

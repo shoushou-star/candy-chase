@@ -34,3 +34,14 @@
   font-weight: 800;
   cursor: pointer;
 }
+
+.start-game-dialog {
+  width: 760px;
+  max-width: 90%;
+  border: 2px solid var(--hero-yellow-bright);
+  box-shadow: 0 20px 80px rgb(0 0 0 / 35%);
+}
+.start-game-dialog p { margin: 0 0 16px; font-size: 26px; }
+.start-game-dialog h2 { margin: 0 0 28px; font-size: 38px; }
+.start-game-dialog__actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+.start-game-dialog .start-game-dialog__secondary { background: transparent; color: var(--hero-yellow-bright); }

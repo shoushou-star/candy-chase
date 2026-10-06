@@ -14,7 +14,7 @@ function visibility(value: 'visible' | 'hidden') {
 }
 
 describe('PregameVideo', () => {
-  it('keeps the ended frame while waiting, finishes once and resets only on unmount', async () => {
+  it('keeps the ended frame while waiting and on removal without seeking back to the opening frame', async () => {
     const onFinished = vi.fn();
     const { unmount } = render(<PregameVideo onFinished={onFinished} />);
     const video = screen.getByLabelText('游戏开场视频') as HTMLVideoElement;
@@ -26,7 +26,7 @@ describe('PregameVideo', () => {
     expect(video.currentTime).toBe(12);
     expect(video.muted).toBe(false); expect(video.loop).toBe(false); expect(video.controls).toBe(false);
     await act(async () => {});
-    unmount(); expect(video.currentTime).toBe(0);
+    unmount(); expect(video.currentTime).toBe(12);
   });
 
   it('requires a playback gesture after policy rejection and never treats it as completion', async () => {
@@ -68,7 +68,7 @@ describe('PregameVideo', () => {
     video.currentTime = 4; unmount();
     const pauseCalls = vi.mocked(video.pause).mock.calls.length;
     await act(async () => { if (outcome === 'resolve') resolve(); else reject(new DOMException('decode', 'NotSupportedError')); });
-    expect(onFinished).not.toHaveBeenCalled(); expect(video.currentTime).toBe(0);
+    expect(onFinished).not.toHaveBeenCalled(); expect(video.currentTime).toBe(4);
     if (outcome === 'resolve') expect(vi.mocked(video.pause).mock.calls.length).toBeGreaterThan(pauseCalls);
   });
 

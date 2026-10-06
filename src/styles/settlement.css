@@ -80,6 +80,11 @@
   cursor: pointer;
 }
 
+/* Until a decoded frame is presented, never expose the static result artwork. */
+.settlement-media[data-frame-ready="false"] { background: #050b55; }
+.settlement-media[data-loop-ready="false"][data-intro-failed="false"]:not(.settlement-media--fallback) .settlement-media__intro { opacity: 1; }
+.settlement-media[data-loop-ready="false"] .settlement-media__loop { opacity: 0; }
+
 .settlement-media__start:hover {
   background: rgb(55 43 165 / 92%);
 }

@@ -21,12 +21,24 @@ function SessionInstance({ runId, playIntro, onComplete, onRetryLoad, onReturnTo
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(!playIntro);
   const [error, setError] = useState<string | null>(null);
+  const [presented, setPresented] = useState(false);
   const notified = useRef(false);
   const retryRef = useRef<HTMLButtonElement>(null);
   const startedCallback = useRef(onGameplayStarted);
   startedCallback.current = onGameplayStarted;
   const active = ready && finished && !error;
   const showError = finished && !!error;
+
+  useEffect(() => {
+    if (!active) return;
+    // The iframe becomes visible and receives start before the intro layer is
+    // removed. Two paint boundaries allow its previously hidden surface to be
+    // composed; this is frame-driven, not a guessed decoding delay.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setPresented(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [active]);
 
   useEffect(() => {
     if (!finished || ready || error) return;
@@ -46,7 +58,7 @@ function SessionInstance({ runId, playIntro, onComplete, onRetryLoad, onReturnTo
   return <section className="play-session" aria-label="游戏会话">
     {!error && <GameplayFrame runId={runId} active={active} onReady={() => setReady(true)}
       onComplete={onComplete} onError={setError} />}
-    {playIntro && !active && !showError && <PregameVideo onFinished={() => setFinished(true)} />}
+    {playIntro && !presented && !showError && <PregameVideo onFinished={() => setFinished(true)} />}
     {finished && !ready && !error && <div className="play-session-loading" role="status">LOADING...</div>}
     {showError && <div className="play-session-overlay">
       <div className="play-session-error" role="alert">

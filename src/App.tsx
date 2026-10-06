@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { StageFrame } from "./components/StageFrame";
 import { HeroUnavailableDialog } from "./components/HeroUnavailableDialog";
+import { StartGameDialog } from "./components/StartGameDialog";
 import { StoreUnavailableDialog } from "./components/StoreUnavailableDialog";
 import { ScreenTransition, useScreenTransition } from "./features/game-flow/ScreenTransition";
 import { PlaySession } from "./features/game-flow/PlaySession";
@@ -61,9 +62,10 @@ export function App() {
     setDraftHeroId(confirmedHeroId ?? "piko");
   }
 
-  const startGame: StartGameHandler = ({ heroId }) => {
-    if (heroId !== "piko" || confirmedHeroId !== "piko" || !requestScreen("pregame-video", 350)) return;
+  const startGame = ({ heroId }: Parameters<StartGameHandler>[0]) => {
+    if (heroId !== "piko" || confirmedHeroId !== "piko" || !requestScreen("pregame-video", 350)) return false;
     createRun(true);
+    return true;
   };
 
   function play() {
@@ -128,6 +130,7 @@ export function App() {
             selectedHeroId={draftHeroId}
             onBack={() => requestScreen("lobby", 220)}
             onConfirm={setConfirmedHeroId}
+            onStartGame={(heroId) => startGame({ heroId })}
             onSelectHero={setDraftHeroId}
           />
         )}
@@ -160,6 +163,7 @@ interface IntegratedHeroSelectProps {
   selectedHeroId: HeroId;
   onBack: () => void;
   onConfirm: (heroId: HeroId) => void;
+  onStartGame: (heroId: HeroId) => boolean;
   onSelectHero: (heroId: HeroId) => void;
 }
 
@@ -168,15 +172,17 @@ function IntegratedHeroSelect({
   selectedHeroId,
   onBack,
   onConfirm,
+  onStartGame,
   onSelectHero,
 }: IntegratedHeroSelectProps) {
   const [playbackRequestId, setPlaybackRequestId] = useState(0);
   const [isStoreNoticeOpen, setStoreNoticeOpen] = useState(false);
   const [isHeroNoticeOpen, setHeroNoticeOpen] = useState(false);
+  const [isStartNoticeOpen, setStartNoticeOpen] = useState(false);
   const storeNoticeTrigger = useRef<HTMLButtonElement>(null);
   const heroNoticeTrigger = useRef<HTMLButtonElement>(null);
   const assetLoadState = useHeroAssets(HEROES);
-  const isNoticeOpen = isStoreNoticeOpen || isHeroNoticeOpen;
+  const isNoticeOpen = isStoreNoticeOpen || isHeroNoticeOpen || isStartNoticeOpen;
 
   function selectHero(heroId: HeroId) {
     if (isNoticeOpen) return;
@@ -197,6 +203,7 @@ function IntegratedHeroSelect({
       return;
     }
     onConfirm(heroId);
+    setStartNoticeOpen(true);
   }
 
   return (
@@ -223,6 +230,14 @@ function IntegratedHeroSelect({
         open={isHeroNoticeOpen}
         triggerRef={heroNoticeTrigger}
         onClose={() => setHeroNoticeOpen(false)}
+      />
+      <StartGameDialog
+        open={isStartNoticeOpen}
+        triggerRef={heroNoticeTrigger}
+        onClose={() => setStartNoticeOpen(false)}
+        onStart={() => {
+          if (isStartNoticeOpen && onStartGame(selectedHeroId)) setStartNoticeOpen(false);
+        }}
       />
     </>
   );

@@ -18,6 +18,8 @@
   let animationFrame = 0;
   let sustained = null;
   let finishFlash = null;
+  let displayScaleX = 1;
+  let displayScaleY = 1;
 
   function findHost() {
     return document.querySelector('.game-shell, .game-stage, #game, main') || document.body;
@@ -25,8 +27,21 @@
 
   function resize() {
     const rect = host.getBoundingClientRect();
-    width = Math.max(1, rect.width);
-    height = Math.max(1, rect.height);
+    displayScaleX = displayScaleY = 1;
+    // An embedded design-sized iframe may be transformed by the host page.
+    // Render in displayed CSS pixels so glows/line widths are not scaled twice.
+    try {
+      const frame = window.frameElement;
+      if (frame && frame.clientWidth && frame.clientHeight) {
+        const displayed = frame.getBoundingClientRect();
+        if (displayed.width > 0 && displayed.height > 0) {
+          displayScaleX = displayed.width / frame.clientWidth;
+          displayScaleY = displayed.height / frame.clientHeight;
+        }
+      }
+    } catch (_) { /* Cross-origin embeds keep the standalone coordinate system. */ }
+    width = Math.max(1, rect.width * displayScaleX);
+    height = Math.max(1, rect.height * displayScaleY);
     pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(width * pixelRatio);
     canvas.height = Math.round(height * pixelRatio);
@@ -105,15 +120,15 @@
     // The guitar body sits slightly right and below the visual centre of the penguin sprite.
     const start = characterRect
       ? {
-          x: characterRect.left - hostRect.left + characterRect.width * 0.54,
-          y: characterRect.top - hostRect.top + characterRect.height * 0.56,
+          x: (characterRect.left - hostRect.left + characterRect.width * 0.54) * displayScaleX,
+          y: (characterRect.top - hostRect.top + characterRect.height * 0.56) * displayScaleY,
         }
       : { x: width * 0.255, y: height * 0.69 };
 
     const end = targetRect
       ? {
-          x: targetRect.left - hostRect.left + targetRect.width * 0.5,
-          y: targetRect.top - hostRect.top + targetRect.height * 0.5,
+          x: (targetRect.left - hostRect.left + targetRect.width * 0.5) * displayScaleX,
+          y: (targetRect.top - hostRect.top + targetRect.height * 0.5) * displayScaleY,
         }
       : { x: width * TARGET.x, y: height * TARGET.y };
 
@@ -374,6 +389,28 @@
     ctx = canvas.getContext('2d');
     resize();
     window.addEventListener('resize', resize, { passive: true });
+    try {
+      if (window.frameElement) {
+        const parent = window.parent;
+        let resizeFrame = 0;
+        const parentResize = () => {
+          // Coalesce changes and measure after the parent commits its layout.
+          cancelAnimationFrame(resizeFrame);
+          resizeFrame = requestAnimationFrame(() => { resizeFrame = 0; clearEffects(); resize(); });
+        };
+        const layoutObserver = new MutationObserver(parentResize);
+        for (let node = window.frameElement.parentElement; node; node = node.parentElement) {
+          layoutObserver.observe(node, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+        parent.addEventListener('resize', parentResize, { passive: true });
+        window.addEventListener('pagehide', () => {
+          layoutObserver.disconnect();
+          parent.removeEventListener('resize', parentResize);
+          cancelAnimationFrame(resizeFrame);
+          clearEffects();
+        }, { once: true });
+      }
+    } catch (_) { /* No parent layout access in cross-origin embeds. */ }
     window.addEventListener('rhythmgame:attack', fire);
     window.addEventListener('rhythmgame:pause', clearEffects);
     window.addEventListener('rhythmgame:complete', clearEffects);

@@ -30,6 +30,8 @@ describe('PlaySession', () => {
     await act(async () => {});
     ready(frame); rerender(<PlaySession {...callbacks} onGameplayStarted={vi.fn()} />);
     expect(screen.getByTitle('节奏游戏')).toBe(frame);
+    expect(screen.getByLabelText('游戏开场视频')).toBe(video);
+    act(() => vi.advanceTimersByTime(40));
     expect(screen.queryByLabelText('游戏开场视频')).not.toBeInTheDocument();
     expect(frame).not.toHaveAttribute('aria-hidden', 'true');
     expect(send).toHaveBeenCalledExactlyOnceWith({ type: 'rhythmgame:start', runId: 1 }, location.origin);

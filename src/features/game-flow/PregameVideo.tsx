@@ -17,10 +17,9 @@ export function PregameVideo({ onFinished }: PregameVideoProps) {
     let alive = true;
     let finished = false;
     let request = 0;
-    const stop = (reset = false) => {
-      video.pause();
-      if (reset) video.currentTime = 0;
-    };
+    // Keep the decoded frame intact even during teardown. Seeking a removed
+    // video can race the compositor's final paint of its still-visible layer.
+    const stop = () => { video.pause(); };
     const finish = () => {
       if (!alive || finished) return;
       finished = true;
@@ -44,7 +43,7 @@ export function PregameVideo({ onFinished }: PregameVideoProps) {
           // A detached element can resolve play() after React has removed it.
           // StrictMode's earlier effect must not pause its replacement effect.
           if (!alive || instance !== lifecycle.current) {
-            if (!video.isConnected) stop(true);
+            if (!video.isConnected) stop();
             return;
           }
           if (finished || document.visibilityState === 'hidden') { stop(); return; }
@@ -68,7 +67,7 @@ export function PregameVideo({ onFinished }: PregameVideoProps) {
       video.removeEventListener('ended', finish);
       video.removeEventListener('error', finish);
       document.removeEventListener('visibilitychange', visibility);
-      stop(true);
+      stop();
     };
   }, []);
 

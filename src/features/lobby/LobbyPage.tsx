@@ -1,9 +1,11 @@
+import { useState } from "react";
 import actionRays from "../../assets/lobby/action-rays.svg";
 import avatarSlot from "../../assets/lobby/avatar-slot.svg";
 import dailyArt from "../../assets/lobby/daily-challenge-art.png";
 import dailyChevron from "../../assets/lobby/chevron-daily.svg";
 import menuChevron from "../../assets/lobby/chevron-menu.svg";
 import lobbyBackground from "../../assets/lobby/lobby-background.png";
+import lobbyBackgroundVideo from "../../assets/lobby/lobby-background.mp4";
 import iconChallenges from "../../assets/lobby/icon-challenges.svg";
 import iconCoins from "../../assets/lobby/icon-coins.svg";
 import iconCrown from "../../assets/lobby/icon-crown-utility.svg";
@@ -57,6 +59,7 @@ const utilityButtons = [
 export function LobbyPage({ state, onAction, onOpenHeroSelect, onPlay, assetsReady }: LobbyPageProps) {
   const assetStatus = useLobbyAssets(LOBBY_ASSETS);
   const isReady = assetsReady ?? assetStatus === "ready";
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   function handleAction(action: LobbyAction) {
     onAction?.(action);
@@ -77,7 +80,19 @@ export function LobbyPage({ state, onAction, onOpenHeroSelect, onPlay, assetsRea
 
   return (
     <main aria-label="游戏大厅" className="lobby-page">
-      <img alt="" className="lobby-page__background" src={lobbyBackground} />
+      <img alt="" className="lobby-page__background-fallback" src={lobbyBackground} />
+      <video
+        aria-hidden="true"
+        autoPlay
+        className={`lobby-page__background-video${isVideoReady ? " is-ready" : ""}`}
+        loop
+        muted
+        onCanPlay={() => setIsVideoReady(true)}
+        playsInline
+        poster={lobbyBackground}
+        preload="auto"
+        src={lobbyBackgroundVideo}
+      />
       <div aria-hidden="true" className="lobby-page__overlay" />
       <LobbyProfileBar experiencePercent={state.experiencePercent} level={state.level} playerName={state.playerName} />
 

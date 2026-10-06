@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_LOBBY_STATE } from "./lobby-data";
@@ -17,6 +17,22 @@ describe("LobbyPage", () => {
     expect(screen.getByText("2139")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Player/ })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("有未读邮件")).not.toBeInTheDocument();
+  });
+
+  it("fades in a silent looping background video over the static fallback", () => {
+    const { container } = render(<LobbyPage state={DEFAULT_LOBBY_STATE} assetsReady />);
+    const video = container.querySelector("video.lobby-page__background-video");
+    const fallback = container.querySelector("img.lobby-page__background-fallback");
+
+    expect(fallback).toBeInTheDocument();
+    expect(video).toHaveProperty("autoplay", true);
+    expect(video).toHaveProperty("loop", true);
+    expect(video).toHaveProperty("muted", true);
+    expect(video).toHaveAttribute("playsinline");
+    expect(video).not.toHaveClass("is-ready");
+
+    fireEvent.canPlay(video!);
+    expect(video).toHaveClass("is-ready");
   });
 
   it("exposes every agreed entrance as one uniquely named semantic button", () => {

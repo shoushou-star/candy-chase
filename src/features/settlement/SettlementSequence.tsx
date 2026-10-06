@@ -23,6 +23,9 @@ export function SettlementSequence(props: SettlementSequenceProps) {
   const introRef = useRef<HTMLVideoElement>(null);
   const loopRef = useRef<HTMLVideoElement>(null);
   const [phase, setPhase] = useState<SequencePhase>("intro");
+  const [introFrameReady, setIntroFrameReady] = useState(false);
+  const [loopFrameReady, setLoopFrameReady] = useState(false);
+  const [introFailed, setIntroFailed] = useState(false);
   const phaseRef = useRef<SequencePhase>("intro");
   const lifecycle = useRef({ active: false, generation: 0, introAttempt: 0, loopAttempt: 0 });
 
@@ -69,6 +72,12 @@ export function SettlementSequence(props: SettlementSequenceProps) {
     if (loopRef.current?.paused) playLoop();
   };
 
+  const handleIntroError = () => {
+    if (!lifecycle.current.active) return;
+    setIntroFailed(true);
+    handleIntroFinished();
+  };
+
   const playIntro = () => {
     const intro = introRef.current;
     if (!intro) return;
@@ -77,13 +86,14 @@ export function SettlementSequence(props: SettlementSequenceProps) {
     const attempt = ++owner.introAttempt;
     intro.muted = false;
     void intro.play().then(() => {
-      if (!owner.active || introRef.current !== intro || phaseRef.current === "looping" || phaseRef.current === "fallback") stop(intro);
+      if (!owner.active || introRef.current !== intro || phaseRef.current === "fallback") stop(intro);
+      else if (phaseRef.current === "looping") intro.pause();
     }).catch((error: unknown) => {
       if (!owner.active || owner.generation !== generation || owner.introAttempt !== attempt) return;
       if (error instanceof DOMException && error.name === "NotAllowedError") {
         if (phaseRef.current === "intro" || phaseRef.current === "awaiting-start") moveTo("awaiting-start");
       } else {
-        handleIntroFinished();
+        handleIntroError();
       }
     });
   };
@@ -97,6 +107,19 @@ export function SettlementSequence(props: SettlementSequenceProps) {
     owner.active = true;
     owner.generation++;
     loop.muted = true;
+    const generation = owner.generation;
+    const watchFrame = (video: HTMLVideoElement, mark: () => void) => {
+      const present = () => { if (owner.active && owner.generation === generation) mark(); };
+      if (typeof video.requestVideoFrameCallback === 'function') {
+        const id = video.requestVideoFrameCallback(present);
+        return () => video.cancelVideoFrameCallback(id);
+      }
+      video.addEventListener('loadeddata', present);
+      if (video.readyState >= 2) present();
+      return () => video.removeEventListener('loadeddata', present);
+    };
+    const cancelIntroFrame = watchFrame(intro, () => setIntroFrameReady(true));
+    const cancelLoopFrame = watchFrame(loop, () => setLoopFrameReady(true));
     playIntro();
 
     return () => {
@@ -104,6 +127,8 @@ export function SettlementSequence(props: SettlementSequenceProps) {
       owner.generation++;
       owner.introAttempt++;
       owner.loopAttempt++;
+      cancelIntroFrame();
+      cancelLoopFrame();
       stop(intro);
       stop(loop);
     };
@@ -140,12 +165,15 @@ export function SettlementSequence(props: SettlementSequenceProps) {
   ].filter(Boolean).join(" ");
 
   const mediaLayer = (
-    <div className={mediaClassName} data-testid="settlement-media">
+    <div className={mediaClassName} data-testid="settlement-media"
+      data-frame-ready={(!introFailed && introFrameReady) ||
+        ((phase === 'looping' || phase === 'crossfading') && loopFrameReady) || phase === 'fallback'}
+      data-intro-failed={introFailed} data-loop-ready={loopFrameReady}>
       <video
         aria-label="结算开场动画"
         className="settlement-media__video settlement-media__intro"
         onEnded={handleIntroFinished}
-        onError={handleIntroFinished}
+        onError={handleIntroError}
         onTimeUpdate={handleIntroTimeUpdate}
         playsInline
         preload="auto"
