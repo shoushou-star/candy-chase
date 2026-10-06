@@ -132,7 +132,7 @@ function confirmPlayableHero(heroId: HeroId) {
 
 **Files:** Create `GameplayFrame.tsx`、`PregameVideo.tsx`、`PlaySession.tsx` 及各自 `.test.tsx`，均位于 `src/features/game-flow`；Create `src/styles/play-session.css`。
 
-**Interfaces:** `GameplayFrame({runId, active, onReady, onComplete, onError})`；`PregameVideo({onFinished})`；`PlaySession({runId, playIntro, onComplete, onRetryLoad, onReturnToLobby})`。onComplete 参数为 RhythmGameResult，组件内先校验来源，再交给 Task 2 parseResult。
+**Interfaces:** `GameplayFrame({runId, active, onReady, onComplete, onError})`；`PregameVideo({onFinished})`；`PlaySession({runId, playIntro, onComplete, onRetryLoad, onReturnToLobby, onGameplayStarted?})`。onComplete 参数为 RhythmGameResult，组件内先校验来源，再交给 Task 2 parseResult。可选 `onGameplayStarted(): void` 每局实际激活时调用一次，使 Task 6 更新顶层页面状态，但不重建同一 iframe。
 
 - [ ] 添加测试覆盖两种 ready/ended 顺序、重复事件、超时、Retry 跳视频、背景暂停和策略拒绝：
 
@@ -162,7 +162,7 @@ it('does not start until both video and game are ready', () => {
 **Interfaces:** AppScreen 加入 pregame-video/gameplay/settlement；使用 runId、latestResult、sessionBestScore、isNewRecord 和 playIntro。保留旧占位页文件，主流程不再使用它。
 
 - [ ] 添加测试：确认 PIKO → 返回 → PLAY → 视频/ready → 游戏完成 → 真实结算；重复 complete 不更新纪录；Retry 新 runId 无前置视频；Next 保留 PIKO；首次/更高/相等分数纪录分支。
-- [ ] 在屏幕状态中保持同一 PlaySession 实例从 pregame-video 进入 gameplay，不能转场时卸载预加载 iframe；只在 runId 改变、结算或返回大厅时卸载。
+- [ ] 利用 PlaySession 的 onGameplayStarted 更新顶层 gameplay 状态；在屏幕状态中保持同一 PlaySession 实例从 pregame-video 进入 gameplay，不能转场时卸载预加载 iframe；只在 runId 改变、结算或返回大厅时卸载。
 - [ ] 首次有效 result 到达时先 recordResult 再更新最高分，保留新纪录布尔值，映射结算 props：
 
 ```tsx
@@ -188,10 +188,10 @@ it('does not start until both video and game are ready', () => {
 
 **Files:** `docs/qa/play-session-integration.md`、计划复选项及来源清单。
 
-- [ ] 对照规格 9 条验收逐项写证据或具体限制；来源 manifest 记录最终版本与资源哈希。
-- [ ] 查 final diff，保护已有 `docs/qa/game-flow-browser-qa.json` 修改，确认本任务未改变无关源工作区、未删除文件。
-- [ ] 保持集成工作区 Vite 在 4176 运行；HTTP 检查后调用 open_in_codex 打开最新预览。若工具返回 queued，只报告已请求打开，不能声称确认了可见标签页。
-- [ ] 交付说明已实现行为、测试结果、浏览器真实音频情况及仍未完成的人工复审项；不将游戏来源对话的旧测试报告作为本次新鲜验收。
+- [x] 对照规格 9 条验收逐项写证据或具体限制；来源 manifest 记录最终版本与资源哈希。
+- [x] 查 final diff，保护已有 `docs/qa/game-flow-browser-qa.json` 修改，确认本任务未改变无关源工作区、未删除文件。
+- [x] 保持集成工作区 Vite 在 4176 运行；HTTP 检查后调用 open_in_codex 打开最新预览。若工具返回 queued，只报告已请求打开，不能声称确认了可见标签页。
+- [x] 交付说明已实现行为、测试结果、浏览器真实音频情况及仍未完成的人工复审项；不将游戏来源对话的旧测试报告作为本次新鲜验收。
 
 ## 自审与执行交接
 
